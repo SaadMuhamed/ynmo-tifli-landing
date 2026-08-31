@@ -567,3 +567,28 @@ export const FOOTER: FooterContent = {
   ],
   copyright: 'جميع الحقوق محفوظة لـ Ynmodata © 2020',
 };
+
+export interface WhatsappFabContent {
+  tooltipLine1: string;
+  tooltipLine2: string;
+  ariaLabel: string;
+  href: string;
+}
+
+/**
+ * S12 — WhatsApp FAB (node 956:11907). Hidden in Figma; plan §7 says build
+ * it anyway behind a config flag (see WHATSAPP_FAB_ENABLED below), default
+ * off pending B-6 (real WhatsApp number). Tooltip copy matches the node —
+ * its font-size in Figma is a broken near-zero value, treated as an
+ * authoring glitch and not reproduced (same call as S06's broken house
+ * icon), real readable sizing used instead.
+ */
+export const WHATSAPP_FAB: WhatsappFabContent = {
+  tooltipLine1: 'تحتاج مساعدة؟',
+  tooltipLine2: 'تواصل معنا واتس آب!',
+  ariaLabel: 'تواصل معنا عبر واتساب',
+  href: '#',
+};
+
+/** B-6: real WhatsApp number not yet provided — flag stays false until it is. */
+export const WHATSAPP_FAB_ENABLED = false;

@@ -1,1 +1,12 @@
-<!-- TODO S12 · Figma node 956:11907 · WhatsappFabComponent — hidden behind config flag, defaults false (B-6) -->
+<!-- S12 · Figma node 956:11907 · hidden in the design, built behind a flag (B-6) -->
+@if (enabled) {
+  <div class="whatsapp-fab">
+    <span class="whatsapp-fab__tooltip">
+      <span>{{ content.tooltipLine1 }}</span>
+      <span>{{ content.tooltipLine2 }}</span>
+    </span>
+    <a class="whatsapp-fab__button" [href]="content.href" [attr.aria-label]="content.ariaLabel">
+      <img src="/assets/icons/whatsapp-fab/icon-whatsapp.svg" alt="" />
+    </a>
+  </div>
+}

@@ -1,0 +1,43 @@
+.whatsapp-fab {
+  position: fixed;
+  inset-block-end: var(--space-24);
+  inset-inline-start: var(--space-24);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-8);
+}
+
+.whatsapp-fab__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  background: var(--brand-whatsapp-green);
+  box-shadow: 0 24px 16px 0 var(--shadow-tint-neutral);
+
+  img {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.whatsapp-fab__tooltip {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  background: var(--surface-2);
+  border-radius: var(--radius-md);
+  padding: var(--space-8) var(--space-12);
+  box-shadow: var(--shadow-md);
+  font-size: var(--fs-12);
+  color: var(--text-primary);
+  white-space: nowrap;
+
+  span:first-child {
+    font-weight: var(--fw-bold);
+  }
+}
