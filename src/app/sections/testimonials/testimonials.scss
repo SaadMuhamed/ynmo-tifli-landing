@@ -1,0 +1,322 @@
+@use '../../../styles/mixins' as *;
+
+.testimonials {
+  position: relative;
+  background: var(--surface-page);
+  padding-block: var(--space-72);
+  padding-inline: var(--gutter);
+}
+
+.testimonials__header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-block-end: var(--space-72);
+}
+
+.testimonials__heading {
+  font-size: var(--fs-64);
+  font-weight: var(--fw-bold);
+  line-height: 1.2;
+  color: var(--text-primary);
+  text-align: center;
+  max-width: 900px;
+
+  @include below-1024 {
+    font-size: var(--fs-44);
+  }
+}
+
+.testimonials__highlight {
+  color: var(--brand-primary);
+}
+
+.testimonials__deco {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  pointer-events: none;
+
+  &--start {
+    inset-inline-start: 0;
+    inset-block-end: 0;
+  }
+  &--end {
+    inset-inline-end: 0;
+    inset-block-start: -12px;
+    flex-direction: row-reverse;
+  }
+
+  /* Only shown at the width the 3-card row actually needs to avoid the
+     three cards wrapping (~1439px+); hidden earlier than the site-wide
+     1024px breakpoint to avoid overlapping the heading once cards wrap. */
+  @media (max-width: 1439px) {
+    display: none;
+  }
+}
+
+.testimonials__bubble {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-8);
+  width: 141px;
+  background: var(--surface-2);
+  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) 0;
+  padding: var(--space-12);
+  box-shadow: 0 56px 32px 0 var(--shadow-tint-neutral);
+  transform: rotate(-4.75deg);
+
+  &--sm {
+    width: 190px;
+    padding: var(--space-16);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 var(--radius-lg);
+    transform: rotate(4.75deg);
+  }
+}
+
+.skeleton-line {
+  display: block;
+  width: 100%;
+  height: 9px;
+  border-radius: var(--radius-full);
+  background: var(--neutral-300);
+  opacity: 0.3;
+
+  &--short {
+    width: 60%;
+  }
+}
+
+.testimonials__emoji {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background: var(--surface-2);
+  border-radius: var(--radius-xxl);
+  box-shadow: 0 56px 32px 0 var(--shadow-tint-neutral);
+  font-size: var(--fs-32);
+  transform: rotate(-15deg);
+
+  &--sm {
+    width: 36px;
+    height: 36px;
+    font-size: var(--fs-20);
+  }
+}
+
+/* ---------- testimonial cards ---------- */
+.testimonial-grid {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-24);
+  max-width: var(--container);
+  margin-inline: auto;
+}
+
+.testimonial-card {
+  display: flex;
+  flex-direction: column;
+  width: 381px;
+  max-width: 100%;
+  background: var(--surface-translucent-white);
+  border: 2px solid var(--border-white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.testimonial-card__video {
+  display: block;
+  width: 100%;
+  height: 162px;
+  object-fit: cover;
+  background: var(--neutral-950);
+  filter: brightness(0.68);
+}
+
+.testimonial-card__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-16);
+  padding: var(--space-16);
+  flex: 1 1 auto;
+}
+
+.testimonial-card__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  width: 100%;
+}
+
+.testimonial-card__avatar {
+  flex: none;
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: var(--radius-xxl);
+  border: 5px solid var(--surface-2);
+  box-shadow: var(--shadow-xl);
+  background: var(--neutral-100);
+}
+
+.testimonial-card__names {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  text-align: end;
+}
+
+.testimonial-card__name {
+  font-size: var(--fs-24);
+  font-weight: var(--fw-bold);
+  color: var(--text-primary);
+}
+
+.testimonial-card__location {
+  font-size: var(--fs-16);
+  color: var(--text-secondary);
+}
+
+.testimonial-card__before {
+  width: 100%;
+  font-size: var(--fs-16);
+  color: var(--neutral-400);
+  text-align: end;
+
+  strong {
+    color: var(--text-secondary);
+  }
+}
+
+.testimonial-card__divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  width: 100%;
+  opacity: 0.5;
+
+  .line {
+    flex: 1 1 0;
+    height: 1px;
+    background: var(--border-med-contrast);
+  }
+
+  img {
+    width: 24px;
+    height: 24px;
+    flex: none;
+  }
+}
+
+.testimonial-card__after {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-16);
+  width: 100%;
+  background: var(--state-success-50);
+  border-radius: var(--radius-sm);
+  padding: var(--space-16);
+  font-size: var(--fs-16);
+  color: var(--text-primary);
+  text-align: end;
+
+  strong {
+    color: var(--state-success);
+  }
+}
+
+.testimonial-card__stars {
+  display: flex;
+  gap: var(--space-4);
+
+  img {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* ---------- audio player mock ---------- */
+.audio-player {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  padding: var(--space-24);
+  width: 100%;
+}
+
+.audio-player__play {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.audio-player__question {
+  flex: 1 1 0;
+  min-width: 0;
+  font-size: var(--fs-16);
+  font-weight: var(--fw-bold);
+  line-height: 1.3;
+  color: var(--text-primary);
+  text-align: end;
+}
+
+.audio-player__mic {
+  flex: none;
+  width: 24px;
+  height: 24px;
+}
+
+.audio-player__divider {
+  height: 1px;
+  width: 100%;
+  background: var(--border-low-contrast);
+}
+
+.audio-player__progress {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-24);
+  width: 100%;
+  font-size: var(--fs-16);
+  color: var(--text-secondary);
+}
+
+.audio-player__bar {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 12px;
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+}
+
+.audio-player__dot {
+  position: absolute;
+  inset-inline-end: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--brand-primary);
+}

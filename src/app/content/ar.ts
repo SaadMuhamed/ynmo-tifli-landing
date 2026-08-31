@@ -332,3 +332,65 @@ export const WHY_US: WhyUsContent = {
     { titleLine1: 'مراقبة الطفل', titleLine2: 'في بيئته الطبيعية', icon: '/assets/icons/why-us/tile-house.png' },
   ],
 };
+
+export interface TestimonialCard {
+  name: string;
+  location: string;
+  before: string;
+  after: string;
+  avatar: string;
+  avatarWebp: string;
+  /** present only on the audio testimonial card */
+  audioQuestion?: string;
+  /** present only on the video testimonial card */
+  videoPoster?: string;
+  videoPosterWebp?: string;
+}
+
+export interface TestimonialsContent {
+  headingPrefix: string;
+  headingHighlight: string;
+  /** DOM order = RTL reading order (mirror of Figma's LTR order, matches its screenshot) */
+  cards: TestimonialCard[];
+}
+
+/**
+ * S07 — Testimonials (node 956:11571). Copy matches plan §7. Figma's video
+ * card has no source video, only a poster — <video> ships with a poster
+ * and no <source>, same B-4-style placeholder treatment as missing CTA
+ * hrefs elsewhere. The "audio" card is a static mockup (no real playback)
+ * for the same reason.
+ */
+export const TESTIMONIALS: TestimonialsContent = {
+  headingPrefix: 'تجارب مستخدمي ',
+  headingHighlight: 'ينمو طفلي',
+  cards: [
+    {
+      name: 'أم عبدالله',
+      location: 'الرياض · تقييم + استشارة أخصائي',
+      before: 'كنت محتارة وما أعرف هل ما يحدث مع طفلي طبيعي أو يحتاج إلى تدخل.',
+      after: 'أصبحت أعرف احتياجه والخطوات التي أقدر أساعده فيها.',
+      avatar: '/assets/img/testimonials/avatar-3.png',
+      avatarWebp: '/assets/img/testimonials/avatar-3.webp',
+      videoPoster: '/assets/img/testimonials/video-poster.png',
+      videoPosterWebp: '/assets/img/testimonials/video-poster.webp',
+    },
+    {
+      name: 'أم ريم',
+      location: 'جدة · برنامج علاجي منزلي',
+      before: 'كنت أؤجل الموضوع خوفاً من التشخيص ومن ردة فعل الناس.',
+      after: 'الجلسات المنزلية ناسبت جدولنا، ولاحظنا تطوراً واضحاً خلال أسابيع.',
+      avatar: '/assets/img/testimonials/avatar-2.png',
+      avatarWebp: '/assets/img/testimonials/avatar-2.webp',
+      audioQuestion: 'كيف سهل تطبيق ينمو طفلي متابعة أم ريم لابنها',
+    },
+    {
+      name: 'أم محمد',
+      location: 'المدينة المنورة · خدمة معلم الظل',
+      before: 'ابني كان يرفض الذهاب للمدرسة ولا أعرف كيف أساعده.',
+      after: 'معلم الظل غيّر تجربته تماماً؛ صار يذهب مطمئناً ويشارك أصدقاءه.',
+      avatar: '/assets/img/testimonials/avatar-1.png',
+      avatarWebp: '/assets/img/testimonials/avatar-1.webp',
+    },
+  ],
+};

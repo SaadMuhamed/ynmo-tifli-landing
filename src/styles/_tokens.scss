@@ -40,6 +40,7 @@
   --border-white:             #ffffff;
   --border-divider-dashed:    #bfbcca;  /* features divider, exact Figma stroke */
   --border-decorative-strong: #000000; /* hero photo-arch stroke, no Ynmotomic equivalent yet, see plan §13 B-7 */
+  --icon-disabled:             #c0c6d8; /* muted divider/mic icons, no Ynmotomic equivalent yet, see plan §13 B-7 */
 
   /* ---------- States ---------- */
   --state-success:            #34c759;  --state-success-bg: #dff9e5;
@@ -47,6 +48,8 @@
   --state-pending:            #ee7921;  --state-pending-bg: #fdeed7;
   --state-error:              #ed1519;  --state-error-bg:   #ffdfe0;
   --state-default:            #414863;  --state-default-bg: #ecedf2;
+  --state-success-50:         #f1fcf3;  /* testimonial "بعد" box bg, no Ynmotomic equivalent yet, see plan §13 B-7 */
+  --state-rating-gold:        #f9ce35;  /* star-rating glyphs, no Ynmotomic equivalent yet, see plan §13 B-7 */
 
   /* ---------- Tags ---------- */
   --tag-primary:              #563cca;

@@ -1,2 +1,85 @@
-<!-- TODO S07 · Figma node 956:11571 -->
-<section id="testimonials" class="testimonials"></section>
+<!-- S07 · Figma node 956:11571 -->
+<section id="testimonials" class="testimonials" aria-labelledby="testimonials-heading">
+  <div class="testimonials__header">
+    <span class="testimonials__deco testimonials__deco--start" aria-hidden="true">
+      <span class="testimonials__bubble">
+        <span class="skeleton-line"></span>
+        <span class="skeleton-line skeleton-line--short"></span>
+      </span>
+      <span class="testimonials__emoji">👍🏻</span>
+    </span>
+
+    <h2 id="testimonials-heading" class="testimonials__heading">
+      {{ content.headingPrefix }}<span class="testimonials__highlight">{{ content.headingHighlight }}</span>
+    </h2>
+
+    <span class="testimonials__deco testimonials__deco--end" aria-hidden="true">
+      <span class="testimonials__bubble testimonials__bubble--sm">
+        <span class="skeleton-line"></span>
+        <span class="skeleton-line skeleton-line--short"></span>
+      </span>
+      <span class="testimonials__emoji testimonials__emoji--sm">❤️</span>
+    </span>
+  </div>
+
+  <ul class="testimonial-grid">
+    @for (card of content.cards; track card.name) {
+      <li class="testimonial-card">
+        @if (card.videoPoster) {
+          <video
+            class="testimonial-card__video"
+            [poster]="card.videoPoster"
+            preload="none"
+            controls
+            [attr.aria-label]="'فيديو تجربة ' + card.name"
+          ></video>
+        }
+        @if (card.audioQuestion) {
+          <div class="audio-player">
+            <button class="audio-player__play" type="button" aria-label="تشغيل التسجيل الصوتي">
+              <img src="/assets/icons/testimonials/icon-play-small.svg" alt="" />
+            </button>
+            <p class="audio-player__question">{{ card.audioQuestion }}</p>
+            <img class="audio-player__mic" src="/assets/icons/testimonials/icon-mic.svg" alt="" aria-hidden="true" />
+          </div>
+          <div class="audio-player__divider" aria-hidden="true"></div>
+          <div class="audio-player__progress">
+            <span>02:57</span>
+            <span class="audio-player__bar"><span class="audio-player__dot"></span></span>
+            <span>02:57</span>
+          </div>
+        }
+
+        <div class="testimonial-card__body">
+          <div class="testimonial-card__head">
+            <picture>
+              <source [srcset]="card.avatarWebp" type="image/webp" />
+              <img class="testimonial-card__avatar" [src]="card.avatar" [alt]="card.name" width="64" height="64" loading="lazy" decoding="async" />
+            </picture>
+            <div class="testimonial-card__names">
+              <h3 class="testimonial-card__name">{{ card.name }}</h3>
+              <p class="testimonial-card__location">{{ card.location }}</p>
+            </div>
+          </div>
+
+          <p class="testimonial-card__before"><strong>قبل:</strong> {{ card.before }}</p>
+
+          <div class="testimonial-card__divider" aria-hidden="true">
+            <span class="line"></span>
+            <img src="/assets/icons/testimonials/icon-chat.svg" alt="" />
+            <span class="line"></span>
+          </div>
+
+          <div class="testimonial-card__after">
+            <div class="testimonial-card__stars" aria-hidden="true">
+              @for (s of stars; track s) {
+                <img src="/assets/icons/testimonials/icon-star.svg" alt="" />
+              }
+            </div>
+            <p><strong>بعد:</strong> {{ card.after }}</p>
+          </div>
+        </div>
+      </li>
+    }
+  </ul>
+</section>
