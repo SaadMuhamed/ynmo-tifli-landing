@@ -15,6 +15,7 @@
   --brand-secondary-hover:    #00a3d6;
   --brand-secondary-50:       #ebfbff;
   --brand-secondary-100:      #d1f5fe;
+  --brand-secondary-700:      #0082ad;  /* journey step description text, no Ynmotomic equivalent yet, see plan §13 B-7 */
 
   --brand-disabled:           #838dad;
 
@@ -52,6 +53,9 @@
   --tag-secondary:            #39cbf9;
   --tag-secondary-bg:         #d1f5fe;
 
+  /* ---------- Third-party partner marks (not part of the Ynmotomic system) ---------- */
+  --partner-tawakkalna-green: #1aaa5b;
+
   /* ---------- Neutral ramp ---------- */
   --neutral-50:  #f6f7f9;  --neutral-100: #ecedf2;  --neutral-200: #d4d7e3;
   --neutral-300: #afb5ca;  --neutral-400: #838dad;  --neutral-500: #626d90;
@@ -82,8 +86,8 @@
   --fw-regular: 400; --fw-medium: 500; --fw-semibold: 600; --fw-bold: 700;
 
   --fs-12: 12px; --fs-14: 14px; --fs-16: 16px; --fs-18: 18px; --fs-20: 20px;
-  --fs-22: 22px; --fs-24: 24px; --fs-30: 30px; --fs-32: 32px; --fs-36: 36px; --fs-38: 38px;
-  --fs-40: 40px; --fs-44: 44px; --fs-48: 48px; --fs-56: 56px; --fs-60: 60px;
+  --fs-22: 22px; --fs-24: 24px; --fs-28: 28px; --fs-30: 30px; --fs-32: 32px; --fs-36: 36px; --fs-38: 38px;
+  --fs-40: 40px; --fs-44: 44px; --fs-48: 48px; --fs-56: 56px; --fs-60: 60px; --fs-64: 64px;
 
   /* ---------- Elevation ---------- */
   --shadow-sm: 0 1px 4px 0 rgba(0,0,0,.12);
@@ -99,6 +103,8 @@
   --shadow-header-float: 0 0 32px 0 rgba(192,198,216,.3);
   /* S01 hero emoji sticker glow — no Ynmotomic equivalent yet, see plan §13 B-7 */
   --shadow-emoji-badge: 0 8px 8px 0 rgba(255,177,0,.4);
+  /* S02 journey heart-badge glow — no Ynmotomic equivalent yet, see plan §13 B-7 */
+  --shadow-heart-badge: 0 8px 8px 0 rgba(57,203,249,.4);
 }
 
 /* ---------- Responsive token overrides (§9) ---------- */

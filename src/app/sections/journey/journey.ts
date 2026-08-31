@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { JOURNEY } from '../../content/ar';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -7,4 +8,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styleUrl: './journey.scss',
   templateUrl: './journey.html',
 })
-export class Journey {}
+export class Journey {
+  protected readonly journey = JOURNEY;
+}

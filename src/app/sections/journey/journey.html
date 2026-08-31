@@ -1,2 +1,68 @@
-<!-- TODO S02 · Figma node 956:10779 -->
-<section id="journey" class="journey"></section>
+<!-- S02 · Figma node 956:10779 -->
+<section id="journey" class="journey" aria-labelledby="journey-heading">
+  <div class="journey__header">
+    <img class="journey__sparkle" src="/assets/icons/journey/sparkle-a.svg" alt="" aria-hidden="true" />
+    <img class="journey__sparkle journey__sparkle--b" src="/assets/icons/journey/sparkle-b.svg" alt="" aria-hidden="true" />
+    <h2 id="journey-heading" class="journey__heading">{{ journey.heading }}</h2>
+    <span class="journey__heart" aria-hidden="true">🩵</span>
+  </div>
+
+  <ol class="journey__steps">
+    @for (step of journey.steps; track step.number) {
+      <li class="step-card">
+        <span class="step-card__badge">{{ step.number }}</span>
+        <div class="step-card__body">
+          <h3 class="step-card__title">{{ step.title }}</h3>
+          <p class="step-card__desc">{{ step.description }}</p>
+          @if (step.link) {
+            <a class="step-card__link" [href]="step.link.href">
+              {{ step.link.label }}
+              <img src="/assets/icons/journey/external-link.svg" alt="" aria-hidden="true" />
+            </a>
+          }
+        </div>
+        <picture>
+          <source [srcset]="step.illustrationWebp" type="image/webp" />
+          <img class="step-card__illustration" [src]="step.illustration" alt="" aria-hidden="true" loading="lazy" decoding="async" />
+        </picture>
+      </li>
+    }
+  </ol>
+
+  <div class="journey__promos">
+    @for (promo of journey.promos; track promo.headingBrand; let last = $last) {
+      <div class="app-promo">
+        <div class="app-promo__row">
+          <div class="app-promo__icon">
+            @if (promo.isYnmoLogo) {
+              <span class="app-promo__logo" aria-hidden="true">
+                <img src="/assets/icons/site-header/avatar-ring.svg" alt="" />
+                <img src="/assets/icons/site-header/avatar-mark-a.svg" alt="" />
+                <img src="/assets/icons/site-header/avatar-mark-b.svg" alt="" />
+              </span>
+            } @else {
+              <picture>
+                <source [srcset]="promo.iconWebp" type="image/webp" />
+                <img [src]="promo.icon" alt="" aria-hidden="true" />
+              </picture>
+            }
+          </div>
+          <p class="app-promo__heading">
+            {{ promo.headingPrefix }}<span class="app-promo__brand app-promo__brand--{{ promo.accent }}">{{ promo.headingBrand }}</span>
+          </p>
+        </div>
+        <div class="app-promo__stores">
+          <a [href]="promo.googlePlayHref" aria-label="Get it on Google Play">
+            <img src="/assets/icons/journey/badge-google-play.svg" alt="" />
+          </a>
+          <a [href]="promo.appStoreHref" aria-label="Download on the App Store">
+            <img src="/assets/icons/journey/badge-app-store.svg" alt="" />
+          </a>
+        </div>
+      </div>
+      @if (!last) {
+        <div class="journey__divider" aria-hidden="true"></div>
+      }
+    }
+  </div>
+</section>
