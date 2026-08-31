@@ -1,2 +1,80 @@
-<!-- TODO S04 · Figma node 956:11313 -->
-<section id="specialists" class="specialists"></section>
+<!-- S04 · Figma node 956:11313 -->
+<section id="specialists" class="specialists" aria-labelledby="specialists-heading">
+  <div class="specialists__intro">
+    <picture class="specialists__collage">
+      <source srcset="/assets/img/specialists/trust-collage.webp" type="image/webp" />
+      <img
+        src="/assets/img/specialists/trust-collage.png"
+        alt="فريق من الأخصائيين، معتمدين من الهيئة السعودية للتخصصات الصحية ووزارة الصحة وشركاء برامج التدخل المبكر"
+        loading="lazy"
+        decoding="async"
+        width="590"
+        height="667"
+      />
+    </picture>
+
+    <div class="specialists__text">
+      <h2 id="specialists-heading" class="specialists__heading">
+        <span class="specialists__scribble" aria-hidden="true">
+          <img src="/assets/icons/specialists/scribble.svg" alt="" />
+        </span>
+        {{ specialists.headingPrefix }}<span class="specialists__highlight">{{ specialists.headingHighlight }}</span>
+      </h2>
+      <p class="specialists__subhead">{{ specialists.subhead }}</p>
+      <p class="specialists__chips-intro">{{ specialists.chipsIntro }}</p>
+
+      <div class="chip-wrap">
+        @for (chip of specialists.chips; track chip.label) {
+          <span class="chip">
+            {{ chip.label }}
+            <img src="/assets/icons/specialists/chip-calendar.svg" alt="" aria-hidden="true" />
+          </span>
+        }
+        <a class="chip-link" [href]="specialists.allSpecialistsLink.href">
+          {{ specialists.allSpecialistsLink.label }}
+          <img src="/assets/icons/specialists/link-external.svg" alt="" aria-hidden="true" />
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <ul class="practitioner-rail" #rail>
+    @for (p of specialists.practitioners; track p.name) {
+      <li class="practitioner-card">
+        <div class="practitioner-card__head">
+          <div class="practitioner-card__info">
+            <h3 class="practitioner-card__name">{{ p.name }}</h3>
+            <p class="practitioner-card__specialty">{{ p.specialty }}</p>
+          </div>
+          <picture>
+            <source [srcset]="p.avatarWebp" type="image/webp" />
+            <img class="practitioner-card__avatar" [src]="p.avatar" [alt]="p.name" width="64" height="64" loading="lazy" decoding="async" />
+          </picture>
+        </div>
+        <div class="practitioner-card__divider" aria-hidden="true"></div>
+        <p class="practitioner-card__meta">
+          {{ p.credential }}
+          <img src="/assets/icons/specialists/icon-id-verified.svg" alt="" aria-hidden="true" />
+        </p>
+        <p class="practitioner-card__meta">
+          {{ p.experience }}
+          <img src="/assets/icons/specialists/icon-diploma.svg" alt="" aria-hidden="true" />
+        </p>
+      </li>
+    }
+  </ul>
+
+  <div class="rail-nav">
+    <button class="rail-nav__arrow" type="button" aria-label="السابق" (click)="rail.scrollBy({ left: 300, behavior: 'smooth' })">
+      <img src="/assets/icons/specialists/arrow-left.svg" alt="" />
+    </button>
+    <span class="rail-nav__dots" aria-hidden="true">
+      <span class="rail-nav__dot"></span>
+      <span class="rail-nav__dot"></span>
+      <span class="rail-nav__dot rail-nav__dot--active"></span>
+    </span>
+    <button class="rail-nav__arrow" type="button" aria-label="التالي" (click)="rail.scrollBy({ left: -300, behavior: 'smooth' })">
+      <img src="/assets/icons/specialists/arrow-right.svg" alt="" />
+    </button>
+  </div>
+</section>

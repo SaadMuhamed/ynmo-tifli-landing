@@ -174,3 +174,86 @@ export const JOURNEY: JourneyContent = {
     },
   ],
 };
+
+export interface SpecialtyChip {
+  label: string;
+}
+
+export interface Practitioner {
+  name: string;
+  specialty: string;
+  credential: string;
+  experience: string;
+  avatar: string;
+  avatarWebp: string;
+}
+
+export interface SpecialistsContent {
+  headingPrefix: string;
+  headingHighlight: string;
+  subhead: string;
+  chipsIntro: string;
+  chips: SpecialtyChip[];
+  allSpecialistsLink: { label: string; href: string };
+  /** DOM order = RTL reading order: most-active card first (renders rightmost) */
+  practitioners: Practitioner[];
+}
+
+/**
+ * S04 — Specialists (node 956:11313). Copy matches plan §7. The 4
+ * practitioner cards in Figma have no per-card booking button (plan's §7
+ * text mentions one) — built what the live node actually has, same as the
+ * S00 header precedent (trust Figma over the plan's prose when they
+ * differ). The right-side photo collage + partner/certification logos are
+ * one flattened image (decorative, same reasoning as S02's clusters).
+ */
+export const SPECIALISTS: SpecialistsContent = {
+  headingPrefix: 'خبراء يرافقون ',
+  headingHighlight: 'رحلة طفلك',
+  subhead: 'اختر المختص المناسب لعمر طفلك واحتياجه، واحجز في الوقت الذي يناسبك.',
+  chipsIntro: 'تخصصات متعددة.. لأن لكل طفل احتياجه:',
+  chips: [
+    { label: 'علاج وظيفي' },
+    { label: 'نطق وتخاطب' },
+    { label: 'علاج طبيعي' },
+    { label: 'طب الأطفال' },
+    { label: 'علم النفس' },
+    { label: 'تحليل السلوك التطبيقي' },
+    { label: 'تخصصات طبية أخرى' },
+  ],
+  allSpecialistsLink: { label: 'تعرّف على جميع الأخصائيين', href: '#' },
+  practitioners: [
+    {
+      name: 'د. عبدالله القحطاني',
+      specialty: 'استشاري طب أطفال ونمو',
+      credential: 'زمالة طب الأطفال · ترخيص مهني ساري',
+      experience: '14 سنة خبرة',
+      avatar: '/assets/img/specialists/avatar-4.png',
+      avatarWebp: '/assets/img/specialists/avatar-4.webp',
+    },
+    {
+      name: 'أ. فيصل الزهراني',
+      specialty: 'أخصائي تحليل سلوك تطبيقي',
+      credential: 'اعتماد مهني في تحليل السلوك التطبيقي',
+      experience: '8 سنوات خبرة',
+      avatar: '/assets/img/specialists/avatar-3.png',
+      avatarWebp: '/assets/img/specialists/avatar-3.webp',
+    },
+    {
+      name: 'أ. مريم العمري',
+      specialty: 'أخصائية علاج وظيفي',
+      credential: 'اعتماد في التكامل الحسي للأطفال',
+      experience: '7 سنوات خبرة',
+      avatar: '/assets/img/specialists/avatar-2.png',
+      avatarWebp: '/assets/img/specialists/avatar-2.webp',
+    },
+    {
+      name: 'د. سارة الحربي',
+      specialty: 'أخصائية نطق وتخاطب',
+      credential: 'مرخّصة من الهيئة السعودية للتخصصات الصحية',
+      experience: '9 سنوات خبرة',
+      avatar: '/assets/img/specialists/avatar-1.png',
+      avatarWebp: '/assets/img/specialists/avatar-1.webp',
+    },
+  ],
+};
