@@ -56,7 +56,12 @@
   position: absolute;
   z-index: 0;
   pointer-events: none;
-  top: 18px;
+  /* Figma's Group 12/13 sit at y≈26-27 *within the text frame itself*
+     (node 956:11266, no extra top padding). This container adds
+     padding-block-start: 40px before the h2, so the scribbles need the
+     same 40px added to stay anchored under the highlighted words on the
+     second line instead of floating up over line 1. */
+  top: 66px;
 
   &--a {
     inset-inline-start: 469px;

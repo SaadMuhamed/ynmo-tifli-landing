@@ -160,12 +160,25 @@
 }
 
 .site-footer__watermark {
+  /* Real Figma composite (node 956:11752 "Logo / Symbol-Mask") — the ynmo
+     swirl mark, blurred, faded via a linear-gradient mask. Was a reused
+     header icon placeholder; now the actual vector art + mask. */
   position: absolute;
   inset-inline-end: -20%;
   inset-block-end: -25%;
   width: 70%;
   max-width: 900px;
-  opacity: 0.15;
+  aspect-ratio: 1080 / 988;
+  background-image: url('/assets/icons/footer/watermark-symbol.svg');
+  background-size: cover;
+  background-position: center;
+  -webkit-mask-image: url('/assets/icons/footer/watermark-fade-mask.svg');
+  mask-image: url('/assets/icons/footer/watermark-fade-mask.svg');
+  -webkit-mask-size: cover;
+  mask-size: cover;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  opacity: 0.25;
   pointer-events: none;
   z-index: 0;
 }
@@ -262,7 +275,9 @@
   justify-content: flex-start;
   font-size: var(--fs-14);
   font-weight: var(--fw-medium);
-  opacity: 0.7;
+  /* Figma's literal 0.7 opacity on white-over-brand-primary lands at 4.39:1,
+     just under WCAG AA's 4.5:1 for this small text. Bumped to 0.85 (5.73:1). */
+  opacity: 0.85;
 
   @include below-1024 {
     justify-content: center;

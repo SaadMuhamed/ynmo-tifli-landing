@@ -67,7 +67,7 @@ export interface DriverDom {
 }
 
 export interface DriverCallbacks {
-  scenes: { scene: string }[];
+  scenes: { scene: string; sceneWebp: string }[];
   reducedMotion: boolean;
 }
 
@@ -105,7 +105,7 @@ export class ScrollDriver {
 
   private paintFace(f: number): void {
     if (f >= 0 && f < N) {
-      this.dom.faces[f % 2].src = this.cb.scenes[f].scene;
+      this.dom.faces[f % 2].src = this.cb.scenes[f].sceneWebp;
     }
   }
 

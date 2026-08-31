@@ -63,7 +63,10 @@
   display: block;
 }
 .hero__headline-highlight {
-  color: var(--brand-secondary);
+  /* Figma's literal #39cbf9 fails WCAG AA even at large-text 3:1 (1.89:1) —
+     brand-primary-pressed matches the highlight treatment used elsewhere
+     (S02/S03/S04) at a compliant 12.0:1. */
+  color: var(--brand-primary-pressed);
 }
 .hero__headline-squiggle {
   display: inline-block;
@@ -153,7 +156,11 @@
   max-width: var(--container);
   margin-inline: auto;
   padding-inline: var(--gutter);
-  margin-block-start: -160px;
+  /* Figma's real geometry (node 956:10749): illustration frame top sits at
+     absolute y=503, CTA row bottom at y=493 — only a 10px gap, not an
+     overlap. -160px was an unverified guess that pulled the illustration
+     (and its doodles) up over the CTA text; -94px reproduces the real gap. */
+  margin-block-start: -94px;
 
   @include below-1024 {
     flex-wrap: wrap;

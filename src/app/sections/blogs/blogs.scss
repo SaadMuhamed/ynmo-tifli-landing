@@ -251,7 +251,9 @@
   gap: var(--space-8);
   font-size: var(--fs-14);
   font-weight: var(--fw-bold);
-  color: var(--border-divider-dashed);
+  /* Figma's literal #bfbcca fails WCAG AA (1.86:1) — text-secondary reads
+     as the same "muted metadata" grey at a compliant 5.11:1. */
+  color: var(--text-secondary);
   white-space: nowrap;
 
   img {
