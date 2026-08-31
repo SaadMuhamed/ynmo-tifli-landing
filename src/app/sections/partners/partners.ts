@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { PARTNERS } from '../../content/ar';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -7,4 +8,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styleUrl: './partners.scss',
   templateUrl: './partners.html',
 })
-export class Partners {}
+export class Partners {
+  protected readonly content = PARTNERS;
+}

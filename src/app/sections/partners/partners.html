@@ -1,2 +1,40 @@
-<!-- TODO S09 · Figma node 956:11680 -->
-<section id="partners" class="partners"></section>
+<!-- S09 · Figma node 956:11680 -->
+<section id="partners" class="partners" aria-labelledby="partners-heading">
+  <div class="partners__header">
+    <img class="partners__sparkle partners__sparkle--a" src="/assets/icons/partners/sparkle-1.svg" alt="" aria-hidden="true" />
+    <img class="partners__sparkle partners__sparkle--b" src="/assets/icons/partners/sparkle-2.svg" alt="" aria-hidden="true" />
+    <img class="partners__sparkle partners__sparkle--c" src="/assets/icons/partners/sparkle-3.svg" alt="" aria-hidden="true" />
+
+    <p class="partners__kicker">
+      <span>{{ content.kicker }}</span>
+      <span class="partners__count" dir="ltr">{{ content.count }}</span>
+    </p>
+    <h2 id="partners-heading" class="partners__heading">{{ content.heading }}</h2>
+    <p class="partners__tagline">
+      <span class="partners__tagline-highlight">
+        <img class="partners__scribble" src="/assets/icons/partners/scribble-highlight.svg" alt="" aria-hidden="true" />
+        <span>{{ content.taglineHighlight }}</span>
+      </span>
+      {{ content.taglineRest }}
+    </p>
+  </div>
+
+  <div class="logo-strip">
+    <button class="logo-strip__arrow logo-strip__arrow--start" type="button" aria-label="السابق" (click)="rail.scrollBy({ left: 200, behavior: 'smooth' })">
+      <img src="/assets/icons/partners/icon-arrow-left.svg" alt="" />
+    </button>
+
+    <div class="logo-strip__track" #rail>
+      @for (logo of content.logos; track logo.alt) {
+        <picture class="logo-strip__item">
+          <source [srcset]="logo.srcWebp" type="image/webp" />
+          <img [src]="logo.src" [alt]="logo.alt" loading="lazy" decoding="async" />
+        </picture>
+      }
+    </div>
+
+    <button class="logo-strip__arrow logo-strip__arrow--end" type="button" aria-label="التالي" (click)="rail.scrollBy({ left: -200, behavior: 'smooth' })">
+      <img src="/assets/icons/partners/icon-arrow-right.svg" alt="" />
+    </button>
+  </div>
+</section>

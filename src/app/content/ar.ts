@@ -473,3 +473,41 @@ export const BLOGS: BlogsContent = {
     },
   ],
 };
+
+export interface PartnerLogo {
+  alt: string;
+  src: string;
+  srcWebp: string;
+}
+
+export interface PartnersContent {
+  kicker: string;
+  count: string;
+  heading: string;
+  /** the part shown on a purple scribble-highlight pill */
+  taglineHighlight: string;
+  /** the plain-text remainder, after the highlight */
+  taglineRest: string;
+  logos: PartnerLogo[];
+}
+
+/**
+ * S09 — Partners (node 956:11680). Copy matches plan §7. Figma's logo
+ * strip repeats slots to imply "+20" partners, but only 4 distinct logo
+ * assets actually exist in the file — used each once rather than
+ * reproducing the repeat pattern. No marquee (plan marks it optional);
+ * static row with a horizontal-scroll fallback instead.
+ */
+export const PARTNERS: PartnersContent = {
+  kicker: 'شركاء النجاح',
+  count: '+20',
+  heading: 'شراكة مع جهات من القطاع الحكومي والخاص',
+  taglineHighlight: 'خطوة بخطوة، ',
+  taglineRest: 'نُعيد تشكيل المستقبل معهم',
+  logos: [
+    { alt: 'stc', src: '/assets/img/partners/logo-1.png', srcWebp: '/assets/img/partners/logo-1.webp' },
+    { alt: 'مؤسسة عبدالقادر المهيدب لخدمة المجتمع', src: '/assets/img/partners/logo-2.png', srcWebp: '/assets/img/partners/logo-2.webp' },
+    { alt: 'المجلس الصحي السعودي', src: '/assets/img/partners/logo-3.png', srcWebp: '/assets/img/partners/logo-3.webp' },
+    { alt: 'مركز الملك سلمان للإغاثة والأعمال الإنسانية', src: '/assets/img/partners/logo-4.png', srcWebp: '/assets/img/partners/logo-4.webp' },
+  ],
+};
