@@ -35,3 +35,46 @@ export const HEADER: HeaderContent = {
   ],
   activeNavIndex: 3,
 };
+
+export interface StatChip {
+  value: string;
+  label: string;
+  icon: string;
+  /** drives the chip's accent color and glow, resolved through tokens in hero.scss */
+  accent: 'success' | 'brand';
+}
+
+export interface HeroContent {
+  headlineLine1: string;
+  headlinePrefix: string;
+  headlineHighlight: string;
+  subhead: string;
+  primaryCta: { label: string; href: string };
+  secondaryCta: { label: string; href: string };
+  photoAlt: string;
+  statsLeft: StatChip[];
+  statsRight: StatChip[];
+}
+
+/**
+ * S01 — Hero (node 956:10749). Copy matches the plan's §7 draft exactly.
+ * CTA hrefs are placeholders pending B-4 (real CTA destinations).
+ */
+export const HERO: HeroContent = {
+  headlineLine1: 'رحلة كاملة لرعاية وتطوير طفلك..',
+  headlinePrefix: 'تبدأ من ',
+  headlineHighlight: 'خطوة واحدة',
+  subhead:
+    'نرافقك من الفحص والتقييم، مروراً بالاستشارات والتشخيص، وحتى اختيار البيئة التعليمية والعلاجية الأنسب لطفلك.',
+  primaryCta: { label: 'احجز تقييم نمو الطفل', href: '#' },
+  secondaryCta: { label: 'احجز جلسة استشاريه', href: '#' },
+  photoAlt: 'أم تحمل طفلها الرضيع وتبتسم له',
+  statsLeft: [
+    { value: '5 / 4.9', label: 'رضا الأسر', icon: '/assets/icons/hero/stat-heart-check.svg', accent: 'success' },
+    { value: '+ 146,000', label: 'دقيقة استشارية', icon: '/assets/icons/hero/stat-time-quarter.svg', accent: 'brand' },
+  ],
+  statsRight: [
+    { value: '+ 200,000', label: 'طفل مستفيد', icon: '/assets/icons/hero/stat-baby.svg', accent: 'success' },
+    { value: '+ 450', label: 'اخصائي', icon: '/assets/icons/hero/stat-doctor.svg', accent: 'brand' },
+  ],
+};

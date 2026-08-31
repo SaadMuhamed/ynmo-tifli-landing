@@ -37,6 +37,7 @@
   --border-low-contrast:      #ecedf2;
   --border-white:             #ffffff;
   --border-divider-dashed:    #bfbcca;  /* features divider, exact Figma stroke */
+  --border-decorative-strong: #000000; /* hero photo-arch stroke, no Ynmotomic equivalent yet, see plan §13 B-7 */
 
   /* ---------- States ---------- */
   --state-success:            #34c759;  --state-success-bg: #dff9e5;
@@ -81,8 +82,8 @@
   --fw-regular: 400; --fw-medium: 500; --fw-semibold: 600; --fw-bold: 700;
 
   --fs-12: 12px; --fs-14: 14px; --fs-16: 16px; --fs-18: 18px; --fs-20: 20px;
-  --fs-24: 24px; --fs-30: 30px; --fs-32: 32px; --fs-36: 36px; --fs-38: 38px;
-  --fs-40: 40px; --fs-44: 44px; --fs-48: 48px; --fs-56: 56px;
+  --fs-22: 22px; --fs-24: 24px; --fs-30: 30px; --fs-32: 32px; --fs-36: 36px; --fs-38: 38px;
+  --fs-40: 40px; --fs-44: 44px; --fs-48: 48px; --fs-56: 56px; --fs-60: 60px;
 
   /* ---------- Elevation ---------- */
   --shadow-sm: 0 1px 4px 0 rgba(0,0,0,.12);
@@ -96,6 +97,8 @@
   --shadow-cta-brand: 0 24px 32px 0 rgba(86,60,202,.48);
   /* S00 floating header ambient shadow — no Ynmotomic equivalent yet, see plan §13 B-7 */
   --shadow-header-float: 0 0 32px 0 rgba(192,198,216,.3);
+  /* S01 hero emoji sticker glow — no Ynmotomic equivalent yet, see plan §13 B-7 */
+  --shadow-emoji-badge: 0 8px 8px 0 rgba(255,177,0,.4);
 }
 
 /* ---------- Responsive token overrides (§9) ---------- */
