@@ -3,6 +3,12 @@
  * Never edited, translated, or diacritized here — see build plan §2.3.
  */
 
+/** Shared UI chrome strings (rail prev/next, etc.) reused verbatim across sections. */
+export const UI = {
+  prev: 'السابق',
+  next: 'التالي',
+};
+
 export interface NavLink {
   label: string;
   href: string;
@@ -14,6 +20,13 @@ export interface HeaderContent {
   navLinks: NavLink[];
   /** index into navLinks that carries the active/brand-accent treatment */
   activeNavIndex: number;
+  logoAriaLabel: string;
+  navAriaLabel: string;
+  langAriaLabel: string;
+  searchAriaLabel: string;
+  hamburgerAriaLabel: string;
+  drawerAriaLabel: string;
+  drawerCloseAriaLabel: string;
 }
 
 /**
@@ -34,6 +47,13 @@ export const HEADER: HeaderContent = {
     { label: 'من نحن', href: '#' },
   ],
   activeNavIndex: 3,
+  logoAriaLabel: 'ينمو طفلي',
+  navAriaLabel: 'التنقل الرئيسي',
+  langAriaLabel: 'تغيير اللغة',
+  searchAriaLabel: 'بحث',
+  hamburgerAriaLabel: 'فتح قائمة التنقل',
+  drawerAriaLabel: 'قائمة التنقل',
+  drawerCloseAriaLabel: 'إغلاق القائمة',
 };
 
 export interface StatChip {
@@ -197,6 +217,7 @@ export interface SpecialistsContent {
   allSpecialistsLink: { label: string; href: string };
   /** DOM order = RTL reading order: most-active card first (renders rightmost) */
   practitioners: Practitioner[];
+  collageAlt: string;
 }
 
 /**
@@ -212,6 +233,8 @@ export const SPECIALISTS: SpecialistsContent = {
   headingHighlight: 'رحلة طفلك',
   subhead: 'اختر المختص المناسب لعمر طفلك واحتياجه، واحجز في الوقت الذي يناسبك.',
   chipsIntro: 'تخصصات متعددة.. لأن لكل طفل احتياجه:',
+  collageAlt:
+    'فريق من الأخصائيين، معتمدين من الهيئة السعودية للتخصصات الصحية ووزارة الصحة وشركاء برامج التدخل المبكر',
   chips: [
     { label: 'علاج وظيفي' },
     { label: 'نطق وتخاطب' },
@@ -352,6 +375,10 @@ export interface TestimonialsContent {
   headingHighlight: string;
   /** DOM order = RTL reading order (mirror of Figma's LTR order, matches its screenshot) */
   cards: TestimonialCard[];
+  videoAriaPrefix: string;
+  audioPlayAriaLabel: string;
+  beforeLabel: string;
+  afterLabel: string;
 }
 
 /**
@@ -364,6 +391,10 @@ export interface TestimonialsContent {
 export const TESTIMONIALS: TestimonialsContent = {
   headingPrefix: 'تجارب مستخدمي ',
   headingHighlight: 'ينمو طفلي',
+  videoAriaPrefix: 'فيديو تجربة ',
+  audioPlayAriaLabel: 'تشغيل التسجيل الصوتي',
+  beforeLabel: 'قبل:',
+  afterLabel: 'بعد:',
   cards: [
     {
       name: 'أم عبدالله',
@@ -539,6 +570,7 @@ export interface FooterContent {
   phone: string;
   legalLinks: { label: string; href: string }[];
   copyright: string;
+  wordmarkAlt: string;
 }
 
 /**
@@ -566,6 +598,7 @@ export const FOOTER: FooterContent = {
     { label: 'الشروط والأحكام', href: '#' },
   ],
   copyright: 'جميع الحقوق محفوظة لـ Ynmodata © 2020',
+  wordmarkAlt: 'ينمو',
 };
 
 export interface WhatsappFabContent {

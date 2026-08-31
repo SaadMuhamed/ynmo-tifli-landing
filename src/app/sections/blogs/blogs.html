@@ -7,7 +7,7 @@
         <span class="blogs__heading-highlight">{{ content.headingLine2 }}</span>
       </h2>
       <div class="rail-nav">
-        <button class="rail-nav__arrow" type="button" aria-label="السابق" (click)="rail.scrollBy({ left: 300, behavior: 'smooth' })">
+        <button class="rail-nav__arrow" type="button" [attr.aria-label]="ui.prev" (click)="rail.scrollBy({ left: 300, behavior: 'smooth' })">
           <img src="/assets/icons/blogs/icon-arrow-left.svg" alt="" />
         </button>
         <span class="rail-nav__dots" aria-hidden="true">
@@ -15,7 +15,7 @@
           <span class="rail-nav__dot"></span>
           <span class="rail-nav__dot rail-nav__dot--active"></span>
         </span>
-        <button class="rail-nav__arrow" type="button" aria-label="التالي" (click)="rail.scrollBy({ left: -300, behavior: 'smooth' })">
+        <button class="rail-nav__arrow" type="button" [attr.aria-label]="ui.next" (click)="rail.scrollBy({ left: -300, behavior: 'smooth' })">
           <img src="/assets/icons/blogs/icon-arrow-right.svg" alt="" />
         </button>
       </div>

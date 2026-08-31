@@ -1,6 +1,6 @@
 <!-- S00 · Figma node 956:11865 · content confirmed against the live node, not the plan's §7 draft -->
 <div class="bar" [class.bar--scrolled]="scrolled()">
-  <a class="logo" href="#" aria-label="ينمو طفلي">
+  <a class="logo" href="#" [attr.aria-label]="header.logoAriaLabel">
     <span class="logo__ring">
       <img src="/assets/icons/site-header/avatar-ring.svg" alt="" />
     </span>
@@ -12,7 +12,7 @@
     </span>
   </a>
 
-  <nav class="nav" aria-label="التنقل الرئيسي">
+  <nav class="nav" [attr.aria-label]="header.navAriaLabel">
     <ul class="nav__list">
       @for (link of header.navLinks; track link.label; let i = $index) {
         <li class="nav__item">
@@ -33,11 +33,11 @@
   </nav>
 
   <div class="utility">
-    <button class="utility__lang" type="button" aria-label="تغيير اللغة">
+    <button class="utility__lang" type="button" [attr.aria-label]="header.langAriaLabel">
       <img class="utility__chevron" src="/assets/icons/site-header/chevron-lang.svg" alt="" />
       <span class="utility__flag" aria-hidden="true">🇸🇦</span>
     </button>
-    <button class="utility__search" type="button" aria-label="بحث">
+    <button class="utility__search" type="button" [attr.aria-label]="header.searchAriaLabel">
       <img src="/assets/icons/site-header/magnifier.svg" alt="" />
     </button>
   </div>
@@ -55,7 +55,7 @@
   <button
     class="hamburger"
     type="button"
-    aria-label="فتح قائمة التنقل"
+    [attr.aria-label]="header.hamburgerAriaLabel"
     [attr.aria-expanded]="drawerOpen()"
     aria-controls="site-header-drawer"
     (click)="toggleDrawer()"
@@ -70,9 +70,9 @@
   [class.drawer--open]="drawerOpen()"
   role="dialog"
   aria-modal="true"
-  aria-label="قائمة التنقل"
+  [attr.aria-label]="header.drawerAriaLabel"
 >
-  <button class="drawer__close" type="button" aria-label="إغلاق القائمة" (click)="closeDrawer()">✕</button>
+  <button class="drawer__close" type="button" [attr.aria-label]="header.drawerCloseAriaLabel" (click)="closeDrawer()">✕</button>
   <ul class="drawer__list">
     @for (link of header.navLinks; track link.label; let i = $index) {
       <li>
@@ -88,7 +88,7 @@
     }
   </ul>
   <a class="drawer__cta" [href]="header.ctaHref" (click)="closeDrawer()">{{ header.ctaLabel }}</a>
-  <button class="drawer__lang" type="button" aria-label="تغيير اللغة">
+  <button class="drawer__lang" type="button" [attr.aria-label]="header.langAriaLabel">
     <span aria-hidden="true">🇸🇦</span>
     <img src="/assets/icons/site-header/chevron-lang.svg" alt="" />
   </button>

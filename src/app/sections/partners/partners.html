@@ -20,7 +20,7 @@
   </div>
 
   <div class="logo-strip">
-    <button class="logo-strip__arrow logo-strip__arrow--start" type="button" aria-label="السابق" (click)="rail.scrollBy({ left: 200, behavior: 'smooth' })">
+    <button class="logo-strip__arrow logo-strip__arrow--start" type="button" [attr.aria-label]="ui.prev" (click)="rail.scrollBy({ left: 200, behavior: 'smooth' })">
       <img src="/assets/icons/partners/icon-arrow-left.svg" alt="" />
     </button>
 
@@ -33,7 +33,7 @@
       }
     </div>
 
-    <button class="logo-strip__arrow logo-strip__arrow--end" type="button" aria-label="التالي" (click)="rail.scrollBy({ left: -200, behavior: 'smooth' })">
+    <button class="logo-strip__arrow logo-strip__arrow--end" type="button" [attr.aria-label]="ui.next" (click)="rail.scrollBy({ left: -200, behavior: 'smooth' })">
       <img src="/assets/icons/partners/icon-arrow-right.svg" alt="" />
     </button>
   </div>

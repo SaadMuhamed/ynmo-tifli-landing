@@ -96,7 +96,7 @@
 .chip-wrap {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: var(--space-16);
 
   @include below-1024 {
@@ -212,7 +212,7 @@
 .practitioner-card__meta {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: var(--space-8);
   font-size: var(--fs-16);
   color: var(--text-secondary);

@@ -118,6 +118,9 @@
   /* S10 security banner CTA glow — no Ynmotomic equivalent yet, see plan §13 B-7 */
   --shadow-cta-blue: 0 16px 28px 0 rgba(81,167,243,.1);
   --shadow-whatsapp: 0 16px 28px 0 rgba(37,211,102,.4);
+  /* S03 feature-scroll ground shadow — rgba(--neutral-950) at two alphas, see plan §8.4 */
+  --shadow-ground-strong: rgba(34,36,47,.38);
+  --shadow-ground-transparent: rgba(34,36,47,0);
 }
 
 /* ---------- Responsive token overrides (§9) ---------- */

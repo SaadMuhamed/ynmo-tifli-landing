@@ -5,7 +5,7 @@
       <source srcset="/assets/img/specialists/trust-collage.webp" type="image/webp" />
       <img
         src="/assets/img/specialists/trust-collage.png"
-        alt="فريق من الأخصائيين، معتمدين من الهيئة السعودية للتخصصات الصحية ووزارة الصحة وشركاء برامج التدخل المبكر"
+        [alt]="specialists.collageAlt"
         loading="lazy"
         decoding="async"
         width="590"
@@ -65,7 +65,7 @@
   </ul>
 
   <div class="rail-nav">
-    <button class="rail-nav__arrow" type="button" aria-label="السابق" (click)="rail.scrollBy({ left: 300, behavior: 'smooth' })">
+    <button class="rail-nav__arrow" type="button" [attr.aria-label]="ui.prev" (click)="rail.scrollBy({ left: 300, behavior: 'smooth' })">
       <img src="/assets/icons/specialists/arrow-left.svg" alt="" />
     </button>
     <span class="rail-nav__dots" aria-hidden="true">
@@ -73,7 +73,7 @@
       <span class="rail-nav__dot"></span>
       <span class="rail-nav__dot rail-nav__dot--active"></span>
     </span>
-    <button class="rail-nav__arrow" type="button" aria-label="التالي" (click)="rail.scrollBy({ left: -300, behavior: 'smooth' })">
+    <button class="rail-nav__arrow" type="button" [attr.aria-label]="ui.next" (click)="rail.scrollBy({ left: -300, behavior: 'smooth' })">
       <img src="/assets/icons/specialists/arrow-right.svg" alt="" />
     </button>
   </div>

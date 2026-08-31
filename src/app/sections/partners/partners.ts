@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { PARTNERS } from '../../content/ar';
+import { PARTNERS, UI } from '../../content/ar';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -10,4 +10,5 @@ import { PARTNERS } from '../../content/ar';
 })
 export class Partners {
   protected readonly content = PARTNERS;
+  protected readonly ui = UI;
 }

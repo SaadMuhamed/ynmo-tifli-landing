@@ -1,0 +1,426 @@
+@use '../../../styles/mixins' as *;
+
+/* ================= desktop pin (≥1024px, no prefers-reduced-motion) ================= */
+
+.feature-scroll {
+  position: relative;
+}
+
+.pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--surface-page);
+}
+
+.design {
+  width: 1440px;
+  padding: 0 var(--gutter);
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 72px;
+  transform: scale(var(--stage-scale, 1));
+  transform-origin: center center;
+}
+
+.headline {
+  position: relative;
+  width: 1440px;
+  display: flex;
+  justify-content: center;
+  padding-block-start: 40px;
+
+  h2 {
+    position: relative;
+    z-index: 1;
+    width: 696px;
+    font-size: var(--fs-44);
+    font-weight: var(--fw-bold);
+    line-height: 1.4;
+    text-align: center;
+    color: var(--text-primary);
+    word-break: break-word;
+  }
+}
+
+.hl {
+  color: var(--brand-primary-pressed);
+}
+
+.scribble {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  top: 18px;
+
+  &--a {
+    inset-inline-start: 469px;
+    width: 244px;
+  }
+  &--b {
+    inset-inline-start: 784px;
+    width: 196px;
+  }
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  width: 1192px;
+}
+
+.main {
+  position: relative;
+  flex: 1 1 0;
+  width: 1068px;
+  height: 752px;
+}
+
+.head {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* packs to the row-start = right under dir=rtl */
+  gap: 24px;
+  height: 96px;
+
+  /* SSR / no-JS default: only the first title is visible; the driver
+     overrides these inline once it boots. */
+  &:first-of-type {
+    opacity: 1;
+  }
+  &:not(:first-of-type) {
+    opacity: 0;
+  }
+}
+
+.title {
+  font-size: var(--fs-38);
+  font-weight: var(--fw-bold);
+  line-height: 1.3;
+  text-align: end;
+  white-space: nowrap;
+  color: var(--brand-primary);
+}
+
+.app-icon {
+  position: relative;
+  flex: none;
+  width: 96px;
+  height: 96px;
+  background: var(--surface-2);
+  border-radius: var(--radius-app-icon);
+  box-shadow: var(--shadow-app-icon);
+
+  img {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 64px;
+    height: 64px;
+  }
+}
+
+.plane-wrap {
+  position: absolute;
+  left: 50%; /* physical left/transform: the fixed 1440px stage is the documented §2.1 exception */
+  transform: translateX(-50%);
+  top: 152px;
+  width: 1068px;
+  height: 542px;
+  perspective: 1400px;
+  perspective-origin: 50% 50%;
+}
+
+.ground {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: auto 7% 3% 7%;
+    height: 13%;
+    background: radial-gradient(ellipse at 50% 50%, var(--shadow-ground-strong), var(--shadow-ground-transparent) 70%);
+    filter: blur(var(--sh-blur, 26px));
+    opacity: var(--sh-op, 0.35);
+    transform: translateY(var(--sh-y, 0)) scaleX(var(--sh-sx, 1));
+  }
+}
+
+.flipper {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  transform-style: preserve-3d;
+  transform-origin: 50% 50%;
+  will-change: transform;
+  opacity: var(--intro-opacity, 1);
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  &--b {
+    transform: rotateX(180deg);
+  }
+}
+
+.divider {
+  align-self: stretch;
+  flex: none;
+  width: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    display: block;
+    width: 1px;
+    height: 698px;
+    background-image: linear-gradient(to bottom, var(--border-divider-dashed) 2px, transparent 2px);
+    background-size: 1px 5px;
+    opacity: 0.5;
+  }
+}
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: none;
+}
+
+.chip {
+  position: relative;
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-chip);
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid var(--border-white);
+  transition: background-color 0.45s ease, border-color 0.45s ease;
+
+  img {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 24px;
+    height: 24px;
+    transition: opacity 0.45s ease;
+  }
+
+  .glyph-on {
+    opacity: 0;
+  }
+
+  &.active {
+    background: var(--tag-primary-bg);
+    border-color: var(--brand-primary);
+  }
+  &.active .glyph-on {
+    opacity: 1;
+  }
+  &.active .glyph-off {
+    opacity: 0;
+  }
+  &.active .ring {
+    opacity: 1;
+  }
+}
+
+.ring {
+  /* physical left/margin centering: inside the fixed 1440px stage, §2.1 exception */
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 52px;
+  height: 52px;
+  margin: -26px 0 0 -26px;
+  overflow: visible;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+
+  path {
+    fill: none;
+    stroke: var(--brand-primary);
+    stroke-width: 2;
+  }
+}
+
+@include below-1024 {
+  .feature-scroll {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feature-scroll {
+    display: none;
+  }
+}
+
+/* ================= mobile / tablet / reduced-motion fallback ================= */
+
+.feature-scroll-mobile {
+  display: none;
+  background: var(--surface-page);
+  padding-block: var(--space-64);
+  padding-inline: var(--gutter);
+}
+
+@include below-1024 {
+  .feature-scroll-mobile {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feature-scroll-mobile {
+    display: block;
+  }
+}
+
+.fsm-headline {
+  display: flex;
+  justify-content: center;
+  margin-block-end: var(--space-32);
+
+  h2 {
+    max-width: 600px;
+    font-size: var(--fs-32);
+    font-weight: var(--fw-bold);
+    line-height: 1.4;
+    text-align: center;
+    color: var(--text-primary);
+  }
+}
+
+.fsm-chip-rail {
+  display: flex;
+  gap: var(--space-12);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-block-end: var(--space-16);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.fsm-chip {
+  scroll-snap-align: start;
+  position: relative;
+  flex: none;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-chip);
+  background: var(--surface-2);
+  border: 2px solid var(--border-med-contrast);
+
+  img {
+    width: 24px;
+    height: 24px;
+  }
+
+  &__bar {
+    position: absolute;
+    inset-inline: 4px;
+    inset-block-end: -8px;
+    height: 3px;
+    border-radius: var(--radius-full);
+    background: transparent;
+  }
+
+  &--active {
+    border-color: var(--brand-primary);
+    background: var(--tag-primary-bg);
+  }
+  &--active &__bar {
+    background: var(--brand-primary);
+  }
+}
+
+.fsm-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-16);
+  margin-block: var(--space-24);
+}
+
+.fsm-app-icon {
+  flex: none;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-2);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-app-icon);
+
+  img {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.fsm-title {
+  font-size: var(--fs-22);
+  font-weight: var(--fw-bold);
+  color: var(--brand-primary);
+  text-align: end;
+}
+
+.fsm-scene {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1068 / 542;
+}
+
+.fsm-scene__item {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  &--active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fsm-scene__item {
+    transition: none;
+  }
+}

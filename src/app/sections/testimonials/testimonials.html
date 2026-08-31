@@ -31,12 +31,12 @@
             [poster]="card.videoPoster"
             preload="none"
             controls
-            [attr.aria-label]="'فيديو تجربة ' + card.name"
+            [attr.aria-label]="content.videoAriaPrefix + card.name"
           ></video>
         }
         @if (card.audioQuestion) {
           <div class="audio-player">
-            <button class="audio-player__play" type="button" aria-label="تشغيل التسجيل الصوتي">
+            <button class="audio-player__play" type="button" [attr.aria-label]="content.audioPlayAriaLabel">
               <img src="/assets/icons/testimonials/icon-play-small.svg" alt="" />
             </button>
             <p class="audio-player__question">{{ card.audioQuestion }}</p>
@@ -62,7 +62,7 @@
             </div>
           </div>
 
-          <p class="testimonial-card__before"><strong>قبل:</strong> {{ card.before }}</p>
+          <p class="testimonial-card__before"><strong>{{ content.beforeLabel }}</strong> {{ card.before }}</p>
 
           <div class="testimonial-card__divider" aria-hidden="true">
             <span class="line"></span>
@@ -76,7 +76,7 @@
                 <img src="/assets/icons/testimonials/icon-star.svg" alt="" />
               }
             </div>
-            <p><strong>بعد:</strong> {{ card.after }}</p>
+            <p><strong>{{ content.afterLabel }}</strong> {{ card.after }}</p>
           </div>
         </div>
       </li>
