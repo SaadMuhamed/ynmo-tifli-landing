@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { SECURITY_BANNER } from '../../content/ar';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -7,4 +8,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styleUrl: './security-banner.scss',
   templateUrl: './security-banner.html',
 })
-export class SecurityBanner {}
+export class SecurityBanner {
+  protected readonly content = SECURITY_BANNER;
+}

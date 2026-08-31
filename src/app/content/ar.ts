@@ -511,3 +511,16 @@ export const PARTNERS: PartnersContent = {
     { alt: 'مركز الملك سلمان للإغاثة والأعمال الإنسانية', src: '/assets/img/partners/logo-4.png', srcWebp: '/assets/img/partners/logo-4.webp' },
   ],
 };
+
+export interface SecurityBannerContent {
+  headingLine1: string;
+  headingLine2: string;
+  cta: { label: string; href: string };
+}
+
+/** S10 — Security banner (node 956:11711). Copy matches plan §7 exactly. */
+export const SECURITY_BANNER: SecurityBannerContent = {
+  headingLine1: 'جميع بياناتك في ينمو',
+  headingLine2: 'محميّة بالكامل!',
+  cta: { label: 'اطلع على سياسة الخصوصية', href: '#' },
+};

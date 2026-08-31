@@ -1,2 +1,20 @@
-<!-- TODO S10 · Figma node 956:11711 -->
-<section id="security-banner" class="security-banner"></section>
+<!-- S10 · Figma node 956:11711 -->
+<section id="security-banner" class="security-banner" aria-labelledby="security-heading">
+  <div class="security-banner__content">
+    <picture class="security-banner__badge">
+      <source srcset="/assets/img/security-banner/badge.webp" type="image/webp" />
+      <img src="/assets/img/security-banner/badge.png" alt="" aria-hidden="true" loading="lazy" decoding="async" />
+    </picture>
+    <h2 id="security-heading" class="security-banner__heading">
+      <span>{{ content.headingLine1 }}</span>
+      <span class="security-banner__highlight">{{ content.headingLine2 }}</span>
+    </h2>
+  </div>
+
+  <a class="security-banner__cta" [href]="content.cta.href">
+    <span>{{ content.cta.label }}</span>
+    <span class="security-banner__cta-badge">
+      <img src="/assets/icons/security-banner/icon-chevron.svg" alt="" />
+    </span>
+  </a>
+</section>
