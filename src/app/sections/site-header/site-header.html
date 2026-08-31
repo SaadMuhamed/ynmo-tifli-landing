@@ -1,2 +1,95 @@
-<!-- TODO S00 · Figma node 956:11865 · SiteHeaderComponent -->
-<header id="site-header" class="site-header"></header>
+<!-- S00 · Figma node 956:11865 · content confirmed against the live node, not the plan's §7 draft -->
+<div class="bar" [class.bar--scrolled]="scrolled()">
+  <a class="logo" href="#" aria-label="ينمو طفلي">
+    <span class="logo__ring">
+      <img src="/assets/icons/site-header/avatar-ring.svg" alt="" />
+    </span>
+    <span class="logo__mark logo__mark--a">
+      <img src="/assets/icons/site-header/avatar-mark-a.svg" alt="" />
+    </span>
+    <span class="logo__mark logo__mark--b">
+      <img src="/assets/icons/site-header/avatar-mark-b.svg" alt="" />
+    </span>
+  </a>
+
+  <nav class="nav" aria-label="التنقل الرئيسي">
+    <ul class="nav__list">
+      @for (link of header.navLinks; track link.label; let i = $index) {
+        <li class="nav__item">
+          <a
+            class="nav__link"
+            [class.nav__link--active]="i === header.activeNavIndex"
+            [href]="link.href"
+            [attr.aria-current]="i === header.activeNavIndex ? 'page' : null"
+          >
+            {{ link.label }}
+            @if (i === header.activeNavIndex) {
+              <img class="nav__chevron" src="/assets/icons/site-header/chevron-tab.svg" alt="" />
+            }
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <div class="utility">
+    <button class="utility__lang" type="button" aria-label="تغيير اللغة">
+      <img class="utility__chevron" src="/assets/icons/site-header/chevron-lang.svg" alt="" />
+      <span class="utility__flag" aria-hidden="true">🇸🇦</span>
+    </button>
+    <button class="utility__search" type="button" aria-label="بحث">
+      <img src="/assets/icons/site-header/magnifier.svg" alt="" />
+    </button>
+  </div>
+
+  <a class="cta" [href]="header.ctaHref">
+    <span class="cta__task-icon">
+      <img src="/assets/icons/site-header/task-daily.svg" alt="" />
+    </span>
+    <span class="cta__label">{{ header.ctaLabel }}</span>
+    <span class="cta__badge">
+      <img src="/assets/icons/site-header/chevron-cta.svg" alt="" />
+    </span>
+  </a>
+
+  <button
+    class="hamburger"
+    type="button"
+    aria-label="فتح قائمة التنقل"
+    [attr.aria-expanded]="drawerOpen()"
+    aria-controls="site-header-drawer"
+    (click)="toggleDrawer()"
+  >
+    <span></span><span></span><span></span>
+  </button>
+</div>
+
+<div
+  id="site-header-drawer"
+  class="drawer"
+  [class.drawer--open]="drawerOpen()"
+  role="dialog"
+  aria-modal="true"
+  aria-label="قائمة التنقل"
+>
+  <button class="drawer__close" type="button" aria-label="إغلاق القائمة" (click)="closeDrawer()">✕</button>
+  <ul class="drawer__list">
+    @for (link of header.navLinks; track link.label; let i = $index) {
+      <li>
+        <a
+          [class.drawer__link--active]="i === header.activeNavIndex"
+          class="drawer__link"
+          [href]="link.href"
+          (click)="closeDrawer()"
+        >
+          {{ link.label }}
+        </a>
+      </li>
+    }
+  </ul>
+  <a class="drawer__cta" [href]="header.ctaHref" (click)="closeDrawer()">{{ header.ctaLabel }}</a>
+  <button class="drawer__lang" type="button" aria-label="تغيير اللغة">
+    <span aria-hidden="true">🇸🇦</span>
+    <img src="/assets/icons/site-header/chevron-lang.svg" alt="" />
+  </button>
+</div>

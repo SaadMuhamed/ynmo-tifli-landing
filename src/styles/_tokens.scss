@@ -92,6 +92,10 @@
   --shadow-2xl: 0 24px 48px 0 rgba(0,0,0,.12);
   /* Feature app-icon tile — exact Figma effect stack */
   --shadow-app-icon: -4px -4px 12px 0 #ffffff, 8px 8px 40px 0 rgba(192,198,216,.5);
+  /* S00 header CTA button glow — no Ynmotomic equivalent yet, see plan §13 B-7 */
+  --shadow-cta-brand: 0 24px 32px 0 rgba(86,60,202,.48);
+  /* S00 floating header ambient shadow — no Ynmotomic equivalent yet, see plan §13 B-7 */
+  --shadow-header-float: 0 0 32px 0 rgba(192,198,216,.3);
 }
 
 /* ---------- Responsive token overrides (§9) ---------- */
