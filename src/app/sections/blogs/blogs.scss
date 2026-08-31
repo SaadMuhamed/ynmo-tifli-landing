@@ -27,7 +27,7 @@
 .blogs__heading-block {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: var(--space-24);
 
   @include below-1024 {
@@ -135,7 +135,7 @@
 .blogs__body {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: var(--space-32);
   width: 100%;
   max-width: var(--container);
@@ -193,7 +193,7 @@
 .blog-card__link {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   background: var(--surface-2);
 }
 
@@ -219,7 +219,7 @@
 .blog-card__body {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: var(--space-8);
   width: 100%;
   padding: var(--space-24);

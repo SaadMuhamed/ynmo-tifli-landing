@@ -76,6 +76,7 @@
 .row {
   display: flex;
   align-items: center;
+  gap: 38px;
   width: 1192px;
 }
 
@@ -190,7 +191,6 @@
 }
 
 .divider {
-  align-self: stretch;
   flex: none;
   width: 1px;
   display: flex;
@@ -200,7 +200,9 @@
   i {
     display: block;
     width: 1px;
-    height: 698px;
+    /* Matches the rail's own content height (9 chips × 48px + 8 gaps × 16px)
+       instead of the phone illustration's height, per feedback. */
+    height: 560px;
     background-image: linear-gradient(to bottom, var(--border-divider-dashed) 2px, transparent 2px);
     background-size: 1px 5px;
     opacity: 0.5;

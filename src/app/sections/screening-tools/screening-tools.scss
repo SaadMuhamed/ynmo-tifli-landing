@@ -24,7 +24,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: var(--space-32);
   padding-block-start: var(--space-48);
 
@@ -98,9 +98,15 @@
   position: absolute;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
+  justify-content: space-between;
   gap: var(--space-32);
   width: 48.2%;
+  /* Figma's cards are a fixed 226px tall (of the 601px stage) — without an
+     explicit height here the auto/content height ran taller than the
+     diagonal cascade's gaps assume, so cards overlapped each other despite
+     each one's inset math being Figma-exact. */
+  height: 37.6%;
   background: var(--surface-translucent-white);
   border: 2px solid var(--border-white);
   border-radius: var(--radius-xxl);
@@ -129,7 +135,7 @@
 .tool-card__body {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: var(--space-12);
   width: 100%;
 }

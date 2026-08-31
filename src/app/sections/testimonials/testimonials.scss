@@ -60,7 +60,7 @@
 .testimonials__bubble {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: var(--space-8);
   width: 141px;
   background: var(--surface-2);
@@ -143,7 +143,7 @@
 .testimonial-card__body {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: var(--space-16);
   padding: var(--space-16);
   flex: 1 1 auto;
@@ -221,7 +221,7 @@
 .testimonial-card__after {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: var(--space-16);
   width: 100%;
   background: var(--state-success-50);

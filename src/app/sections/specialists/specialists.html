@@ -38,7 +38,7 @@
     </div>
   </div>
 
-  <ul class="practitioner-rail" #rail>
+  <ul class="practitioner-rail" #rail (scroll)="onRailScroll(rail)">
     @for (p of specialists.practitioners; track p.name) {
       <li class="practitioner-card">
         <div class="practitioner-card__head">
@@ -66,15 +66,15 @@
 
   <div class="rail-nav">
     <button class="rail-nav__arrow" type="button" [attr.aria-label]="ui.prev" (click)="rail.scrollBy({ left: 300, behavior: 'smooth' })">
-      <img src="/assets/icons/specialists/arrow-left.svg" alt="" />
+      <img src="/assets/icons/specialists/arrow-right.svg" alt="" />
     </button>
     <span class="rail-nav__dots" aria-hidden="true">
-      <span class="rail-nav__dot"></span>
-      <span class="rail-nav__dot"></span>
-      <span class="rail-nav__dot rail-nav__dot--active"></span>
+      @for (dot of dots; track $index) {
+        <span class="rail-nav__dot" [class.rail-nav__dot--active]="$index === activeDotIndex()"></span>
+      }
     </span>
     <button class="rail-nav__arrow" type="button" [attr.aria-label]="ui.next" (click)="rail.scrollBy({ left: -300, behavior: 'smooth' })">
-      <img src="/assets/icons/specialists/arrow-right.svg" alt="" />
+      <img src="/assets/icons/specialists/arrow-left.svg" alt="" />
     </button>
   </div>
 </section>

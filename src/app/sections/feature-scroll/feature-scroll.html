@@ -14,25 +14,6 @@
       </div>
 
       <div class="row">
-        <div class="main">
-          @for (scene of features; track scene.index) {
-            <div class="head">
-              <p class="title">{{ scene.titleAr }}</p>
-              <div class="app-icon"><img [src]="scene.appIcon" alt="" aria-hidden="true" /></div>
-            </div>
-          }
-
-          <div class="plane-wrap">
-            <div class="ground" aria-hidden="true"></div>
-            <div class="flipper" role="img" [attr.aria-label]="ui.planeAriaLabel">
-              <div class="face face--a"><img [src]="features[0].scene" alt="" /></div>
-              <div class="face face--b"><img [src]="features[1].scene" alt="" /></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="divider" aria-hidden="true"><i></i></div>
-
         <ul class="rail">
           @for (scene of features; track scene.index; let i = $index) {
             <li>
@@ -53,6 +34,25 @@
             </li>
           }
         </ul>
+
+        <div class="divider" aria-hidden="true"><i></i></div>
+
+        <div class="main">
+          @for (scene of features; track scene.index) {
+            <div class="head">
+              <div class="app-icon"><img [src]="scene.appIcon" alt="" aria-hidden="true" /></div>
+              <p class="title">{{ scene.titleAr }}</p>
+            </div>
+          }
+
+          <div class="plane-wrap">
+            <div class="ground" aria-hidden="true"></div>
+            <div class="flipper" role="img" [attr.aria-label]="ui.planeAriaLabel">
+              <div class="face face--a"><img [src]="features[0].scene" alt="" /></div>
+              <div class="face face--b"><img [src]="features[1].scene" alt="" /></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

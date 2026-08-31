@@ -36,7 +36,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: var(--space-24);
   text-align: end;
 
@@ -146,10 +146,9 @@
   gap: var(--space-16);
   overflow-x: auto;
   scroll-snap-type: x proximity;
-  max-width: var(--container);
-  margin-inline: auto;
+  width: 100%;
   margin-block-start: var(--space-72);
-  padding-block-end: var(--space-16);
+  padding-block: var(--space-24);
 
   &::-webkit-scrollbar {
     display: none;
