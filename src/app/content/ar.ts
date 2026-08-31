@@ -524,3 +524,46 @@ export const SECURITY_BANNER: SecurityBannerContent = {
   headingLine2: 'محميّة بالكامل!',
   cta: { label: 'اطلع على سياسة الخصوصية', href: '#' },
 };
+
+export interface FooterContent {
+  ctaHeadingPrefix: string;
+  ctaHeadingHighlight: string;
+  ctaHeadingSuffix: string;
+  ctaSubhead: string;
+  primaryCta: { label: string; href: string };
+  whatsappCta: { label: string; href: string };
+  productsHeading: string;
+  /** DOM order = RTL reading order (ينمو طفلي — this product — renders rightmost) */
+  products: string[];
+  email: string;
+  phone: string;
+  legalLinks: { label: string; href: string }[];
+  copyright: string;
+}
+
+/**
+ * S11 — Footer (node 956:11733). Copy matches plan §7 exactly. Contact
+ * illustration (orbiting avatar photos + support-headset icon) is one
+ * flattened image — decorative, same reasoning as prior composites. The
+ * large blurred logo-ring watermark behind the bottom section is
+ * approximated with the existing header logo mark scaled up at low
+ * opacity via CSS rather than re-exporting Figma's mask composite.
+ */
+export const FOOTER: FooterContent = {
+  ctaHeadingPrefix: 'محتار من أين تبدأ مع ',
+  ctaHeadingHighlight: 'طفلك',
+  ctaHeadingSuffix: '؟"',
+  ctaSubhead: 'تواصل مع فريقنا اليوم لنساعدك في تحديد الخطوة الأولى الأنسب لطفلك.',
+  primaryCta: { label: 'احجز جلسة استشاريه', href: '#' },
+  whatsappCta: { label: 'تواصل معنا عبر واتساب', href: '#' },
+  productsHeading: 'الحلول الرقمية المتكاملة',
+  products: ['ينمو طفلي', 'ينمو الحضانات', 'ينمو بلان', 'ينمو المناهج والمقاييس'],
+  email: 'info@ynmodata.com',
+  phone: '+966500035895',
+  legalLinks: [
+    { label: 'سياسة الخصوصية', href: '#' },
+    { label: 'ملفات الارتباط', href: '#' },
+    { label: 'الشروط والأحكام', href: '#' },
+  ],
+  copyright: 'جميع الحقوق محفوظة لـ Ynmodata © 2020',
+};

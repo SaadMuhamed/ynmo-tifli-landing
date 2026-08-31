@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { FOOTER } from '../../content/ar';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -7,4 +8,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styleUrl: './site-footer.scss',
   templateUrl: './site-footer.html',
 })
-export class SiteFooter {}
+export class SiteFooter {
+  protected readonly content = FOOTER;
+}

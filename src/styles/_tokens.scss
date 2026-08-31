@@ -59,6 +59,7 @@
 
   /* ---------- Third-party partner marks (not part of the Ynmotomic system) ---------- */
   --partner-tawakkalna-green: #1aaa5b;
+  --brand-whatsapp-green: #25d366;
 
   /* ---------- Neutral ramp ---------- */
   --neutral-50:  #f6f7f9;  --neutral-100: #ecedf2;  --neutral-200: #d4d7e3;
@@ -69,7 +70,7 @@
   /* ---------- Radius ---------- */
   --radius-none: 0;    --radius-xs: 2px;   --radius-sm: 4px;   --radius-md: 8px;
   --radius-lg: 16px;   --radius-xl: 24px;  --radius-xxl: 32px; --radius-3xl: 48px;
-  --radius-4xl: 56px;  --radius-full: 999px;
+  --radius-4xl: 56px;  --radius-hero: 124px; --radius-full: 999px;
   --radius-chip: 12px;      /* feature rail chip */
   --radius-app-icon: 20px;  /* feature app-icon tile */
 
@@ -116,6 +117,7 @@
   --shadow-pagination: 0 8px 12px 0 rgba(41,38,50,.04);
   /* S10 security banner CTA glow — no Ynmotomic equivalent yet, see plan §13 B-7 */
   --shadow-cta-blue: 0 16px 28px 0 rgba(81,167,243,.1);
+  --shadow-whatsapp: 0 16px 28px 0 rgba(37,211,102,.4);
 }
 
 /* ---------- Responsive token overrides (§9) ---------- */

@@ -1,2 +1,68 @@
-<!-- TODO S11 · Figma node 956:11733 · SiteFooterComponent -->
-<footer id="site-footer" class="site-footer"></footer>
+<!-- S11 · Figma node 956:11733 -->
+<footer id="site-footer" class="site-footer" aria-labelledby="footer-cta-heading">
+  <div class="site-footer__top">
+    <div class="site-footer__cta-block">
+      <h2 id="footer-cta-heading" class="site-footer__cta-heading">
+        {{ content.ctaHeadingPrefix }}<span class="site-footer__cta-highlight">{{ content.ctaHeadingHighlight }}</span>{{ content.ctaHeadingSuffix }}
+      </h2>
+      <p class="site-footer__cta-subhead">{{ content.ctaSubhead }}</p>
+      <div class="site-footer__ctas">
+        <a class="site-footer__whatsapp" [href]="content.whatsappCta.href">
+          <span class="site-footer__whatsapp-icon"><img src="/assets/icons/footer/icon-whatsapp.svg" alt="" /></span>
+          <span>{{ content.whatsappCta.label }}</span>
+          <span class="site-footer__whatsapp-chevron"><img src="/assets/icons/footer/icon-chevron-whatsapp.svg" alt="" /></span>
+        </a>
+        <a class="site-footer__primary-cta" [href]="content.primaryCta.href">
+          <span class="site-footer__cta-icon"><img src="/assets/icons/hero/cta-calendar.svg" alt="" /></span>
+          <span>{{ content.primaryCta.label }}</span>
+          <span class="site-footer__cta-chevron"><img src="/assets/icons/hero/cta-chevron-outline.svg" alt="" /></span>
+        </a>
+      </div>
+    </div>
+
+    <picture class="site-footer__illustration">
+      <source srcset="/assets/img/footer/contact-illustration.webp" type="image/webp" />
+      <img src="/assets/img/footer/contact-illustration.png" alt="" aria-hidden="true" loading="lazy" decoding="async" />
+    </picture>
+  </div>
+
+  <div class="site-footer__bottom">
+    <img class="site-footer__watermark" src="/assets/icons/site-header/avatar-mark-a.svg" alt="" aria-hidden="true" />
+
+    <div class="site-footer__main-info">
+      <div class="site-footer__info">
+        <div class="site-footer__logo">
+          <img class="site-footer__symbol" src="/assets/icons/footer/ynmo-symbol.svg" alt="" aria-hidden="true" />
+          <img class="site-footer__wordmark" src="/assets/icons/footer/ynmo-wordmark.svg" alt="ينمو" />
+        </div>
+        <div class="site-footer__contact">
+          <img class="site-footer__socials" src="/assets/icons/footer/social-links.svg" alt="" role="presentation" />
+          <p class="site-footer__reach">
+            <a [href]="'tel:' + content.phone" dir="ltr">{{ content.phone }}</a>
+            <a [href]="'mailto:' + content.email" dir="ltr">{{ content.email }}</a>
+          </p>
+        </div>
+      </div>
+
+      <div class="site-footer__products">
+        <p class="site-footer__products-heading">{{ content.productsHeading }}</p>
+        <ul class="site-footer__products-list">
+          @for (product of content.products; track product) {
+            <li>{{ product }}</li>
+          }
+        </ul>
+      </div>
+    </div>
+
+    <span class="site-footer__divider" aria-hidden="true"></span>
+
+    <div class="site-footer__legal">
+      <p class="site-footer__copyright">{{ content.copyright }}</p>
+      <ul class="site-footer__legal-links">
+        @for (link of content.legalLinks; track link.label) {
+          <li><a [href]="link.href">{{ link.label }}</a></li>
+        }
+      </ul>
+    </div>
+  </div>
+</footer>
