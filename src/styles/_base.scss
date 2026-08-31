@@ -1,0 +1,64 @@
+@use "mixins" as *;
+
+html {
+  scroll-behavior: auto; /* never "smooth" — it desynchronises the S03 scroll driver */
+}
+
+body {
+  background: var(--surface-page);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-weight: var(--fw-regular);
+  line-height: 1.6; /* Arabic never below 1.4 */
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+
+  @include below-1024 {
+    padding-inline: 32px;
+  }
+  @include below-768 {
+    padding-inline: 20px;
+  }
+}
+
+.skip-link {
+  @include visually-hidden;
+
+  &:focus {
+    position: fixed;
+    inset-inline-start: var(--space-16);
+    top: var(--space-16);
+    width: auto; height: auto;
+    padding: var(--space-12) var(--space-20);
+    margin: 0;
+    clip: auto;
+    overflow: visible;
+    white-space: normal;
+    background: var(--surface-2);
+    color: var(--text-primary);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+  }
+}
+
+:focus-visible {
+  @include focus-ring;
+}
+
+/* Section vertical rhythm is irregular per §3 — each section sets its own
+   block spacing; this just guarantees no accidental margin collapse. */
+section {
+  position: relative;
+  display: block;
+}
+
+[dir="ltr"] {
+  unicode-bidi: isolate;
+}

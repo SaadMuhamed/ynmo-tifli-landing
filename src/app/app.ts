@@ -1,11 +1,37 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { SiteHeader } from './sections/site-header/site-header';
+import { Hero } from './sections/hero/hero';
+import { Journey } from './sections/journey/journey';
+import { FeatureScroll } from './sections/feature-scroll/feature-scroll';
+import { Specialists } from './sections/specialists/specialists';
+import { ScreeningTools } from './sections/screening-tools/screening-tools';
+import { WhyUs } from './sections/why-us/why-us';
+import { Testimonials } from './sections/testimonials/testimonials';
+import { Blogs } from './sections/blogs/blogs';
+import { Partners } from './sections/partners/partners';
+import { SecurityBanner } from './sections/security-banner/security-banner';
+import { SiteFooter } from './sections/site-footer/site-footer';
+import { WhatsappFab } from './sections/whatsapp-fab/whatsapp-fab';
 
 @Component({
-  imports: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    SiteHeader,
+    Hero,
+    Journey,
+    FeatureScroll,
+    Specialists,
+    ScreeningTools,
+    WhyUs,
+    Testimonials,
+    Blogs,
+    Partners,
+    SecurityBanner,
+    SiteFooter,
+    WhatsappFab,
+  ],
   selector: 'app-root',
   styleUrl: './app.scss',
   templateUrl: './app.html',
 })
-export class App {
-  protected readonly title = signal('ynmo-tifli-landing');
-}
+export class App {}

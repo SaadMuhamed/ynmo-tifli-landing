@@ -1,0 +1,35 @@
+/* Breakpoints per §9 of the build plan */
+@mixin bp-desktop {
+  @media (min-width: 1280px) { @content; }
+}
+@mixin bp-laptop {
+  @media (min-width: 1024px) and (max-width: 1279px) { @content; }
+}
+@mixin bp-tablet {
+  @media (min-width: 768px) and (max-width: 1023px) { @content; }
+}
+@mixin bp-mobile {
+  @media (max-width: 767px) { @content; }
+}
+/* "below the S03 pin / desktop row layout" threshold used across sections */
+@mixin below-1024 {
+  @media (max-width: 1023px) { @content; }
+}
+@mixin below-768 {
+  @media (max-width: 767px) { @content; }
+}
+
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@mixin focus-ring {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}

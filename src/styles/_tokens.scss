@@ -1,0 +1,113 @@
+:root {
+  /* ---------- Brand & Interaction (Tifli mode) ---------- */
+  --brand-primary:            #563cca;  /* Primary/500  */
+  --brand-primary-hover:      #4631a5;  /* Primary/600  */
+  --brand-primary-pressed:    #372582;  /* Primary/700  */
+  --brand-primary-50:         #f1f0fd;
+  --brand-primary-100:        #e1dbf9;
+  --brand-primary-200:        #c5b9f3;
+  --brand-primary-300:        #a491eb;
+  --brand-primary-400:        #7d65e2;
+  --brand-primary-800:        #291c62;
+  --brand-primary-900:        #1c1342;
+
+  --brand-secondary:          #39cbf9;  /* Secondary/500 — cyan */
+  --brand-secondary-hover:    #00a3d6;
+  --brand-secondary-50:       #ebfbff;
+  --brand-secondary-100:      #d1f5fe;
+
+  --brand-disabled:           #838dad;
+
+  /* ---------- Surface ---------- */
+  --surface-page:             #f7f6f7;  /* root frame fill */
+  --surface-1:                #ecedf2;
+  --surface-2:                #ffffff;
+  --surface-3:                #f6f7f9;
+  --surface-disabled:         #d4d7e3;
+
+  /* ---------- Text & Icon ---------- */
+  --text-primary:             #22242f;
+  --text-secondary:           #626d90;
+  --text-on-brand:            #ffffff;
+
+  /* ---------- Border ---------- */
+  --border-brand:             #e1dbf9;
+  --border-high-contrast:     #afb5ca;
+  --border-med-contrast:      #d4d7e3;
+  --border-low-contrast:      #ecedf2;
+  --border-white:             #ffffff;
+  --border-divider-dashed:    #bfbcca;  /* features divider, exact Figma stroke */
+
+  /* ---------- States ---------- */
+  --state-success:            #34c759;  --state-success-bg: #dff9e5;
+  --state-warning:            #ffcc00;  --state-warning-bg: #fffec1;
+  --state-pending:            #ee7921;  --state-pending-bg: #fdeed7;
+  --state-error:              #ed1519;  --state-error-bg:   #ffdfe0;
+  --state-default:            #414863;  --state-default-bg: #ecedf2;
+
+  /* ---------- Tags ---------- */
+  --tag-primary:              #563cca;
+  --tag-primary-bg:           #e1dbf9;
+  --tag-secondary:            #39cbf9;
+  --tag-secondary-bg:         #d1f5fe;
+
+  /* ---------- Neutral ramp ---------- */
+  --neutral-50:  #f6f7f9;  --neutral-100: #ecedf2;  --neutral-200: #d4d7e3;
+  --neutral-300: #afb5ca;  --neutral-400: #838dad;  --neutral-500: #626d90;
+  --neutral-600: #4f587a;  --neutral-700: #414863;  --neutral-800: #383d54;
+  --neutral-900: #323648;  --neutral-950: #22242f;
+
+  /* ---------- Radius ---------- */
+  --radius-none: 0;    --radius-xs: 2px;   --radius-sm: 4px;   --radius-md: 8px;
+  --radius-lg: 16px;   --radius-xl: 24px;  --radius-xxl: 32px; --radius-3xl: 48px;
+  --radius-4xl: 56px;  --radius-full: 999px;
+  --radius-chip: 12px;      /* feature rail chip */
+  --radius-app-icon: 20px;  /* feature app-icon tile */
+
+  /* ---------- Spacing ---------- */
+  --space-2: 2px;   --space-4: 4px;   --space-6: 6px;   --space-8: 8px;
+  --space-12: 12px; --space-16: 16px; --space-20: 20px; --space-24: 24px;
+  --space-32: 32px; --space-40: 40px; --space-48: 48px; --space-56: 56px;
+  --space-60: 60px; --space-64: 64px; --space-72: 72px; --space-80: 80px;
+  --space-124: 124px;
+
+  /* ---------- Layout ---------- */
+  --page-max: 1440px;
+  --container: 1192px;
+  --gutter: 124px;
+
+  /* ---------- Typography ---------- */
+  --font-family: "IBM Plex Sans Arabic", "Noto Sans Arabic", system-ui, sans-serif;
+  --fw-regular: 400; --fw-medium: 500; --fw-semibold: 600; --fw-bold: 700;
+
+  --fs-12: 12px; --fs-14: 14px; --fs-16: 16px; --fs-18: 18px; --fs-20: 20px;
+  --fs-24: 24px; --fs-30: 30px; --fs-32: 32px; --fs-36: 36px; --fs-38: 38px;
+  --fs-40: 40px; --fs-44: 44px; --fs-48: 48px; --fs-56: 56px;
+
+  /* ---------- Elevation ---------- */
+  --shadow-sm: 0 1px 4px 0 rgba(0,0,0,.12);
+  --shadow-md: 0 4px 8px 0 rgba(0,0,0,.12);
+  --shadow-lg: 0 8px 16px 0 rgba(0,0,0,.12);
+  --shadow-xl: 0 16px 32px 0 rgba(0,0,0,.12);
+  --shadow-2xl: 0 24px 48px 0 rgba(0,0,0,.12);
+  /* Feature app-icon tile — exact Figma effect stack */
+  --shadow-app-icon: -4px -4px 12px 0 #ffffff, 8px 8px 40px 0 rgba(192,198,216,.5);
+}
+
+/* ---------- Responsive token overrides (§9) ---------- */
+@media (max-width: 1023px) {
+  :root {
+    --container: calc(100% - 96px); /* 100% - 2×48px gutter */
+    --gutter: 32px;
+    --fs-44: 32px;
+    --fs-38: 22px;
+  }
+}
+
+@media (max-width: 767px) {
+  :root {
+    --gutter: 20px;
+    --fs-44: 28px;
+    --fs-38: 22px;
+  }
+}
