@@ -394,3 +394,82 @@ export const TESTIMONIALS: TestimonialsContent = {
     },
   ],
 };
+
+export interface BlogPost {
+  title: string;
+  date: string;
+  image: string;
+  imageWebp: string;
+  href: string;
+}
+
+export interface BlogsContent {
+  headingLine1: string;
+  headingLine2: string;
+  viewAllCta: { label: string; href: string };
+  tabs: string[];
+  activeTabIndex: number;
+  /** DOM order = RTL reading order (first post renders rightmost) */
+  posts: BlogPost[];
+}
+
+/**
+ * S08 — Blogs (node 956:11679), an instance of the shared "Blogs Section"
+ * component (plan §7 B-3: static data for MVP). The Figma mock repeats the
+ * same placeholder title across all 14 cards and cycles 3 photos — kept
+ * that placeholder title verbatim (it's the only copy Figma provides) and
+ * trimmed to 6 posts per the plan's "5-6 posts" note instead of all 14
+ * duplicates.
+ */
+export const BLOGS: BlogsContent = {
+  headingLine1: 'كن على اطلاع بأحدث المقالات',
+  headingLine2: 'لتنمية قدرات الأطفال',
+  viewAllCta: { label: 'اطلع على كل المدوّنة', href: '#' },
+  /** reversed from Figma's LTR order so dir=rtl reproduces its screenshot (الكل rightmost/active) */
+  tabs: ['الكل', 'مدونات للأسر', 'مدونات للأخصائيين'],
+  activeTabIndex: 0,
+  posts: [
+    {
+      title: 'أيها المعلمون، احفظوا "التصور أو صنع الأفلام الذهنية أثناء..." لتعيينه لفصلك الدراسي',
+      date: '12 يناير، 2024',
+      image: '/assets/img/blogs/photo-1.png',
+      imageWebp: '/assets/img/blogs/photo-1.webp',
+      href: '#',
+    },
+    {
+      title: 'أيها المعلمون، احفظوا "التصور أو صنع الأفلام الذهنية أثناء..." لتعيينه لفصلك الدراسي',
+      date: '12 يناير، 2024',
+      image: '/assets/img/blogs/photo-2.png',
+      imageWebp: '/assets/img/blogs/photo-2.webp',
+      href: '#',
+    },
+    {
+      title: 'أيها المعلمون، احفظوا "التصور أو صنع الأفلام الذهنية أثناء..." لتعيينه لفصلك الدراسي',
+      date: '12 يناير، 2024',
+      image: '/assets/img/blogs/photo-3.png',
+      imageWebp: '/assets/img/blogs/photo-3.webp',
+      href: '#',
+    },
+    {
+      title: 'أيها المعلمون، احفظوا "التصور أو صنع الأفلام الذهنية أثناء..." لتعيينه لفصلك الدراسي',
+      date: '12 يناير، 2024',
+      image: '/assets/img/blogs/photo-1.png',
+      imageWebp: '/assets/img/blogs/photo-1.webp',
+      href: '#',
+    },
+    {
+      title: 'أيها المعلمون، احفظوا "التصور أو صنع الأفلام الذهنية أثناء..." لتعيينه لفصلك الدراسي',
+      date: '12 يناير، 2024',
+      image: '/assets/img/blogs/photo-2.png',
+      imageWebp: '/assets/img/blogs/photo-2.webp',
+      href: '#',
+    },
+    {
+      title: 'أيها المعلمون، احفظوا "التصور أو صنع الأفلام الذهنية أثناء..." لتعيينه لفصلك الدراسي',
+      date: '12 يناير، 2024',
+      image: '/assets/img/blogs/photo-3.png',
+      imageWebp: '/assets/img/blogs/photo-3.webp',
+      href: '#',
+    },
+  ],
+};

@@ -1,2 +1,73 @@
-<!-- TODO S08 · Figma node 956:11679 -->
-<section id="blogs" class="blogs"></section>
+<!-- S08 · Figma node 956:11679 (instance of shared "Blogs Section" component) -->
+<section id="blogs" class="blogs" aria-labelledby="blogs-heading">
+  <div class="blogs__top">
+    <div class="blogs__heading-block">
+      <h2 id="blogs-heading" class="blogs__heading">
+        <span>{{ content.headingLine1 }}</span>
+        <span class="blogs__heading-highlight">{{ content.headingLine2 }}</span>
+      </h2>
+      <div class="rail-nav">
+        <button class="rail-nav__arrow" type="button" aria-label="السابق" (click)="rail.scrollBy({ left: 300, behavior: 'smooth' })">
+          <img src="/assets/icons/blogs/icon-arrow-left.svg" alt="" />
+        </button>
+        <span class="rail-nav__dots" aria-hidden="true">
+          <span class="rail-nav__dot"></span>
+          <span class="rail-nav__dot"></span>
+          <span class="rail-nav__dot rail-nav__dot--active"></span>
+        </span>
+        <button class="rail-nav__arrow" type="button" aria-label="التالي" (click)="rail.scrollBy({ left: -300, behavior: 'smooth' })">
+          <img src="/assets/icons/blogs/icon-arrow-right.svg" alt="" />
+        </button>
+      </div>
+    </div>
+
+    <span class="blogs__line" aria-hidden="true"></span>
+
+    <a class="blogs__view-all" [href]="content.viewAllCta.href">
+      {{ content.viewAllCta.label }}
+      <img src="/assets/icons/blogs/icon-chevron-cta.svg" alt="" aria-hidden="true" />
+    </a>
+  </div>
+
+  <div class="blogs__body">
+    <div class="blogs__tabs" role="tablist">
+      @for (tab of content.tabs; track tab; let i = $index) {
+        <button
+          class="blogs__tab"
+          [class.blogs__tab--active]="i === content.activeTabIndex"
+          type="button"
+          role="tab"
+          [attr.aria-selected]="i === content.activeTabIndex"
+        >
+          {{ tab }}
+        </button>
+      }
+    </div>
+
+    <ul class="blog-rail" #rail>
+      @for (post of content.posts; track $index) {
+        <li class="blog-card">
+          <a [href]="post.href" class="blog-card__link">
+            <div class="blog-card__media">
+              <picture>
+                <source [srcset]="post.imageWebp" type="image/webp" />
+                <img [src]="post.image" alt="" loading="lazy" decoding="async" width="272" height="208" />
+              </picture>
+              <span class="blog-card__glow" aria-hidden="true"></span>
+            </div>
+            <div class="blog-card__body">
+              <h3 class="blog-card__title">{{ post.title }}</h3>
+              <div class="blog-card__meta">
+                <span class="blog-card__date">
+                  <img src="/assets/icons/blogs/icon-calendar.svg" alt="" aria-hidden="true" />
+                  {{ post.date }}
+                </span>
+                <img class="blog-card__arrow" src="/assets/icons/blogs/icon-card-arrow.svg" alt="" aria-hidden="true" />
+              </div>
+            </div>
+          </a>
+        </li>
+      }
+    </ul>
+  </div>
+</section>

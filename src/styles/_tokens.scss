@@ -111,6 +111,9 @@
   --shadow-heart-badge: 0 8px 8px 0 rgba(57,203,249,.4);
   /* Neutral shadow tint reused across several soft-glow effects (S05 cards etc.) */
   --shadow-tint-neutral: rgba(192,198,216,.3);
+  /* S08 blogs — no Ynmotomic equivalent yet, see plan §13 B-7 */
+  --shadow-cta-soft: 0 16px 28px 0 rgba(192,198,216,.1);
+  --shadow-pagination: 0 8px 12px 0 rgba(41,38,50,.04);
 }
 
 /* ---------- Responsive token overrides (§9) ---------- */
