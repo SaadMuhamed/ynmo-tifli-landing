@@ -1,2 +1,33 @@
-<!-- TODO S05 · Figma node 956:11476 -->
-<section id="screening-tools" class="screening-tools"></section>
+<!-- S05 · Figma node 956:11476 -->
+<section id="screening-tools" class="screening-tools" aria-labelledby="screening-heading">
+  <div class="screening-tools__heading">
+    <span class="screening-tools__icon" aria-hidden="true">
+      <img src="/assets/icons/screening-tools/icon-protected-file.svg" alt="" />
+    </span>
+    <h2 id="screening-heading" class="screening-tools__title">
+      <span class="screening-tools__title-line">{{ content.headingLine1 }}</span>
+      <span class="screening-tools__title-line">{{ content.headingLine2 }}</span>
+    </h2>
+    <p class="screening-tools__subhead">{{ content.subhead }}</p>
+  </div>
+
+  <div class="tool-stack">
+    @for (tool of content.tools; track tool.acronym; let i = $index) {
+      <div class="tool-card" [class]="'tool-card--' + i">
+        <div class="tool-card__body">
+          <h3 class="tool-card__title">
+            {{ tool.titleBefore }}<bdi>{{ tool.acronym }}</bdi>{{ tool.titleAfter }}
+          </h3>
+          <p class="tool-card__age">
+            <img src="/assets/icons/screening-tools/icon-infant.svg" alt="" aria-hidden="true" />
+            {{ tool.ageRange }}
+          </p>
+        </div>
+        <a class="tool-card__link" [href]="tool.link.href">
+          {{ tool.link.label }}
+          <img class="tool-card__link-icon" src="/assets/icons/screening-tools/icon-arrow-link.svg" alt="" aria-hidden="true" />
+        </a>
+      </div>
+    }
+  </div>
+</section>

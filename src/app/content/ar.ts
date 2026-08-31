@@ -257,3 +257,51 @@ export const SPECIALISTS: SpecialistsContent = {
     },
   ],
 };
+
+export interface ScreeningTool {
+  titleBefore: string;
+  /** Latin acronym — wrapped in <bdi> in the template per plan §5 */
+  acronym: string;
+  titleAfter: string;
+  ageRange: string;
+  link: { label: string; href: string };
+}
+
+export interface ScreeningToolsContent {
+  headingLine1: string;
+  headingLine2: string;
+  subhead: string;
+  /** DOM order = RTL reading order (rightmost card first) */
+  tools: ScreeningTool[];
+}
+
+/** S05 — Screening tools (node 956:11476). Copy matches plan §7 exactly. */
+export const SCREENING_TOOLS: ScreeningToolsContent = {
+  headingLine1: 'مقاييس محلية',
+  headingLine2: 'وعالمية موثوقة!',
+  subhead:
+    'أداة كشف مبكر تساعد الأسرة على تحديد مؤشرات اضطراب طيف التوحد لدى الطفل في سن مبكرة، وتوجّه إلى التقييم المتخصص عند الحاجة.',
+  tools: [
+    {
+      titleBefore: 'القائمة المعدّلة للكشف المبكر عن التوحد (',
+      acronym: 'M-Chat',
+      titleAfter: ')',
+      ageRange: 'من 16 إلى 30 شهراً',
+      link: { label: 'تفاصيل أكثر', href: '#' },
+    },
+    {
+      titleBefore: 'قائمة جِش العربية لقياس التطور اللغوي (',
+      acronym: 'JACDI',
+      titleAfter: ')',
+      ageRange: 'من 8 أشهر إلى 3 سنوات',
+      link: { label: 'تفاصيل أكثر', href: '#' },
+    },
+    {
+      titleBefore: 'استبيانات الأعمار والمراحل، الإصدار الثالث (',
+      acronym: 'ASQ-3',
+      titleAfter: ')',
+      ageRange: 'من شهر إلى 5 سنوات ونصف',
+      link: { label: 'تفاصيل أكثر', href: '#' },
+    },
+  ],
+};

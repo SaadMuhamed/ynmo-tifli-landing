@@ -25,6 +25,7 @@
   --surface-2:                #ffffff;
   --surface-3:                #f6f7f9;
   --surface-disabled:         #d4d7e3;
+  --surface-translucent-white: rgba(255,255,255,.7); /* S05 glass card, no Ynmotomic equivalent yet, see plan §13 B-7 */
 
   /* ---------- Text & Icon ---------- */
   --text-primary:             #22242f;
@@ -105,6 +106,8 @@
   --shadow-emoji-badge: 0 8px 8px 0 rgba(255,177,0,.4);
   /* S02 journey heart-badge glow — no Ynmotomic equivalent yet, see plan §13 B-7 */
   --shadow-heart-badge: 0 8px 8px 0 rgba(57,203,249,.4);
+  /* Neutral shadow tint reused across several soft-glow effects (S05 cards etc.) */
+  --shadow-tint-neutral: rgba(192,198,216,.3);
 }
 
 /* ---------- Responsive token overrides (§9) ---------- */
