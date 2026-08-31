@@ -1,2 +1,33 @@
-<!-- TODO S06 · Figma node 956:11515 -->
-<section id="why-us" class="why-us"></section>
+<!-- S06 · Figma node 956:11515 -->
+<section id="why-us" class="why-us" aria-labelledby="why-us-heading">
+  <div class="why-us__aside">
+    <img class="why-us__badge" src="/assets/img/why-us/badge.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" />
+
+    <h2 id="why-us-heading" class="why-us__heading">
+      <span class="why-us__heading-line">{{ content.headingLine1 }}</span>
+      <span class="why-us__heading-line why-us__heading-line--highlight">{{ content.headingLine2 }}</span>
+    </h2>
+
+    <a class="why-us__cta" [href]="content.cta.href">
+      <span class="why-us__cta-icon"><img src="/assets/icons/hero/cta-calendar.svg" alt="" /></span>
+      <span>{{ content.cta.label }}</span>
+      <span class="why-us__cta-chevron"><img src="/assets/icons/hero/cta-chevron-outline.svg" alt="" /></span>
+    </a>
+  </div>
+
+  <!-- Natural reading order (tile 1 first) renders tile 1 at the RTL start
+       (top-right); this is a flat list of equal-weight reasons, not a fixed
+       decorative composition, so it's left to mirror naturally per §2.1
+       rather than reversed to pixel-match Figma's LTR screenshot. -->
+  <ul class="reason-grid">
+    @for (tile of content.tiles; track tile.titleLine1) {
+      <li class="reason-tile">
+        <img class="reason-tile__icon" [src]="tile.icon" alt="" aria-hidden="true" />
+        <p class="reason-tile__title">
+          <span>{{ tile.titleLine1 }}</span>
+          <span>{{ tile.titleLine2 }}</span>
+        </p>
+      </li>
+    }
+  </ul>
+</section>

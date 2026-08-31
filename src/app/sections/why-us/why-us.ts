@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { WHY_US } from '../../content/ar';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -7,4 +8,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styleUrl: './why-us.scss',
   templateUrl: './why-us.html',
 })
-export class WhyUs {}
+export class WhyUs {
+  protected readonly content = WHY_US;
+}

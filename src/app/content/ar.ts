@@ -305,3 +305,30 @@ export const SCREENING_TOOLS: ScreeningToolsContent = {
     },
   ],
 };
+
+export interface ReasonTile {
+  titleLine1: string;
+  titleLine2: string;
+  icon: string;
+}
+
+export interface WhyUsContent {
+  headingLine1: string;
+  headingLine2: string;
+  cta: { label: string; href: string };
+  tiles: ReasonTile[];
+}
+
+/** S06 — Why us (node 956:11515). Copy matches plan §7 exactly. */
+export const WHY_US: WhyUsContent = {
+  headingLine1: 'لماذا ينمو طفلي',
+  headingLine2: 'هو الأفضل؟',
+  cta: { label: 'احجز جلسة استشاريه', href: '#' },
+  tiles: [
+    { titleLine1: 'أخصائيين', titleLine2: 'مؤهلين', icon: '/assets/icons/why-us/tile-reader.svg' },
+    { titleLine1: 'التركيز على', titleLine2: 'الراحة', icon: '/assets/icons/why-us/tile-family-love.svg' },
+    { titleLine1: 'خصوصية', titleLine2: 'تامة', icon: '/assets/icons/why-us/tile-shield-check.svg' },
+    { titleLine1: 'برامج تدخل', titleLine2: 'مبكر فعالة', icon: '/assets/icons/why-us/tile-favorite-chat.svg' },
+    { titleLine1: 'مراقبة الطفل', titleLine2: 'في بيئته الطبيعية', icon: '/assets/icons/why-us/tile-house.png' },
+  ],
+};
