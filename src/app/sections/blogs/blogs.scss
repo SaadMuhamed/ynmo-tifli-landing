@@ -175,7 +175,13 @@
   overflow-x: auto;
   scroll-snap-type: x proximity;
   width: 100%;
-  padding-block-end: var(--space-16);
+  /* Sits outside .blogs__body's max-width (see the template) so this fills
+     the section's own wider content box instead of the letterboxed
+     container; the padding keeps card shadows clear of the scroll clip. */
+  margin-block-start: -40px;
+  padding-inline: var(--space-24);
+  scroll-padding-inline: var(--space-24);
+  padding-block: var(--space-16);
 
   &::-webkit-scrollbar {
     display: none;

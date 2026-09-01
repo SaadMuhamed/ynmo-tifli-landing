@@ -12,7 +12,7 @@ export class Specialists {
   protected readonly specialists = SPECIALISTS;
   protected readonly ui = UI;
 
-  protected readonly dots = [0, 1, 2];
+  protected readonly dots = SPECIALISTS.practitioners.map((_, i) => i);
   protected readonly activeDotIndex = signal(0);
 
   /** Maps rail scroll progress onto the dots — RTL scrollLeft runs 0 → -max

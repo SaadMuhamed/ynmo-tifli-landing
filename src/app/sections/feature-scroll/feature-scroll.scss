@@ -33,7 +33,10 @@
   width: 1440px;
   display: flex;
   justify-content: center;
-  padding-block-start: 40px;
+  /* The floating header sits fixed at inset-block-start:48px over this
+     pinned/sticky section; 40px alone left the heading tucked right under
+     it, so bumped to clear the bar's full height + its own offset. */
+  padding-block-start: 130px;
 
   h2 {
     position: relative;
@@ -61,7 +64,7 @@
      padding-block-start: 40px before the h2, so the scribbles need the
      same 40px added to stay anchored under the highlighted words on the
      second line instead of floating up over line 1. */
-  top: 66px;
+  top: 156px;
 
   &--a {
     inset-inline-start: 469px;
@@ -259,9 +262,9 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 52px;
-  height: 52px;
-  margin: -26px 0 0 -26px;
+  width: 60px;
+  height: 60px;
+  margin: -30px 0 0 -30px;
   overflow: visible;
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -269,7 +272,7 @@
   path {
     fill: none;
     stroke: var(--brand-primary);
-    stroke-width: 2;
+    stroke-width: 3;
   }
 }
 

@@ -8,15 +8,15 @@
       </h2>
       <div class="rail-nav">
         <button class="rail-nav__arrow" type="button" [attr.aria-label]="ui.prev" (click)="rail.scrollBy({ left: 300, behavior: 'smooth' })">
-          <img src="/assets/icons/blogs/icon-arrow-left.svg" alt="" />
+          <img src="/assets/icons/blogs/icon-arrow-right.svg" alt="" />
         </button>
         <span class="rail-nav__dots" aria-hidden="true">
-          <span class="rail-nav__dot"></span>
-          <span class="rail-nav__dot"></span>
-          <span class="rail-nav__dot rail-nav__dot--active"></span>
+          @for (dot of dots; track $index) {
+            <span class="rail-nav__dot" [class.rail-nav__dot--active]="$index === activeDotIndex()"></span>
+          }
         </span>
         <button class="rail-nav__arrow" type="button" [attr.aria-label]="ui.next" (click)="rail.scrollBy({ left: -300, behavior: 'smooth' })">
-          <img src="/assets/icons/blogs/icon-arrow-right.svg" alt="" />
+          <img src="/assets/icons/blogs/icon-arrow-left.svg" alt="" />
         </button>
       </div>
     </div>
@@ -43,31 +43,34 @@
         </button>
       }
     </div>
-
-    <ul class="blog-rail" #rail>
-      @for (post of content.posts; track $index) {
-        <li class="blog-card">
-          <a [href]="post.href" class="blog-card__link">
-            <div class="blog-card__media">
-              <picture>
-                <source [srcset]="post.imageWebp" type="image/webp" />
-                <img [src]="post.image" alt="" loading="lazy" decoding="async" width="272" height="208" />
-              </picture>
-              <span class="blog-card__glow" aria-hidden="true"></span>
-            </div>
-            <div class="blog-card__body">
-              <h3 class="blog-card__title">{{ post.title }}</h3>
-              <div class="blog-card__meta">
-                <span class="blog-card__date">
-                  <img src="/assets/icons/blogs/icon-calendar.svg" alt="" aria-hidden="true" />
-                  {{ post.date }}
-                </span>
-                <img class="blog-card__arrow" src="/assets/icons/blogs/icon-card-arrow.svg" alt="" aria-hidden="true" />
-              </div>
-            </div>
-          </a>
-        </li>
-      }
-    </ul>
   </div>
+
+  <!-- Outside .blogs__body's max-width on purpose: the rail fills the
+       section's own (wider) content width instead of the letterboxed
+       container, so it's not clipping card shadows or the slider view. -->
+  <ul class="blog-rail" #rail (scroll)="onRailScroll(rail)">
+    @for (post of content.posts; track $index) {
+      <li class="blog-card">
+        <a [href]="post.href" class="blog-card__link">
+          <div class="blog-card__media">
+            <picture>
+              <source [srcset]="post.imageWebp" type="image/webp" />
+              <img [src]="post.image" alt="" loading="lazy" decoding="async" width="272" height="208" />
+            </picture>
+            <span class="blog-card__glow" aria-hidden="true"></span>
+          </div>
+          <div class="blog-card__body">
+            <h3 class="blog-card__title">{{ post.title }}</h3>
+            <div class="blog-card__meta">
+              <span class="blog-card__date">
+                <img src="/assets/icons/blogs/icon-calendar.svg" alt="" aria-hidden="true" />
+                {{ post.date }}
+              </span>
+              <img class="blog-card__arrow" src="/assets/icons/blogs/icon-card-arrow.svg" alt="" aria-hidden="true" />
+            </div>
+          </div>
+        </a>
+      </li>
+    }
+  </ul>
 </section>

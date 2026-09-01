@@ -7,6 +7,14 @@ html, body {
   padding: 0;
 }
 
+html {
+  /* Also set here, not just on body: relying solely on body→viewport
+     overflow propagation left the fixed header's containing block sized to
+     the underlying (unclipped) layout width in RTL, shifting it visibly
+     off-center even though the page itself couldn't actually scroll. */
+  overflow-x: hidden;
+}
+
 body {
   min-height: 100vh;
   overflow-x: hidden; /* the S03 stage and hero decorations must never force page scroll */
