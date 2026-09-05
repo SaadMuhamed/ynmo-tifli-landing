@@ -14,7 +14,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-block: 192px var(--space-64);
+  padding-block: 192px var(--space-24);
   padding-inline: var(--gutter);
 
   @include below-1024 {
@@ -148,22 +148,19 @@
   position: relative;
   z-index: 2;
   display: flex;
-  align-items: center;
+  /* flex-start (not center) so .hero__illustration's top sits flush with
+     the band's top — the 24px gap to the CTAs above is set entirely by
+     .hero__card's own bottom padding, not by any offset here. */
+  align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-24);
   width: 100%;
   max-width: var(--container);
   margin-inline: auto;
   padding-inline: var(--gutter);
-  /* Figma's real geometry (node 956:10749): illustration frame top sits at
-     absolute y=503, CTA row bottom at y=493 — only a 10px gap, not an
-     overlap. -160px was an unverified guess that pulled the illustration
-     (and its doodles) up over the CTA text; -94px reproduces the real gap. */
-  margin-block-start: -94px;
 
   @include below-1024 {
     flex-wrap: wrap;
-    margin-block-start: -80px;
   }
 }
 
@@ -172,6 +169,9 @@
   flex-direction: column;
   gap: var(--space-72);
   flex: none;
+  /* re-centers the stat column against the (taller) illustration now that
+     .hero__band itself top-aligns instead of centering everything. */
+  align-self: center;
 
   @include below-768 {
     display: none;
@@ -229,80 +229,16 @@
   flex: 1 1 auto;
   width: 100%;
   max-width: 754px;
-  aspect-ratio: 754 / 601;
+  /* matches hero-visual.png's native 1530×1255 canvas exactly, so the
+     flattened composite (photos, arch, doodles, stickers already baked in)
+     fills the box with no letterboxing. */
+  aspect-ratio: 1530 / 1255;
 }
 
-.hero__arch {
-  position: absolute;
-  inset-inline-start: 5.18%;
-  inset-block-start: 30.28%;
-  width: 85.15%;
-  height: 69.72%;
-  background: var(--brand-primary);
-  border: 6px solid var(--border-decorative-strong);
-  border-start-start-radius: 200px;
-  border-start-end-radius: 200px;
-  z-index: 0;
+.hero__visual {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
-.hero__photo {
-  position: absolute;
-  inset-inline-start: 9.93%;
-  inset-block-start: 8.15%;
-  width: 82.26%;
-  height: 94.41%;
-  object-fit: cover;
-  border-radius: 15px;
-  z-index: 1;
-}
-
-.hero__doodle {
-  position: absolute;
-  z-index: 2;
-  pointer-events: none;
-
-  &--1 {
-    inset-inline-start: 13.79%;
-    inset-block-start: 4.33%;
-    width: 16.4%;
-    transform: rotate(5.56deg);
-  }
-  &--2 {
-    inset-inline-start: 80.6%;
-    inset-block-start: 23.96%;
-    width: 16.65%;
-    transform: rotate(101.13deg);
-  }
-  &--3 {
-    inset-inline-start: 50.2%;
-    inset-block-start: 18.07%;
-    width: 16.65%;
-    transform: rotate(17.9deg);
-  }
-}
-
-.hero__emoji {
-  position: absolute;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  aspect-ratio: 1;
-  background: var(--surface-2);
-  border-radius: 20%;
-  box-shadow: var(--shadow-emoji-badge);
-  font-size: var(--fs-24);
-  line-height: 1;
-
-  &--teddy {
-    inset-inline-start: 0.66%;
-    inset-block-start: 49.75%;
-    width: 9.1%;
-    transform: rotate(-15deg);
-  }
-  &--baby {
-    inset-inline-start: 92.3%;
-    inset-block-start: 64.23%;
-    width: 7.4%;
-  }
-}

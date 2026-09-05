@@ -27,20 +27,40 @@
   }
 }
 
-.journey__sparkle {
+/* node 956:10782 — a 70x52 cluster of two glow stars; each asset's viewBox
+   already bakes in the drop-shadow's blur padding, so it must render at its
+   native pixel size (not a uniform 40px) or the visible glyph shrinks well
+   below Figma's real scale. Offsets below place each asset so its inner
+   circle (see the asset's own <rect>) lands at the cluster-relative spot
+   Figma specifies: big star at (0,0), small star at (40,22). */
+.journey__sparkles {
   position: absolute;
   inset-block-start: 8px;
   inset-inline-end: 23.7%;
-  width: 40px;
+  width: 70px;
+  height: 52px;
   pointer-events: none;
-
-  &--b {
-    inset-inline-end: 21.5%;
-    inset-block-start: 22px;
-  }
 
   @include below-1024 {
     display: none;
+  }
+}
+
+.journey__sparkle {
+  position: absolute;
+
+  &--big {
+    inset-inline-start: -41px;
+    inset-block-start: -5px;
+    width: 122.233px;
+    height: 122.699px;
+  }
+
+  &--small {
+    inset-inline-start: -1px;
+    inset-block-start: 17px;
+    width: 112.699px;
+    height: 112.699px;
   }
 }
 
@@ -110,10 +130,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--radius-full);
-  background: var(--brand-secondary);
+  /* Figma nodes 998:19213 / 1008:22547 / 23750 / 26244 — one-off hex, no
+     Ynmotomic token yet (same convention as _tokens.scss's other one-offs). */
+  background: #6d48a8;
   color: var(--text-on-brand);
   font-weight: var(--fw-bold);
   font-size: var(--fs-20);
@@ -141,6 +163,13 @@
   font-weight: var(--fw-bold);
   line-height: 1.3;
   color: var(--brand-primary-pressed);
+  text-align: center;
+  max-width: 200px;
+
+  @include below-1024 {
+    text-align: start;
+    max-width: none;
+  }
 }
 
 .step-card__desc {
