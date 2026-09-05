@@ -71,11 +71,18 @@
 }
 
 .specialists__highlight-bg {
+  /* A percentage `inset` shorthand + auto width/height computes against
+     this span's height, which is indeterminate (inline-flex, no explicit
+     height) — that resolves to a zero-height box and the image silently
+     never paints. Sizing from a fixed width (auto height derives safely
+     from *that*, per the image's own aspect ratio) and centering via
+     transform sidesteps the indeterminate-container-height trap. */
   position: absolute;
-  inset: -28% -12%;
-  width: auto;
+  top: 50%;
+  inset-inline-start: -10px;
+  width: 160px;
   height: auto;
-  max-width: none;
+  transform: translateY(-50%);
   z-index: 0;
   pointer-events: none;
 }
