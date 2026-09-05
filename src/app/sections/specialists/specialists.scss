@@ -167,20 +167,45 @@
 
 /* ---------- practitioner rail ---------- */
 .practitioner-rail {
+  --rail-shadow-room: 32px;
+  --rail-fade-start: 560px;
+  --rail-fade-end: 96px;
+  --rail-mask: linear-gradient(to right, rgba(0, 0, 0, 0.25), #000 var(--rail-fade-start), #000 calc(100% - var(--rail-fade-end)), transparent);
+
   display: flex;
-  gap: var(--space-16);
+  gap: 0;
   overflow-x: auto;
   scroll-snap-type: x proximity;
-  width: 100%;
+  width: calc(100% + var(--gutter) + var(--rail-shadow-room));
+  margin-inline-start: calc(-1 * var(--rail-shadow-room));
+  margin-inline-end: calc(-1 * var(--gutter));
   margin-block-start: var(--space-72);
   padding-block: var(--space-24);
-  /* Full-bleed width still needs edge padding, or the scroll container's own
-     bounding box clips the first/last card's shadow. */
-  padding-inline: var(--gutter);
-  scroll-padding-inline: var(--gutter);
+  padding-inline-start: var(--rail-shadow-room);
+  scroll-padding-inline: 0;
+  -webkit-mask-image: var(--rail-mask);
+  mask-image: var(--rail-mask);
+
+  &--at-start {
+    --rail-mask: linear-gradient(to right, rgba(0, 0, 0, 0.25), #000 var(--rail-fade-start));
+  }
+
+  &--at-end {
+    --rail-mask: linear-gradient(to right, #000 calc(100% - var(--rail-fade-end)), transparent);
+  }
+
+  &--at-start.practitioner-rail--at-end {
+    --rail-mask: none;
+  }
 
   &::-webkit-scrollbar {
     display: none;
+  }
+
+  @include below-768 {
+    --rail-shadow-room: 20px;
+    --rail-fade-start: 72px;
+    --rail-fade-end: 48px;
   }
 }
 
@@ -188,8 +213,8 @@
   position: relative;
   overflow: hidden;
   scroll-snap-align: start;
-  flex: 0 0 381px;
-  min-height: 312px;
+  flex: 0 0 381.33px;
+  height: 312px;
   display: flex;
   flex-direction: column;
   gap: var(--space-32);
@@ -201,7 +226,6 @@
 
   @include below-768 {
     flex-basis: calc(100vw - (2 * var(--gutter)));
-    min-height: 312px;
   }
 }
 
@@ -209,6 +233,8 @@
   display: flex;
   align-items: center;
   gap: var(--space-16);
+  height: 64px;
+  direction: rtl;
 }
 
 .practitioner-card__info {
@@ -217,17 +243,21 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-8);
-  text-align: end;
+  align-items: flex-start;
+  direction: rtl;
+  text-align: right;
 }
 
 .practitioner-card__name {
   font-size: var(--fs-24);
   font-weight: var(--fw-bold);
+  line-height: 32px;
   color: var(--text-primary);
 }
 
 .practitioner-card__specialty {
   font-size: var(--fs-16);
+  line-height: 24px;
   color: var(--text-secondary);
 }
 
@@ -241,47 +271,50 @@
   box-shadow: var(--shadow-xl);
 }
 
-/* Figma node 1201:7155 — the card reads as a ticket stub: two semicircle
-   notches bitten out of the left/right edges at the divider's height. The
-   notch "cuts" are circles painted in the rail's own background (so they
-   read as holes) sitting half on/half off the card; `overflow: hidden` on
-   the card clips the off-card half so only the bite shows. */
+/* Figma node 1110:23648 uses a 56px boolean subtraction at the divider. */
 .practitioner-card__divider {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 1px;
-  background: var(--border-low-contrast);
+  gap: var(--space-16);
+  height: 24px;
 
   &::before,
   &::after {
     content: '';
     position: absolute;
     top: 50%;
-    width: 32px;
-    height: 32px;
+    z-index: 3;
+    width: 56px;
+    height: 56px;
     background: var(--surface-page);
     border-radius: 50%;
     transform: translateY(-50%);
+    box-shadow: 0 0 0 2px var(--border-white);
   }
 
   &::before {
-    inset-inline-start: calc(-1 * var(--space-40) - 16px);
+    inset-inline-start: calc(-1 * var(--space-40) - 30px);
   }
 
   &::after {
-    inset-inline-end: calc(-1 * var(--space-40) - 16px);
+    inset-inline-end: calc(-1 * var(--space-40) - 30px);
   }
+}
+
+.practitioner-card__divider-line {
+  flex: 1 1 0;
+  height: 1px;
+  background: var(--border-low-contrast);
 }
 
 .practitioner-card__divider-icon {
   position: relative;
   z-index: 1;
   flex: none;
-  width: 24px;
-  height: 24px;
-  background: color-mix(in srgb, var(--surface-2) 50%, var(--surface-page));
+  width: 21px;
+  height: 21px;
 }
 
 .practitioner-card__meta {
@@ -289,9 +322,20 @@
   align-items: center;
   justify-content: flex-start;
   gap: var(--space-8);
-  font-size: var(--fs-16);
+  min-width: 0;
+  height: 24px;
+  direction: rtl;
+  font-size: var(--fs-14);
+  line-height: 24px;
   color: var(--text-secondary);
-  text-align: end;
+  text-align: right;
+
+  span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
   img {
     width: 24px;

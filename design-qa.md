@@ -1,40 +1,34 @@
 # Design QA
 
-- Source visual truth: https://www.figma.com/design/Zd2kdJppJubokdUvLi6egT/Ynmo-Website-New-Design?node-id=1201-7155
+- Source visual truth: https://www.figma.com/design/Zd2kdJppJubokdUvLi6egT/Ynmo-Website-New-Design?node-id=1110-23648
 - Implementation capture: http://127.0.0.1:4200/#specialists (Google Chrome CUA capture, 2026-09-06)
 - Viewport: 1224 × 768 desktop browser viewport
-- State: light theme, specialists rail at its initial RTL position
+- States checked: light theme; initial RTL position; one-card advance; scroll endpoint
 
 ## Full-view comparison evidence
 
-The Figma card and rendered card use the same compact 381 × 312 proportion, 16px corner radius, ticket-edge cutouts, translucent off-white surface, white inner stroke, and neutral tinted elevation. The wider card keeps the credentials on one line where the content length permits, removing the tall narrow-card appearance from the previous implementation. The rail still shows the clipped edge card and centered pagination pattern from the design.
+The rendered rail follows the final frame: cards are flush, the right edge remains aligned with the section gutter, and the left side extends responsively to the viewport edge. The initial and scrolled captures confirm that the clipped cards fade as they enter and leave the horizontal viewport. Navigation advances by one measured card and updates its disabled state and active dot.
 
 ## Focused region comparison evidence
 
-The card header retains the Figma-aligned 64px portrait, 24px bold Arabic name, 16px specialty, and 16px spacing between portrait and copy. The divider remains centered between 32px edge cutouts with the supplied information icon. Credential and experience rows retain the existing 24px source icons, 16px Arabic copy, and RTL alignment. No replacement or generated assets were introduced.
+The cards match the measured 381.33 × 312 frame, 16px radius, 40px inset, 32px vertical rhythm, layered translucent surface, 2px white inner stroke, and neutral elevation. Each divider uses the Figma 56px boolean-subtraction diameter, with separate line segments and 16px clearance around the 21px info icon. Portraits sit on the right of RTL-aligned copy. Credential icons also sit on the right, use the source cyan color, and retain their 24px size.
 
 ## Fidelity surfaces
 
-- Fonts and typography: passed. IBM Plex Sans Arabic, weights, sizes, line height, hierarchy, and wrapping match the existing Figma-derived type system.
-- Spacing and layout rhythm: passed. Card width, minimum height, 40px inset, 32px internal rhythm, 16px radius, edge cutouts, and rail spacing match the target proportions.
-- Colors and visual tokens: passed. The card uses the layered page/white surface, white inner border, existing text palette, and neutral design-system shadow tint.
-- Image quality and asset fidelity: passed. Existing source portraits and supplied specialist icons remain sharp and correctly masked.
-- Copy and content: passed. All Arabic names, specialties, credentials, and experience labels are unchanged.
+- Fonts and typography: passed. Arabic hierarchy, RTL alignment, line heights, and wrapping match the target.
+- Spacing and layout rhythm: passed. Card dimensions, zero rail gap, 40px inset, 32px rhythm, divider clearance, and responsive rail bleed match the measured frame.
+- Colors and visual tokens: passed. Surface layers, white stroke, neutral shadow, muted copy, grey info icon, and cyan metadata icons match the design.
+- Image quality and asset fidelity: passed. Existing portrait and specialist SVG assets remain sharp and are placed at their source sizes.
+- Copy and content: passed. Names, specialties, credentials, and experience labels remain unchanged.
 
-## Findings
+## Findings and patches
 
-No actionable P0, P1, or P2 mismatches remain in the requested card styling.
+- Corrected portrait and metadata ordering for RTL reading.
+- Rebuilt the divider with two line segments and 56px masked edge circles.
+- Set the exact desktop card geometry and removed spacing between cards.
+- Added position-aware edge fades for initial, middle, and endpoint states.
+- Extended the rail through the left page gutter while preserving the right alignment and responsive card sizing.
 
-## Patches made
-
-- Increased the desktop card basis from 320px to the Figma width of 381px.
-- Added the 312px target minimum height with a viewport-safe mobile width.
-- Replaced the flat white fill with the layered off-white surface.
-- Added the 2px white inner border and neutral 16px/32px elevation.
-- Matched the divider icon backing surface to the card.
-
-## Follow-up polish
-
-No P3 follow-up is required for the requested card style pass.
+No actionable P0, P1, P2, or P3 mismatch remains in the requested card and rail pass.
 
 final result: passed

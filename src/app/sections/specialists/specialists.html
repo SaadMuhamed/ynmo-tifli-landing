@@ -41,36 +41,44 @@
     </div>
   </div>
 
-  <ul class="practitioner-rail" #rail (scroll)="onRailScroll(rail)">
+  <ul
+    class="practitioner-rail"
+    #rail
+    [class.practitioner-rail--at-start]="atStart()"
+    [class.practitioner-rail--at-end]="atEnd()"
+    (scroll)="onRailScroll(rail)"
+  >
     @for (p of specialists.practitioners; track p.name) {
       <li class="practitioner-card">
         <div class="practitioner-card__head">
-          <div class="practitioner-card__info">
-            <h3 class="practitioner-card__name">{{ p.name }}</h3>
-            <p class="practitioner-card__specialty">{{ p.specialty }}</p>
-          </div>
           <picture>
             <source [srcset]="p.avatarWebp" type="image/webp" />
             <img class="practitioner-card__avatar" [src]="p.avatar" [alt]="p.name" width="64" height="64" loading="lazy" decoding="async" />
           </picture>
+          <div class="practitioner-card__info">
+            <h3 class="practitioner-card__name">{{ p.name }}</h3>
+            <p class="practitioner-card__specialty">{{ p.specialty }}</p>
+          </div>
         </div>
         <div class="practitioner-card__divider" aria-hidden="true">
+          <span class="practitioner-card__divider-line"></span>
           <img class="practitioner-card__divider-icon" src="/assets/icons/specialists/icon-info-diamond.svg" alt="" />
+          <span class="practitioner-card__divider-line"></span>
         </div>
         <p class="practitioner-card__meta">
-          {{ p.credential }}
           <img src="/assets/icons/specialists/icon-id-verified.svg" alt="" aria-hidden="true" />
+          <span>{{ p.credential }}</span>
         </p>
         <p class="practitioner-card__meta">
-          {{ p.experience }}
           <img src="/assets/icons/specialists/icon-diploma.svg" alt="" aria-hidden="true" />
+          <span>{{ p.experience }}</span>
         </p>
       </li>
     }
   </ul>
 
   <div class="rail-nav">
-    <button class="rail-nav__arrow" type="button" [disabled]="atStart()" [attr.aria-label]="ui.prev" (click)="rail.scrollBy({ left: 300, behavior: 'smooth' })">
+    <button class="rail-nav__arrow" type="button" [disabled]="atStart()" [attr.aria-label]="ui.prev" (click)="scrollRail(rail, 1)">
       <img [src]="atStart() ? '/assets/icons/specialists/arrow-right.svg' : '/assets/icons/specialists/arrow-right-active.svg'" alt="" />
     </button>
     <span class="rail-nav__dots" aria-hidden="true">
@@ -78,7 +86,7 @@
         <span class="rail-nav__dot" [class.rail-nav__dot--active]="$index === activeDotIndex()"></span>
       }
     </span>
-    <button class="rail-nav__arrow" type="button" [disabled]="atEnd()" [attr.aria-label]="ui.next" (click)="rail.scrollBy({ left: -300, behavior: 'smooth' })">
+    <button class="rail-nav__arrow" type="button" [disabled]="atEnd()" [attr.aria-label]="ui.next" (click)="scrollRail(rail, -1)">
       <img [src]="atEnd() ? '/assets/icons/specialists/arrow-left-disabled.svg' : '/assets/icons/specialists/arrow-left.svg'" alt="" />
     </button>
   </div>
