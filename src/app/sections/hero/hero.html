@@ -1,10 +1,12 @@
 <!-- S01 · Figma node 956:10749 -->
 <section id="hero" class="hero" aria-labelledby="hero-heading">
   <div class="hero__card">
-    <picture>
-      <source srcset="/assets/img/hero/hero-bg-logo.webp" type="image/webp" />
-      <img class="hero__bg-blob" src="/assets/img/hero/hero-bg-logo.png" alt="" aria-hidden="true" />
-    </picture>
+    <div class="hero__bg-mask">
+      <picture>
+        <source srcset="/assets/img/hero/hero-bg-logo.webp" type="image/webp" />
+        <img class="hero__bg-blob" src="/assets/img/hero/hero-bg-logo.png" alt="" aria-hidden="true" />
+      </picture>
+    </div>
 
     <div class="hero__copy">
       <h1 id="hero-heading" class="hero__headline">
@@ -30,44 +32,44 @@
         </a>
       </div>
     </div>
-  </div>
 
-  <div class="hero__band">
-    <ul class="hero__stats hero__stats--start">
-      @for (stat of hero.statsRight; track stat.label) {
-        <li class="stat-chip" [class]="'stat-chip--' + stat.accent">
-          <span class="stat-chip__glow"></span>
-          <img class="stat-chip__icon" [src]="stat.icon" alt="" aria-hidden="true" />
-          <span class="stat-chip__value" dir="ltr">{{ stat.value }}</span>
-          <span class="stat-chip__label">{{ stat.label }}</span>
-        </li>
-      }
-    </ul>
+    <div class="hero__band">
+      <ul class="hero__stats hero__stats--start">
+        @for (stat of hero.statsRight; track stat.label) {
+          <li class="stat-chip" [class]="'stat-chip--' + stat.accent">
+            <span class="stat-chip__glow"></span>
+            <img class="stat-chip__icon" [src]="stat.icon" alt="" aria-hidden="true" />
+            <span class="stat-chip__value" dir="ltr">{{ stat.value }}</span>
+            <span class="stat-chip__label">{{ stat.label }}</span>
+          </li>
+        }
+      </ul>
 
-    <div class="hero__illustration">
-      <picture>
-        <source srcset="/assets/img/hero/hero-visual.webp" type="image/webp" />
-        <img
-          class="hero__visual"
-          src="/assets/img/hero/hero-visual.png"
-          [alt]="hero.photoAlt"
-          width="1530"
-          height="1255"
-          fetchpriority="high"
-          decoding="async"
-        />
-      </picture>
+      <div class="hero__illustration">
+        <picture>
+          <source srcset="/assets/img/hero/hero-visual.webp" type="image/webp" />
+          <img
+            class="hero__visual"
+            src="/assets/img/hero/hero-visual.png"
+            [alt]="hero.photoAlt"
+            width="1530"
+            height="1255"
+            fetchpriority="high"
+            decoding="async"
+          />
+        </picture>
+      </div>
+
+      <ul class="hero__stats hero__stats--end">
+        @for (stat of hero.statsLeft; track stat.label) {
+          <li class="stat-chip" [class]="'stat-chip--' + stat.accent">
+            <span class="stat-chip__glow"></span>
+            <img class="stat-chip__icon" [src]="stat.icon" alt="" aria-hidden="true" />
+            <span class="stat-chip__value" dir="ltr">{{ stat.value }}</span>
+            <span class="stat-chip__label">{{ stat.label }}</span>
+          </li>
+        }
+      </ul>
     </div>
-
-    <ul class="hero__stats hero__stats--end">
-      @for (stat of hero.statsLeft; track stat.label) {
-        <li class="stat-chip" [class]="'stat-chip--' + stat.accent">
-          <span class="stat-chip__glow"></span>
-          <img class="stat-chip__icon" [src]="stat.icon" alt="" aria-hidden="true" />
-          <span class="stat-chip__value" dir="ltr">{{ stat.value }}</span>
-          <span class="stat-chip__label">{{ stat.label }}</span>
-        </li>
-      }
-    </ul>
   </div>
 </section>

@@ -3,24 +3,55 @@
 .hero {
   position: relative;
   background: var(--surface-page);
+  /* .hero__band overflows 258px past .hero__card's own (shorter, capped)
+     height by design — overflow:visible content doesn't count toward this
+     section's own height, so without compensating here the next section
+     would butt straight up against the overhanging illustration. Below
+     1024 that overhang is disabled (.hero__band height:auto there), so
+     only the normal section gap applies. */
+  padding-block-end: calc(258px + var(--space-64));
+
+  @include below-1024 {
+    padding-block-end: var(--space-64);
+  }
 }
 
 .hero__card {
   position: relative;
-  overflow: hidden;
+  /* visible, not hidden — .hero__band is nested inside so it inherits this
+     white background/rounded shape by simply being inside it (Figma node
+     1110:22371: white card is 846px tall, illustration starts at y=503,
+     so the card's shape only covers the top 343px of the 601px-tall
+     illustration). .hero__band's own capped height (see below) is what
+     lets the remaining 258px spill out past this box onto the grey page
+     background; overflow:hidden here would clip that spill instead. */
+  overflow: visible;
   background: var(--surface-2);
   border-end-start-radius: 40px;
   border-end-end-radius: 180px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-block: 192px var(--space-24);
+  gap: 10px;
+  padding-block-start: 192px;
   padding-inline: var(--gutter);
 
   @include below-1024 {
     border-radius: 0;
     padding-block-start: 140px;
   }
+}
+
+.hero__bg-mask {
+  /* clips just the oversized decorative blob to the card's shape — can't
+     rely on .hero__card's own overflow for this anymore since that's now
+     visible (see above). */
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .hero__bg-blob {
@@ -30,7 +61,6 @@
   height: 100%;
   object-fit: cover;
   pointer-events: none;
-  z-index: 0;
 }
 
 .hero__copy {
@@ -146,11 +176,11 @@
 /* ---------- stats + illustration band ---------- */
 .hero__band {
   position: relative;
-  z-index: 2;
+  z-index: 1;
   display: flex;
   /* flex-start (not center) so .hero__illustration's top sits flush with
-     the band's top — the 24px gap to the CTAs above is set entirely by
-     .hero__card's own bottom padding, not by any offset here. */
+     the band's top — the gap to the CTAs above is set by .hero__card's own
+     flex `gap`, not by any offset here. */
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-24);
@@ -158,27 +188,38 @@
   max-width: var(--container);
   margin-inline: auto;
   padding-inline: var(--gutter);
+  /* Figma node 1110:22371: of .hero__illustration's 601px height, only the
+     top 343px sits inside the white card's 846px-tall shape — capping
+     band's own height here (rather than touching illustration's or the
+     stats' sizing/alignment at all) lets the taller illustration and the
+     bottom stat row simply overflow past this box onto the grey page
+     background below, since .hero__card is overflow:visible now. --container
+     is a flat 1192px at this breakpoint (only shrinking below 1024, where
+     this is disabled anyway), so illustration reliably sits at its 754px
+     cap here and this constant holds. */
+  height: 343px;
 
   @include below-1024 {
+    height: auto;
     flex-wrap: wrap;
   }
 }
 
 .hero__stats {
-  position: relative;
-  /* z-index (not just position) so this stack above .hero__illustration's
-     ::before regardless of DOM order — the --start column comes before
-     illustration in markup, and an absolutely-positioned sibling always
-     paints above a static one, so without this the --start column would
-     end up hidden under the full-bleed white patch. */
-  z-index: 1;
   display: flex;
   flex-direction: column;
   gap: var(--space-72);
   flex: none;
-  /* re-centers the stat column against the (taller) illustration now that
-     .hero__band itself top-aligns instead of centering everything. */
-  align-self: center;
+  /* Figma node 1110:22371's exact offset (not a true vertical center of the
+     illustration — center would be ~151px, Figma uses 187px) — a fixed
+     value rather than align-self:center because .hero__band now has an
+     explicit (shorter) height, which would otherwise redefine the flex
+     line's cross-size and re-center this against the wrong box. */
+  margin-block-start: 187px;
+
+  @include below-1024 {
+    margin-block-start: 0;
+  }
 
   @include below-768 {
     display: none;
@@ -238,47 +279,12 @@
   max-width: 754px;
   /* matches hero-visual.png's native 1530×1255 canvas exactly, so the
      flattened composite (photos, arch, doodles, stickers already baked in)
-     fills the box with no letterboxing. */
+     fills the box with no letterboxing. Left at its full natural height —
+     see .hero__band for how the card only counts the top portion of it. */
   aspect-ratio: 1530 / 1255;
-
-  /* Figma node 1110:22371 — the white card is 846px tall, the illustration
-     starts at y=503, so the card overlaps 343px into the illustration's
-     601px height (343/601 = 57.07%), landing right between the two stat
-     rows. Full-bleed via the 100vw trick since both this and the band are
-     inset by the container/gutter, unlike .hero__card above them.
-     NOTE: not using `container-type: size` here to derive this height —
-     size containment forces `overflow: clip` on the container, which
-     would clip this child's `width: 100vw` right back down to the
-     illustration's own ~754px box, defeating the full-bleed entirely. */
-  &::before {
-    content: '';
-    position: absolute;
-    inset-block-start: 0;
-    inset-inline-start: 50%;
-    width: 100vw;
-    transform: translateX(-50%);
-    height: 57.07%;
-    background: var(--surface-2);
-    border-end-start-radius: 40px;
-    border-end-end-radius: 180px;
-    pointer-events: none;
-  }
-
-  @include below-1024 {
-    &::before {
-      content: none;
-    }
-  }
 }
 
 .hero__visual {
-  /* position + z-index so the photo paints above .hero__illustration's
-     ::before (an absolutely-positioned decorative background patch always
-     paints above static in-flow siblings, regardless of DOM order — so
-     without this, the white patch would cover the photo instead of
-     sitting behind it). */
-  position: relative;
-  z-index: 1;
   display: block;
   width: 100%;
   height: 100%;
