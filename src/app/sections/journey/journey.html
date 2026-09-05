@@ -34,18 +34,12 @@
       <div class="app-promo">
         <div class="app-promo__row">
           <div class="app-promo__icon app-promo__icon--{{ promo.accent }}">
-            @if (promo.isYnmoLogo) {
-              <span class="app-promo__logo" aria-hidden="true">
-                <img src="/assets/icons/site-header/avatar-ring.svg" alt="" />
-                <img src="/assets/icons/site-header/avatar-mark-a.svg" alt="" />
-                <img src="/assets/icons/site-header/avatar-mark-b.svg" alt="" />
-              </span>
-            } @else {
-              <picture>
+            <picture>
+              @if (promo.iconWebp) {
                 <source [srcset]="promo.iconWebp" type="image/webp" />
-                <img [src]="promo.icon" alt="" aria-hidden="true" />
-              </picture>
-            }
+              }
+              <img [src]="promo.icon" alt="" aria-hidden="true" />
+            </picture>
           </div>
           <p class="app-promo__heading">
             {{ promo.headingPrefix }}<span class="app-promo__brand app-promo__brand--{{ promo.accent }}">{{ promo.headingBrand }}</span>

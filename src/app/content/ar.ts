@@ -115,7 +115,6 @@ export interface AppPromo {
   accent: 'tawakkalna' | 'ynmo';
   icon: string;
   iconWebp?: string;
-  isYnmoLogo?: boolean;
   appStoreHref: string;
   googlePlayHref: string;
 }
@@ -178,8 +177,7 @@ export const JOURNEY: JourneyContent = {
       headingPrefix: 'ابدأ الآن و حمّل تطبيق ',
       headingBrand: 'ينمو طفلي',
       accent: 'ynmo',
-      icon: '',
-      isYnmoLogo: true,
+      icon: '/assets/icons/journey/ynmo-app-icon.png',
       appStoreHref: '#',
       googlePlayHref: '#',
     },
