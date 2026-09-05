@@ -1,6 +1,6 @@
 # Ynmo Tifli — Landing Page
 
-**Live preview:** _pending — see PR/Slack for the current Vercel deployment URL once posted_
+**Live preview:** https://ynmo-tifli-landing.vercel.app
 
 Production MVP of the Ynmo Tifli landing page. Arabic-first, RTL-native, built in
 Angular 22 (standalone components + SSR, single prerendered route). Built per
