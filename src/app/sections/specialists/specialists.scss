@@ -188,14 +188,21 @@
   position: relative;
   overflow: hidden;
   scroll-snap-align: start;
-  flex: 0 0 320px;
+  flex: 0 0 381px;
+  min-height: 312px;
   display: flex;
   flex-direction: column;
   gap: var(--space-32);
-  background: var(--surface-2);
+  background: color-mix(in srgb, var(--surface-2) 50%, var(--surface-page));
+  border: 2px solid var(--border-white);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 16px 32px 0 var(--shadow-tint-neutral);
   padding: var(--space-40);
+
+  @include below-768 {
+    flex-basis: calc(100vw - (2 * var(--gutter)));
+    min-height: 312px;
+  }
 }
 
 .practitioner-card__head {
@@ -234,7 +241,7 @@
   box-shadow: var(--shadow-xl);
 }
 
-/* Figma node 956:12427 — the card reads as a ticket stub: two semicircle
+/* Figma node 1201:7155 — the card reads as a ticket stub: two semicircle
    notches bitten out of the left/right edges at the divider's height. The
    notch "cuts" are circles painted in the rail's own background (so they
    read as holes) sitting half on/half off the card; `overflow: hidden` on
@@ -274,7 +281,7 @@
   flex: none;
   width: 24px;
   height: 24px;
-  background: var(--surface-2);
+  background: color-mix(in srgb, var(--surface-2) 50%, var(--surface-page));
 }
 
 .practitioner-card__meta {
