@@ -290,7 +290,10 @@ export interface ScreeningTool {
 
 export interface ScreeningToolsContent {
   headingLine1: string;
-  headingLine2: string;
+  headingLine2Prefix: string;
+  /** the part shown in the brand-strong highlight color */
+  headingLine2Highlight: string;
+  headingLine2Suffix: string;
   subhead: string;
   /** DOM order = RTL reading order (rightmost card first) */
   tools: ScreeningTool[];
@@ -299,7 +302,9 @@ export interface ScreeningToolsContent {
 /** S05 — Screening tools (node 956:11476). Copy matches plan §7 exactly. */
 export const SCREENING_TOOLS: ScreeningToolsContent = {
   headingLine1: 'مقاييس محلية',
-  headingLine2: 'وعالمية موثوقة!',
+  headingLine2Prefix: 'وعالمية ',
+  headingLine2Highlight: 'موثوقة',
+  headingLine2Suffix: '!',
   subhead:
     'أداة كشف مبكر تساعد الأسرة على تحديد مؤشرات اضطراب طيف التوحد لدى الطفل في سن مبكرة، وتوجّه إلى التقييم المتخصص عند الحاجة.',
   tools: [
@@ -350,7 +355,7 @@ export const WHY_US: WhyUsContent = {
     { titleLine1: 'التركيز على', titleLine2: 'الراحة', icon: '/assets/icons/why-us/tile-family-love.svg' },
     { titleLine1: 'خصوصية', titleLine2: 'تامة', icon: '/assets/icons/why-us/tile-shield-check.svg' },
     { titleLine1: 'برامج تدخل', titleLine2: 'مبكر فعالة', icon: '/assets/icons/why-us/tile-favorite-chat.svg' },
-    { titleLine1: 'مراقبة الطفل', titleLine2: 'في بيئته الطبيعية', icon: '/assets/icons/why-us/tile-house.png' },
+    { titleLine1: 'مراقبة الطفل', titleLine2: 'في بيئته الطبيعية', icon: '/assets/icons/why-us/tile-house.svg' },
   ],
 };
 

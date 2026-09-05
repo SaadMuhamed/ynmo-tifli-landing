@@ -34,7 +34,10 @@
 
 .why-us__badge {
   position: absolute;
-  inset-inline-end: 60px;
+  /* `inset-inline-end` resolves to the LEFT edge under this doc's
+     dir="rtl" — the opposite of "sticky to the right" at every viewport.
+     `inset-inline-start` is the RTL-correct "stays pinned to the right". */
+  inset-inline-start: 60px;
   inset-block-start: -220px;
   width: 260px;
   pointer-events: none;
@@ -52,16 +55,27 @@
   font-weight: var(--fw-bold);
   line-height: 1.4;
   color: var(--text-primary);
-  text-align: end;
+  /* `end` resolves to the LEFT edge under dir="rtl" — `start` is the
+     RTL-correct "packs right" value, needed so both explicit lines below
+     stay flush on the same (right) edge instead of the shorter one
+     drifting left. */
+  text-align: start;
 
   @include below-1024 {
-    font-size: var(--fs-44);
     text-align: center;
   }
 }
 
+.why-us__heading-line {
+  display: block;
+
+  @include below-1024 {
+    font-size: var(--fs-44);
+  }
+}
+
 .why-us__heading-line--highlight {
-  color: var(--brand-primary);
+  color: var(--brand-primary-strong);
 }
 
 .why-us__cta {

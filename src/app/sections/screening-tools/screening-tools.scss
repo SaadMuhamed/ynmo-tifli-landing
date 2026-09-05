@@ -50,7 +50,9 @@
   font-weight: var(--fw-bold);
   line-height: 1.4;
   color: var(--text-primary);
-  text-align: end;
+  /* `end` resolves to the LEFT edge under this doc's dir="rtl" — wrong for
+     Arabic. `start` is the RTL-correct "packs right" value. */
+  text-align: start;
 
   @include below-1024 {
     font-size: var(--fs-44);
@@ -58,11 +60,15 @@
   }
 }
 
+.screening-tools__title-highlight {
+  color: var(--brand-primary-strong);
+}
+
 .screening-tools__subhead {
   font-size: var(--fs-16);
   font-weight: var(--fw-bold);
   color: var(--text-secondary);
-  text-align: end;
+  text-align: start;
   max-width: 480px;
 
   @include below-1024 {
@@ -77,7 +83,14 @@
   min-width: 0;
   width: 100%;
   max-width: 682px;
-  aspect-ratio: 682 / 601;
+  /* Figma's stage is 682×601, but that box height assumes every card wraps
+     to 2 lines; the M-Chat card's real (longer) title wraps to 3, and since
+     each card's height is content-driven, not fixed, it grows past the
+     gap the 601px stage left it — reads as touching/overlapping its
+     neighbor. Cards' widths/left-offsets stay Figma-exact (%); only the
+     stage height is taller than spec so the same content-driven card
+     heights land with real breathing room instead of colliding. */
+  aspect-ratio: 682 / 720;
 
   /* The cascading absolute layout only has room to breathe at full desktop
      width — below 1280 the cards' Arabic text wraps enough to overflow the

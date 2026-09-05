@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { SPECIALISTS, UI } from '../../content/ar';
 
 @Component({
@@ -14,6 +14,12 @@ export class Specialists {
 
   protected readonly dots = SPECIALISTS.practitioners.map((_, i) => i);
   protected readonly activeDotIndex = signal(0);
+
+  /** Same dot-index the rail-nav dots key off, reused so the prev/next
+   * arrows go disabled in lockstep with the dots instead of drifting out
+   * of sync with a separately-computed scroll threshold. */
+  protected readonly atStart = computed(() => this.activeDotIndex() === 0);
+  protected readonly atEnd = computed(() => this.activeDotIndex() === this.dots.length - 1);
 
   /** Maps rail scroll progress onto the dots — RTL scrollLeft runs 0 → -max
    * as the (visually right-to-left) rail advances, per the modern browser

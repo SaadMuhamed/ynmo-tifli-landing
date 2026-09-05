@@ -60,7 +60,24 @@
 
 .specialists__highlight {
   position: relative;
-  color: var(--brand-primary-pressed);
+  display: inline-flex;
+  align-items: center;
+
+  span {
+    position: relative;
+    z-index: 1;
+    color: var(--brand-primary-pressed);
+  }
+}
+
+.specialists__highlight-bg {
+  position: absolute;
+  inset: -28% -12%;
+  width: auto;
+  height: auto;
+  max-width: none;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .specialists__scribble {
@@ -137,6 +154,7 @@
   img {
     width: 16px;
     height: 16px;
+    transform: scaleX(-1);
   }
 }
 
@@ -160,15 +178,17 @@
 }
 
 .practitioner-card {
+  position: relative;
+  overflow: hidden;
   scroll-snap-align: start;
   flex: 0 0 320px;
   display: flex;
   flex-direction: column;
-  gap: var(--space-16);
+  gap: var(--space-32);
   background: var(--surface-2);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
-  padding: var(--space-32);
+  padding: var(--space-40);
 }
 
 .practitioner-card__head {
@@ -207,9 +227,47 @@
   box-shadow: var(--shadow-xl);
 }
 
+/* Figma node 956:12427 — the card reads as a ticket stub: two semicircle
+   notches bitten out of the left/right edges at the divider's height. The
+   notch "cuts" are circles painted in the rail's own background (so they
+   read as holes) sitting half on/half off the card; `overflow: hidden` on
+   the card clips the off-card half so only the bite shows. */
 .practitioner-card__divider {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 1px;
   background: var(--border-low-contrast);
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 32px;
+    height: 32px;
+    background: var(--surface-page);
+    border-radius: 50%;
+    transform: translateY(-50%);
+  }
+
+  &::before {
+    inset-inline-start: calc(-1 * var(--space-40) - 16px);
+  }
+
+  &::after {
+    inset-inline-end: calc(-1 * var(--space-40) - 16px);
+  }
+}
+
+.practitioner-card__divider-icon {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  background: var(--surface-2);
 }
 
 .practitioner-card__meta {
@@ -250,6 +308,11 @@
   img {
     width: 24px;
     height: 24px;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    box-shadow: none;
   }
 }
 

@@ -18,7 +18,10 @@
         <span class="specialists__scribble" aria-hidden="true">
           <img src="/assets/icons/specialists/scribble.svg" alt="" />
         </span>
-        {{ specialists.headingPrefix }}<span class="specialists__highlight">{{ specialists.headingHighlight }}</span>
+        {{ specialists.headingPrefix }}<span class="specialists__highlight">
+          <img class="specialists__highlight-bg" src="/assets/icons/specialists/heading-highlight-bg.svg" alt="" aria-hidden="true" />
+          <span>{{ specialists.headingHighlight }}</span>
+        </span>
       </h2>
       <p class="specialists__subhead">{{ specialists.subhead }}</p>
       <p class="specialists__chips-intro">{{ specialists.chipsIntro }}</p>
@@ -51,7 +54,9 @@
             <img class="practitioner-card__avatar" [src]="p.avatar" [alt]="p.name" width="64" height="64" loading="lazy" decoding="async" />
           </picture>
         </div>
-        <div class="practitioner-card__divider" aria-hidden="true"></div>
+        <div class="practitioner-card__divider" aria-hidden="true">
+          <img class="practitioner-card__divider-icon" src="/assets/icons/specialists/icon-info-diamond.svg" alt="" />
+        </div>
         <p class="practitioner-card__meta">
           {{ p.credential }}
           <img src="/assets/icons/specialists/icon-id-verified.svg" alt="" aria-hidden="true" />
@@ -65,16 +70,16 @@
   </ul>
 
   <div class="rail-nav">
-    <button class="rail-nav__arrow" type="button" [attr.aria-label]="ui.prev" (click)="rail.scrollBy({ left: 300, behavior: 'smooth' })">
-      <img src="/assets/icons/specialists/arrow-right.svg" alt="" />
+    <button class="rail-nav__arrow" type="button" [disabled]="atStart()" [attr.aria-label]="ui.prev" (click)="rail.scrollBy({ left: 300, behavior: 'smooth' })">
+      <img [src]="atStart() ? '/assets/icons/specialists/arrow-right.svg' : '/assets/icons/specialists/arrow-right-active.svg'" alt="" />
     </button>
     <span class="rail-nav__dots" aria-hidden="true">
       @for (dot of dots; track $index) {
         <span class="rail-nav__dot" [class.rail-nav__dot--active]="$index === activeDotIndex()"></span>
       }
     </span>
-    <button class="rail-nav__arrow" type="button" [attr.aria-label]="ui.next" (click)="rail.scrollBy({ left: -300, behavior: 'smooth' })">
-      <img src="/assets/icons/specialists/arrow-left.svg" alt="" />
+    <button class="rail-nav__arrow" type="button" [disabled]="atEnd()" [attr.aria-label]="ui.next" (click)="rail.scrollBy({ left: -300, behavior: 'smooth' })">
+      <img [src]="atEnd() ? '/assets/icons/specialists/arrow-left-disabled.svg' : '/assets/icons/specialists/arrow-left.svg'" alt="" />
     </button>
   </div>
 </section>

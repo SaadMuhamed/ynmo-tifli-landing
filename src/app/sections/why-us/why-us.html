@@ -3,7 +3,10 @@
   <div class="why-us__aside">
     <img class="why-us__badge" src="/assets/img/why-us/badge.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" />
 
-    <h2 id="why-us-heading" class="why-us__heading">{{ content.headingLine1 }} <span class="why-us__heading-line--highlight">{{ content.headingLine2 }}</span></h2>
+    <h2 id="why-us-heading" class="why-us__heading">
+      <span class="why-us__heading-line">{{ content.headingLine1 }}</span>
+      <span class="why-us__heading-line why-us__heading-line--highlight">{{ content.headingLine2 }}</span>
+    </h2>
 
     <a class="why-us__cta" [href]="content.cta.href">
       <span class="why-us__cta-icon"><img src="/assets/icons/hero/cta-calendar.svg" alt="" /></span>

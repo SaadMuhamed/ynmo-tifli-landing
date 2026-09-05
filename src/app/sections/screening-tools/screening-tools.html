@@ -4,7 +4,9 @@
     <span class="screening-tools__icon" aria-hidden="true">
       <img src="/assets/icons/screening-tools/icon-protected-file.svg" alt="" />
     </span>
-    <h2 id="screening-heading" class="screening-tools__title">{{ content.headingLine1 }} {{ content.headingLine2 }}</h2>
+    <h2 id="screening-heading" class="screening-tools__title">
+      {{ content.headingLine1 }} {{ content.headingLine2Prefix }}<span class="screening-tools__title-highlight">{{ content.headingLine2Highlight }}</span>{{ content.headingLine2Suffix }}
+    </h2>
     <p class="screening-tools__subhead">{{ content.subhead }}</p>
   </div>
 
