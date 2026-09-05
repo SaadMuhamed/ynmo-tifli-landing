@@ -27,66 +27,189 @@ const SCREEN_WEBP = '/assets/img/services-grid/screen.webp';
 const SCREEN_ALT = '/assets/img/services-grid/frame-mask.png';
 const SCREEN_ALT_WEBP = '/assets/img/services-grid/frame-mask.webp';
 
-/** Two-phone fan, used by the taller cards (growth eval / doctor consult). */
-const phonesTall = (): ServicePhone[] => [
+/** node 1110:26097 — two large upright overlapping phones. */
+const phonesGrowthAssessment = (): ServicePhone[] => [
   {
-    x: -34,
-    y: 8,
-    rotate: -8,
-    width: 132,
-    height: 272,
+    x: -48,
+    y: 15,
+    rotate: 0,
+    width: 148,
+    height: 305,
     screen: SCREEN,
     screenWebp: SCREEN_WEBP,
     z: 1,
   },
   {
-    x: 30,
-    y: 22,
-    rotate: 6,
-    width: 118,
-    height: 244,
+    x: 50,
+    y: 58,
+    rotate: 0,
+    width: 130,
+    height: 265,
     screen: SCREEN_ALT,
     screenWebp: SCREEN_ALT_WEBP,
     z: 2,
   },
 ];
 
-/** Three-phone fan, used by the standard 200px-tall cards. */
-const phonesShort = (mirror = false): ServicePhone[] => {
-  const s = mirror ? -1 : 1;
-  return [
-    {
-      x: -78 * s,
-      y: 30,
-      rotate: -18 * s,
-      width: 82,
-      height: 168,
-      screen: SCREEN,
-      screenWebp: SCREEN_WEBP,
-      z: 1,
-    },
-    {
-      x: 0,
-      y: 6,
-      rotate: 0,
-      width: 96,
-      height: 196,
-      screen: SCREEN_ALT,
-      screenWebp: SCREEN_ALT_WEBP,
-      z: 3,
-    },
-    {
-      x: 82 * s,
-      y: 34,
-      rotate: 20 * s,
-      width: 82,
-      height: 168,
-      screen: SCREEN,
-      screenWebp: SCREEN_WEBP,
-      z: 1,
-    },
-  ];
-};
+/** node 1110:26122 — mirror of the growth-assessment pair (also upright, no tilt). */
+const phonesDoctorConsultation = (): ServicePhone[] => [
+  {
+    x: -50,
+    y: 58,
+    rotate: 0,
+    width: 130,
+    height: 265,
+    screen: SCREEN,
+    screenWebp: SCREEN_WEBP,
+    z: 1,
+  },
+  {
+    x: 48,
+    y: 15,
+    rotate: 0,
+    width: 148,
+    height: 305,
+    screen: SCREEN_ALT,
+    screenWebp: SCREEN_ALT_WEBP,
+    z: 2,
+  },
+];
+
+/** node 1110:26114 — three phones, all tilted the same direction (-30deg). */
+const phonesShadowTeacher = (): ServicePhone[] => [
+  {
+    x: -105,
+    y: 55,
+    rotate: -30,
+    width: 80,
+    height: 165,
+    screen: SCREEN,
+    screenWebp: SCREEN_WEBP,
+    z: 1,
+  },
+  {
+    x: -8,
+    y: 10,
+    rotate: -30,
+    width: 92,
+    height: 190,
+    screen: SCREEN_ALT,
+    screenWebp: SCREEN_ALT_WEBP,
+    z: 2,
+  },
+  {
+    x: 90,
+    y: 60,
+    rotate: -30,
+    width: 80,
+    height: 165,
+    screen: SCREEN,
+    screenWebp: SCREEN_WEBP,
+    z: 1,
+  },
+];
+
+/** node 1110:26124 — three phones, all tilted the other direction (+30deg). */
+const phonesRemoteSpecialist = (): ServicePhone[] => [
+  {
+    x: -90,
+    y: 60,
+    rotate: 30,
+    width: 80,
+    height: 165,
+    screen: SCREEN,
+    screenWebp: SCREEN_WEBP,
+    z: 1,
+  },
+  {
+    x: 8,
+    y: 10,
+    rotate: 30,
+    width: 92,
+    height: 190,
+    screen: SCREEN_ALT,
+    screenWebp: SCREEN_ALT_WEBP,
+    z: 2,
+  },
+  {
+    x: 105,
+    y: 55,
+    rotate: 30,
+    width: 80,
+    height: 165,
+    screen: SCREEN,
+    screenWebp: SCREEN_WEBP,
+    z: 1,
+  },
+];
+
+/** nodes 1110:26165 / 1110:26173 — wide bottom-row cards, three upright phones spread out. */
+const phonesWideRow = (): ServicePhone[] => [
+  {
+    x: -190,
+    y: 50,
+    rotate: 0,
+    width: 90,
+    height: 185,
+    screen: SCREEN,
+    screenWebp: SCREEN_WEBP,
+    z: 1,
+  },
+  {
+    x: 0,
+    y: 5,
+    rotate: 0,
+    width: 100,
+    height: 205,
+    screen: SCREEN_ALT,
+    screenWebp: SCREEN_ALT_WEBP,
+    z: 2,
+  },
+  {
+    x: 190,
+    y: 50,
+    rotate: 0,
+    width: 90,
+    height: 185,
+    screen: SCREEN,
+    screenWebp: SCREEN_WEBP,
+    z: 1,
+  },
+];
+
+/** node 1110:26143 — hearing test's own three-phone fan. */
+const phonesHearingTest = (): ServicePhone[] => [
+  {
+    x: -78,
+    y: 30,
+    rotate: -18,
+    width: 82,
+    height: 168,
+    screen: SCREEN,
+    screenWebp: SCREEN_WEBP,
+    z: 1,
+  },
+  {
+    x: 0,
+    y: 6,
+    rotate: 0,
+    width: 96,
+    height: 196,
+    screen: SCREEN_ALT,
+    screenWebp: SCREEN_ALT_WEBP,
+    z: 3,
+  },
+  {
+    x: 82,
+    y: 34,
+    rotate: 20,
+    width: 82,
+    height: 168,
+    screen: SCREEN,
+    screenWebp: SCREEN_WEBP,
+    z: 1,
+  },
+];
 
 /** Two flanking phones per hub panel (node 1110:24728), one left one right of the notch. */
 const phonesHub = (): ServicePhone[] => [
@@ -120,7 +243,7 @@ export const SERVICES: ServiceCard[] = [
     iconAlt: '',
     badge: 'banner',
     bannerText: 'للتعرف على مراحل نمو طفلك والاطمئنان على تطوره النمائي خطوة بخطوة.',
-    phones: phonesTall(),
+    phones: phonesGrowthAssessment(),
   },
   {
     id: 'hearing-test',
@@ -128,7 +251,7 @@ export const SERVICES: ServiceCard[] = [
     icon: '/assets/icons/services-grid/icon-ear.svg',
     iconAlt: '',
     badge: 'icon',
-    phones: phonesShort(),
+    phones: phonesHearingTest(),
   },
   {
     id: 'remote-specialist',
@@ -136,7 +259,7 @@ export const SERVICES: ServiceCard[] = [
     icon: '/assets/icons/services-grid/icon-live-streaming.svg',
     iconAlt: '',
     badge: 'icon',
-    phones: phonesShort(true),
+    phones: phonesRemoteSpecialist(),
   },
   {
     id: 'comprehensive-diagnosis',
@@ -160,7 +283,7 @@ export const SERVICES: ServiceCard[] = [
     icon: '/assets/icons/services-grid/icon-doctor.svg',
     iconAlt: '',
     badge: 'icon',
-    phones: phonesTall(),
+    phones: phonesDoctorConsultation(),
   },
   {
     id: 'shadow-teacher',
@@ -168,7 +291,7 @@ export const SERVICES: ServiceCard[] = [
     icon: '/assets/icons/services-grid/icon-user-star.svg',
     iconAlt: '',
     badge: 'icon',
-    phones: phonesShort(),
+    phones: phonesShadowTeacher(),
   },
   {
     id: 'nursery-picker',
@@ -176,7 +299,7 @@ export const SERVICES: ServiceCard[] = [
     icon: '/assets/icons/services-grid/icon-rocking-horse.svg',
     iconAlt: '',
     badge: 'icon',
-    phones: phonesShort(),
+    phones: phonesWideRow(),
   },
   {
     id: 'daycare-centers',
@@ -184,7 +307,7 @@ export const SERVICES: ServiceCard[] = [
     icon: '/assets/icons/services-grid/icon-university.svg',
     iconAlt: '',
     badge: 'icon',
-    phones: phonesShort(true),
+    phones: phonesWideRow(),
   },
 ];
 

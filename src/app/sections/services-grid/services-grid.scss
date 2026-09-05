@@ -184,6 +184,21 @@ $banner-border: #e9dff7; /* secondary/100 */
   }
 }
 
+.svc-card__badge-wrap {
+  position: absolute;
+  top: 13px;
+  left: 13px;
+  z-index: 2;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  .svc-card__badge {
+    position: static;
+  }
+}
+
 .svc-card__badge {
   position: absolute;
   top: 13px;
@@ -208,10 +223,11 @@ $banner-border: #e9dff7; /* secondary/100 */
 
 .svc-card__banner {
   position: absolute;
-  top: 12px;
-  left: 13px;
+  top: -1px;
+  left: 0;
   z-index: 1;
   display: flex;
+  direction: ltr;
   align-items: flex-start;
   gap: var(--space-8);
   width: 221px;
@@ -221,6 +237,19 @@ $banner-border: #e9dff7; /* secondary/100 */
   border: 1px solid $banner-border;
   backdrop-filter: blur(40px);
   box-shadow: 0 12px 12px 0 rgba(57, 203, 249, 0.24);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.15s ease,
+    visibility 0.15s ease;
+
+  .svc-card__badge-wrap:hover &,
+  .svc-card__badge-wrap:focus-within & {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
 
   img {
     width: 24px;
@@ -229,6 +258,7 @@ $banner-border: #e9dff7; /* secondary/100 */
   }
 
   p {
+    direction: rtl;
     margin: 0;
     font-size: var(--fs-12);
     font-weight: var(--fw-bold);
@@ -241,7 +271,7 @@ $banner-border: #e9dff7; /* secondary/100 */
   position: absolute;
   z-index: 1;
   bottom: 16px;
-  inset-inline-end: 16px;
+  right: 16px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
