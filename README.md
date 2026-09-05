@@ -1,24 +1,87 @@
 # Ynmo Tifli — Landing Page
 
-Production MVP of the Ynmo Tifli landing page. Arabic-first, RTL-native, Angular
-standalone + SSR. Built per `YNMO-TIFLI-LANDING-BUILD-PLAN.md` — that file is the
-authoritative spec; this README is just the practical "how do I run/extend this" guide.
+**Live preview:** _pending — see PR/Slack for the current Vercel deployment URL once posted_
+
+Production MVP of the Ynmo Tifli landing page. Arabic-first, RTL-native, built in
+Angular 22 (standalone components + SSR, single prerendered route). Built per
+`YNMO-TIFLI-LANDING-BUILD-PLAN.md` — that file is the authoritative spec; this
+README is the practical "how do I run/extend/ship this" guide.
+
+## At a glance
+
+- **Stack**: Angular 22 (standalone + `OnPush`), Angular SSR (`@angular/ssr`), Express
+  server for local SSR serving, RxJS. No component framework beyond Angular — the
+  `react`/`react-dom` deps are only for the dev-only Agentation feedback overlay.
+- **Route**: single page, fully prerendered at build time (`ng build` does SSR +
+  prerender in one step — there's no separate prerender command).
+- **Language/direction**: Arabic, `dir="rtl"`, no i18n routing — one locale.
+- **12 sections (S00–S12)** assembled from Figma node-for-node, each its own
+  standalone component under `src/app/sections/`:
+
+  | # | Section | Component dir |
+  |---|---|---|
+  | S00 | Floating header + nav drawer | `site-header/` |
+  | S01 | Hero | `hero/` |
+  | S02 | Journey | `journey/` |
+  | S03 | Feature scroll sequence (framework-free scroll driver) | `feature-scroll/` |
+  | S04 | Specialists / practitioners | `specialists/` |
+  | S05 | Screening tools | `screening-tools/` |
+  | S06 | Why us | `why-us/` |
+  | S07 | Testimonials | `testimonials/` |
+  | S08 | Blogs | `blogs/` |
+  | S09 | Partners | `partners/` |
+  | S10 | Security banner | `security-banner/` |
+  | S11 | Footer | `site-footer/` |
+  | S12 | WhatsApp FAB (gated off, see B-6) | `whatsapp-fab/` |
+
+## Latest updates
+
+- New brand favicon shipped (`public/favicon.png`, replacing the old `.ico`).
+- Fixed a real site-wide layout bug: `overflow-x:hidden` was only set on `<body>`,
+  which under RTL let the fixed header size itself to the unclipped (167px-wider)
+  layout — now also set on `<html>`.
+- Fixed a systemic RTL `align-items` bug plus S03 rail/icon ordering and layout gaps.
+- Fixed WCAG contrast failures, an S03 WebP perf bug, a real footer watermark bug,
+  and two hidden text-occlusion bugs.
+- Added Agentation — a dev-only visual feedback overlay (`src/app/dev/agentation.dev.ts`),
+  never included in production output.
+- Large round of Figma-fidelity fixes across S03 and the specialists/blogs rails
+  (dot counts now reflect real card counts, rail padding so shadows aren't clipped,
+  practitioner avatar radius corrected).
+
+Run `git log --oneline` for the full history.
+
+## Quick start
 
 Node.js ≥ 22.22.3 (or ≥ 24.15 / ≥ 26) is required for the Angular 22 CLI. If your
 global `node` is older, point `PATH` at a newer install for these commands, e.g.
 `export PATH="/opt/homebrew/opt/node/bin:$PATH"` on an Apple Silicon Homebrew setup.
 
-## Commands
-
 ```bash
 npm install
 
-ng serve              # dev server, http://localhost:4300 (or 4200 default)
-ng build              # production build + prerender → dist/ynmo-tifli-landing
+npm start             # ng serve, http://localhost:4200
+npm run build         # production build + prerender → dist/ynmo-tifli-landing
 ```
 
-The build prerenders the single route (SSR + static prerender) per the plan's §1
-rendering strategy. There is no separate "prerender" command — `ng build` does both.
+`npm run build` output:
+- `dist/ynmo-tifli-landing/browser/` — the fully prerendered static site (this is
+  what's deployed to Vercel — see below).
+- `dist/ynmo-tifli-landing/server/` — Node/Express SSR server bundle, only needed if
+  running `npm run serve:ssr:ynmo-tifli-landing` for on-demand SSR instead of the
+  static prerendered output.
+
+## Deployment (Vercel)
+
+This is a single fully-prerendered route, so it ships to Vercel as a static site —
+no serverless/Node function needed. `vercel.json` at the repo root pins the build
+command and output directory (`dist/ynmo-tifli-landing/browser`) so Vercel's
+Angular framework preset doesn't have to guess.
+
+```bash
+vercel          # preview deployment
+vercel --prod   # production deployment
+```
 
 ## Where things live
 
@@ -31,7 +94,7 @@ rendering strategy. There is no separate "prerender" command — `ng build` does
   live in any `.html` template — even aria-labels and alt text are bound from these
   files.
 - **Sections**: `src/app/sections/<name>/` — one standalone, `OnPush` component per
-  plan §7 section (S00–S12).
+  plan §7 section (S00–S12), listed above.
 - **S03 core logic**: `src/app/core/scroll-driver.ts` — the framework-free scroll
   driver (§8.6 of the plan). It's plain TypeScript with no Angular imports, so it's
   unit-testable on its own.
