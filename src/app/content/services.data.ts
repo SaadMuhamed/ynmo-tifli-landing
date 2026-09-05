@@ -18,6 +18,8 @@ export interface ServiceCard {
   iconAlt: string;
   /** shown in the description tooltip that reveals on badge hover/focus */
   bannerText: string;
+  /** 'blue' recolors the title to the new brand blue (secondary-pressed); default stays purple */
+  titleAccent?: 'blue';
   phones: ServicePhone[];
 }
 
@@ -249,6 +251,7 @@ export const SERVICES: ServiceCard[] = [
     icon: '/assets/icons/services-grid/icon-ear.svg',
     iconAlt: '',
     bannerText: 'لتقييم قدرة طفلك على السمع مبكراً واكتشاف أي تأخر يؤثر على النطق والتواصل.',
+    titleAccent: 'blue',
     phones: phonesHearingTest(),
   },
   {
@@ -257,6 +260,7 @@ export const SERVICES: ServiceCard[] = [
     icon: '/assets/icons/services-grid/icon-live-streaming.svg',
     iconAlt: '',
     bannerText: 'للتواصل مباشرة مع أخصائي مؤهل من أي مكان، والحصول على التوجيه المناسب لحالة طفلك.',
+    titleAccent: 'blue',
     phones: phonesRemoteSpecialist(),
   },
   {
@@ -281,6 +285,7 @@ export const SERVICES: ServiceCard[] = [
     icon: '/assets/icons/services-grid/icon-doctor.svg',
     iconAlt: '',
     bannerText: 'لحجز استشارة طبية مع أفضل الأطباء، حضورياً أو عن بُعد، بما يناسبك.',
+    titleAccent: 'blue',
     phones: phonesDoctorConsultation(),
   },
   {
@@ -289,6 +294,7 @@ export const SERVICES: ServiceCard[] = [
     icon: '/assets/icons/services-grid/icon-user-star.svg',
     iconAlt: '',
     bannerText: 'لتوفير مرافق تعليمي متخصص يدعم طفلك داخل الصف ويعزز اندماجه.',
+    titleAccent: 'blue',
     phones: phonesShadowTeacher(),
   },
   {
@@ -297,6 +303,7 @@ export const SERVICES: ServiceCard[] = [
     icon: '/assets/icons/services-grid/icon-rocking-horse.svg',
     iconAlt: '',
     bannerText: 'لمساعدتك على اختيار الحضانة الأنسب لاحتياجات طفلك من بين خيارات موثوقة.',
+    titleAccent: 'blue',
     phones: phonesWideRow(),
   },
   {
@@ -305,6 +312,7 @@ export const SERVICES: ServiceCard[] = [
     icon: '/assets/icons/services-grid/icon-university.svg',
     iconAlt: '',
     bannerText: 'للتعرف على مراكز الرعاية النهارية المعتمدة القريبة منك ومقارنة خدماتها.',
+    titleAccent: 'blue',
     phones: phonesWideRow(),
   },
 ];

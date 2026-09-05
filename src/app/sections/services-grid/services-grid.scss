@@ -205,7 +205,7 @@ $banner-text-blue: #0082ad; /* Brand & interaction/secondary-pressed, blue (Figm
 .svc-card__badge-wrap {
   position: absolute;
   top: 13px;
-  right: 13px;
+  left: 13px;
   z-index: 2;
 
   &:focus-visible {
@@ -215,12 +215,17 @@ $banner-text-blue: #0082ad; /* Brand & interaction/secondary-pressed, blue (Figm
   .svc-card__badge {
     position: static;
   }
+
+  &--bottom {
+    top: auto;
+    bottom: 13px;
+  }
 }
 
 .svc-card__badge {
   position: absolute;
   top: 13px;
-  right: 13px;
+  left: 13px;
   z-index: 1;
   display: flex;
   align-items: center;
@@ -288,16 +293,16 @@ $banner-text-blue: #0082ad; /* Brand & interaction/secondary-pressed, blue (Figm
 .svc-card__head {
   position: absolute;
   z-index: 1;
-  bottom: 16px;
+  top: 16px;
   right: 16px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: var(--space-12);
 
-  &--top {
-    bottom: auto;
-    top: 16px;
+  &--bottom {
+    top: auto;
+    bottom: 16px;
   }
 }
 
@@ -309,6 +314,10 @@ $banner-text-blue: #0082ad; /* Brand & interaction/secondary-pressed, blue (Figm
   color: $title-purple;
   text-align: right;
   max-width: 210px;
+
+  &--blue {
+    color: $banner-text-blue;
+  }
 }
 
 .svc-card__icon {
@@ -334,24 +343,13 @@ $banner-text-blue: #0082ad; /* Brand & interaction/secondary-pressed, blue (Figm
   width: 160px;
   height: 166px;
   pointer-events: none;
-
-  img {
-    position: absolute;
-  }
 }
 
-.svc-card__hub-glyph {
-  &--a {
-    inset: 0;
-    width: 100%;
-    height: 100%;
-  }
-  &--b {
-    top: 27%;
-    left: 27%;
-    width: 46%;
-    height: 46%;
-  }
+.svc-card__hub-logo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 @include below-1024 {

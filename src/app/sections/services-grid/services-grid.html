@@ -69,7 +69,7 @@
               <p>{{ comprehensiveDiagnosis.bannerText }}</p>
             </div>
           </div>
-          <div class="svc-card__head svc-card__head--top">
+          <div class="svc-card__head">
             <span class="svc-card__icon"
               ><img [src]="comprehensiveDiagnosis.icon" alt="" aria-hidden="true"
             /></span>
@@ -79,13 +79,8 @@
 
         <div class="svc-card__hub-icon" aria-hidden="true">
           <img
-            class="svc-card__hub-glyph svc-card__hub-glyph--a"
-            src="/assets/icons/services-grid/hub-group.svg"
-            alt=""
-          />
-          <img
-            class="svc-card__hub-glyph svc-card__hub-glyph--b"
-            src="/assets/icons/services-grid/hub-group1.svg"
+            class="svc-card__hub-logo"
+            src="/assets/icons/services-grid/hub-logo.png"
             alt=""
           />
         </div>
@@ -103,7 +98,7 @@
               [ngTemplateOutletContext]="{ $implicit: therapyPrograms.phones }"
             />
           </div>
-          <div class="svc-card__badge-wrap" tabindex="0">
+          <div class="svc-card__badge-wrap svc-card__badge-wrap--bottom" tabindex="0">
             <span class="svc-card__badge" aria-hidden="true">
               <img src="/assets/icons/services-grid/icon-info-diamond.svg" alt="" />
             </span>
@@ -116,7 +111,7 @@
               <p>{{ therapyPrograms.bannerText }}</p>
             </div>
           </div>
-          <div class="svc-card__head">
+          <div class="svc-card__head svc-card__head--bottom">
             <span class="svc-card__icon"
               ><img [src]="therapyPrograms.icon" alt="" aria-hidden="true"
             /></span>
@@ -197,7 +192,9 @@
 
     <div class="svc-card__head">
       <span class="svc-card__icon"><img [src]="card.icon" alt="" aria-hidden="true" /></span>
-      <p class="svc-card__title">{{ card.title }}</p>
+      <p class="svc-card__title" [class.svc-card__title--blue]="card.titleAccent === 'blue'">
+        {{ card.title }}
+      </p>
     </div>
   </article>
 </ng-template>
