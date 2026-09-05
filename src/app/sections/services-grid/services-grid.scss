@@ -108,7 +108,35 @@ $banner-border: #e9dff7; /* secondary/100 */
 
   &--hub {
     height: 413px;
+    flex-direction: column;
+    gap: 13px;
+    background: none;
+    border: none;
+    backdrop-filter: none;
+    padding: 0;
+    overflow: visible;
   }
+}
+
+.hub-panel {
+  position: relative;
+  height: 200px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.hub-panel__bg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hub-panel--top .hub-panel__bg {
+  transform: scaleY(-1);
 }
 
 .svc-card__mockup {
@@ -262,12 +290,6 @@ $banner-border: #e9dff7; /* secondary/100 */
   img {
     position: absolute;
   }
-}
-
-.svc-card__hub-ring {
-  inset: 0;
-  width: 100%;
-  height: 100%;
 }
 
 .svc-card__hub-glyph {

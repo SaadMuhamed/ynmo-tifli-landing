@@ -88,6 +88,30 @@ const phonesShort = (mirror = false): ServicePhone[] => {
   ];
 };
 
+/** Two flanking phones per hub panel (node 1110:24728), one left one right of the notch. */
+const phonesHub = (): ServicePhone[] => [
+  {
+    x: -169,
+    y: 0,
+    rotate: 0,
+    width: 106,
+    height: 220,
+    screen: SCREEN,
+    screenWebp: SCREEN_WEBP,
+    z: 1,
+  },
+  {
+    x: 169,
+    y: 0,
+    rotate: 0,
+    width: 106,
+    height: 220,
+    screen: SCREEN,
+    screenWebp: SCREEN_WEBP,
+    z: 1,
+  },
+];
+
 export const SERVICES: ServiceCard[] = [
   {
     id: 'growth-assessment',
@@ -120,7 +144,7 @@ export const SERVICES: ServiceCard[] = [
     icon: '/assets/icons/services-grid/icon-task.svg',
     iconAlt: '',
     badge: 'icon',
-    phones: phonesShort(),
+    phones: phonesHub(),
   },
   {
     id: 'therapy-programs',
@@ -128,7 +152,7 @@ export const SERVICES: ServiceCard[] = [
     icon: '/assets/icons/services-grid/icon-healthcare.svg',
     iconAlt: '',
     badge: 'icon',
-    phones: phonesShort(true),
+    phones: phonesHub(),
   },
   {
     id: 'doctor-consultation',

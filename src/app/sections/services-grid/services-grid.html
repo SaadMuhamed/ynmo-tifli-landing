@@ -38,48 +38,35 @@
         [ngTemplateOutletContext]="{ $implicit: hearingTest, size: 'short' }"
       />
 
+      <!-- node 1110:24728 — two notched panels (each a Figma "Subtract" shape,
+           its translucent fill/blur baked into the asset) meeting around the
+           shared hub icon. -->
       <article class="svc-card svc-card--hub">
-        <div class="svc-card__mockup">
-          @for (phone of comprehensiveDiagnosis.phones; track $index) {
-            <div
-              class="phone"
-              [style.width.px]="phone.width"
-              [style.height.px]="phone.height"
-              [style.--x.px]="phone.x"
-              [style.--y.px]="phone.y - 60"
-              [style.--r.deg]="phone.rotate"
-              [style.z-index]="phone.z"
-            >
-              <picture>
-                <source [srcset]="phone.screenWebp" type="image/webp" />
-                <img [src]="phone.screen" alt="" loading="lazy" decoding="async" />
-              </picture>
-            </div>
-          }
-          @for (phone of therapyPrograms.phones; track $index) {
-            <div
-              class="phone"
-              [style.width.px]="phone.width"
-              [style.height.px]="phone.height"
-              [style.--x.px]="phone.x"
-              [style.--y.px]="phone.y + 60"
-              [style.--r.deg]="phone.rotate"
-              [style.z-index]="phone.z"
-            >
-              <picture>
-                <source [srcset]="phone.screenWebp" type="image/webp" />
-                <img [src]="phone.screen" alt="" loading="lazy" decoding="async" />
-              </picture>
-            </div>
-          }
+        <div class="hub-panel hub-panel--top">
+          <img
+            class="hub-panel__bg"
+            src="/assets/icons/services-grid/hub-subtract.svg"
+            alt=""
+            aria-hidden="true"
+          />
+          <div class="svc-card__mockup">
+            <ng-container
+              [ngTemplateOutlet]="phonesTpl"
+              [ngTemplateOutletContext]="{ $implicit: comprehensiveDiagnosis.phones }"
+            />
+          </div>
+          <span class="svc-card__badge" aria-hidden="true">
+            <img src="/assets/icons/services-grid/icon-info-diamond.svg" alt="" />
+          </span>
+          <div class="svc-card__head svc-card__head--top">
+            <span class="svc-card__icon"
+              ><img [src]="comprehensiveDiagnosis.icon" alt="" aria-hidden="true"
+            /></span>
+            <p class="svc-card__title">{{ comprehensiveDiagnosis.title }}</p>
+          </div>
         </div>
 
         <div class="svc-card__hub-icon" aria-hidden="true">
-          <img
-            class="svc-card__hub-ring"
-            src="/assets/icons/services-grid/hub-ellipse.svg"
-            alt=""
-          />
           <img
             class="svc-card__hub-glyph svc-card__hub-glyph--a"
             src="/assets/icons/services-grid/hub-group.svg"
@@ -92,17 +79,25 @@
           />
         </div>
 
-        <div class="svc-card__head svc-card__head--top">
-          <p class="svc-card__title">{{ comprehensiveDiagnosis.title }}</p>
-          <span class="svc-card__icon"
-            ><img [src]="comprehensiveDiagnosis.icon" alt="" aria-hidden="true"
-          /></span>
-        </div>
-        <div class="svc-card__head svc-card__head--bottom">
-          <p class="svc-card__title">{{ therapyPrograms.title }}</p>
-          <span class="svc-card__icon"
-            ><img [src]="therapyPrograms.icon" alt="" aria-hidden="true"
-          /></span>
+        <div class="hub-panel hub-panel--bottom">
+          <img
+            class="hub-panel__bg"
+            src="/assets/icons/services-grid/hub-subtract.svg"
+            alt=""
+            aria-hidden="true"
+          />
+          <div class="svc-card__mockup">
+            <ng-container
+              [ngTemplateOutlet]="phonesTpl"
+              [ngTemplateOutletContext]="{ $implicit: therapyPrograms.phones }"
+            />
+          </div>
+          <div class="svc-card__head">
+            <span class="svc-card__icon"
+              ><img [src]="therapyPrograms.icon" alt="" aria-hidden="true"
+            /></span>
+            <p class="svc-card__title">{{ therapyPrograms.title }}</p>
+          </div>
         </div>
       </article>
     </div>
@@ -131,25 +126,32 @@
   </div>
 </section>
 
+<ng-template #phonesTpl let-phones>
+  @for (phone of phones; track $index) {
+    <div
+      class="phone"
+      [style.width.px]="phone.width"
+      [style.height.px]="phone.height"
+      [style.--x.px]="phone.x"
+      [style.--y.px]="phone.y"
+      [style.--r.deg]="phone.rotate"
+      [style.z-index]="phone.z"
+    >
+      <picture>
+        <source [srcset]="phone.screenWebp" type="image/webp" />
+        <img [src]="phone.screen" alt="" loading="lazy" decoding="async" />
+      </picture>
+    </div>
+  }
+</ng-template>
+
 <ng-template #cardTpl let-card let-size="size">
   <article class="svc-card" [class.svc-card--tall]="size === 'tall'">
     <div class="svc-card__mockup">
-      @for (phone of card.phones; track $index) {
-        <div
-          class="phone"
-          [style.width.px]="phone.width"
-          [style.height.px]="phone.height"
-          [style.--x.px]="phone.x"
-          [style.--y.px]="phone.y"
-          [style.--r.deg]="phone.rotate"
-          [style.z-index]="phone.z"
-        >
-          <picture>
-            <source [srcset]="phone.screenWebp" type="image/webp" />
-            <img [src]="phone.screen" alt="" loading="lazy" decoding="async" />
-          </picture>
-        </div>
-      }
+      <ng-container
+        [ngTemplateOutlet]="phonesTpl"
+        [ngTemplateOutletContext]="{ $implicit: card.phones }"
+      />
     </div>
 
     @if (card.badge === 'banner') {
