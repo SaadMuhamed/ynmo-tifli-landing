@@ -20,6 +20,7 @@
     </h2>
   </div>
 
+  <div class="services__stack">
   <div class="services__board">
     <div class="services__col">
       <ng-container
@@ -55,9 +56,19 @@
               [ngTemplateOutletContext]="{ $implicit: comprehensiveDiagnosis.phones }"
             />
           </div>
-          <span class="svc-card__badge" aria-hidden="true">
-            <img src="/assets/icons/services-grid/icon-info-diamond.svg" alt="" />
-          </span>
+          <div class="svc-card__badge-wrap" tabindex="0">
+            <span class="svc-card__badge" aria-hidden="true">
+              <img src="/assets/icons/services-grid/icon-info-diamond.svg" alt="" />
+            </span>
+            <div class="svc-card__banner">
+              <img
+                src="/assets/icons/services-grid/icon-info-diamond-banner.svg"
+                alt=""
+                aria-hidden="true"
+              />
+              <p>{{ comprehensiveDiagnosis.bannerText }}</p>
+            </div>
+          </div>
           <div class="svc-card__head svc-card__head--top">
             <span class="svc-card__icon"
               ><img [src]="comprehensiveDiagnosis.icon" alt="" aria-hidden="true"
@@ -92,6 +103,19 @@
               [ngTemplateOutletContext]="{ $implicit: therapyPrograms.phones }"
             />
           </div>
+          <div class="svc-card__badge-wrap" tabindex="0">
+            <span class="svc-card__badge" aria-hidden="true">
+              <img src="/assets/icons/services-grid/icon-info-diamond.svg" alt="" />
+            </span>
+            <div class="svc-card__banner">
+              <img
+                src="/assets/icons/services-grid/icon-info-diamond-banner.svg"
+                alt=""
+                aria-hidden="true"
+              />
+              <p>{{ therapyPrograms.bannerText }}</p>
+            </div>
+          </div>
           <div class="svc-card__head">
             <span class="svc-card__icon"
               ><img [src]="therapyPrograms.icon" alt="" aria-hidden="true"
@@ -124,6 +148,7 @@
       [ngTemplateOutletContext]="{ $implicit: daycareCenters, size: 'short' }"
     />
   </div>
+  </div>
 </section>
 
 <ng-template #phonesTpl let-phones>
@@ -154,27 +179,21 @@
       />
     </div>
 
-    @if (card.badge === 'banner') {
-      <!-- node 1154:6227 (default) / 1154:6235 (hover) — plain badge at rest,
-           full description tooltip on hover, dismissed on pointer leave. -->
-      <div class="svc-card__badge-wrap" tabindex="0">
-        <span class="svc-card__badge" aria-hidden="true">
-          <img src="/assets/icons/services-grid/icon-info-diamond.svg" alt="" />
-        </span>
-        <div class="svc-card__banner">
-          <img
-            src="/assets/icons/services-grid/icon-info-diamond-banner.svg"
-            alt=""
-            aria-hidden="true"
-          />
-          <p>{{ card.bannerText }}</p>
-        </div>
-      </div>
-    } @else {
+    <!-- node 1154:6227 (default) / 1154:6235 (hover) — plain badge at rest,
+         full description tooltip on hover, dismissed on pointer leave. -->
+    <div class="svc-card__badge-wrap" tabindex="0">
       <span class="svc-card__badge" aria-hidden="true">
         <img src="/assets/icons/services-grid/icon-info-diamond.svg" alt="" />
       </span>
-    }
+      <div class="svc-card__banner">
+        <img
+          src="/assets/icons/services-grid/icon-info-diamond-banner.svg"
+          alt=""
+          aria-hidden="true"
+        />
+        <p>{{ card.bannerText }}</p>
+      </div>
+    </div>
 
     <div class="svc-card__head">
       <span class="svc-card__icon"><img [src]="card.icon" alt="" aria-hidden="true" /></span>

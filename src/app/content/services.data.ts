@@ -16,9 +16,8 @@ export interface ServiceCard {
   title: string;
   icon: string;
   iconAlt: string;
-  /** 'banner' shows a description strip instead of the small circular badge (card 1 only) */
-  badge: 'icon' | 'banner';
-  bannerText?: string;
+  /** shown in the description tooltip that reveals on badge hover/focus */
+  bannerText: string;
   phones: ServicePhone[];
 }
 
@@ -241,7 +240,6 @@ export const SERVICES: ServiceCard[] = [
     title: 'تقييم مراحل النمو',
     icon: '/assets/icons/services-grid/icon-analytics-up.svg',
     iconAlt: '',
-    badge: 'banner',
     bannerText: 'للتعرف على مراحل نمو طفلك والاطمئنان على تطوره النمائي خطوة بخطوة.',
     phones: phonesGrowthAssessment(),
   },
@@ -250,7 +248,7 @@ export const SERVICES: ServiceCard[] = [
     title: 'فحص السمع',
     icon: '/assets/icons/services-grid/icon-ear.svg',
     iconAlt: '',
-    badge: 'icon',
+    bannerText: 'لتقييم قدرة طفلك على السمع مبكراً واكتشاف أي تأخر يؤثر على النطق والتواصل.',
     phones: phonesHearingTest(),
   },
   {
@@ -258,7 +256,7 @@ export const SERVICES: ServiceCard[] = [
     title: 'جلسة استشارية مع أخصائي (عن بُعد)',
     icon: '/assets/icons/services-grid/icon-live-streaming.svg',
     iconAlt: '',
-    badge: 'icon',
+    bannerText: 'للتواصل مباشرة مع أخصائي مؤهل من أي مكان، والحصول على التوجيه المناسب لحالة طفلك.',
     phones: phonesRemoteSpecialist(),
   },
   {
@@ -266,7 +264,7 @@ export const SERVICES: ServiceCard[] = [
     title: 'خدمة التشخيص الشامل',
     icon: '/assets/icons/services-grid/icon-task.svg',
     iconAlt: '',
-    badge: 'icon',
+    bannerText: 'لتحديد احتياجات طفلك بدقة من خلال تقييم شامل يجمع بين عدة تخصصات.',
     phones: phonesHub(),
   },
   {
@@ -274,7 +272,7 @@ export const SERVICES: ServiceCard[] = [
     title: 'البرامج العلاجية',
     icon: '/assets/icons/services-grid/icon-healthcare.svg',
     iconAlt: '',
-    badge: 'icon',
+    bannerText: 'لوضع خطة علاجية مخصصة تناسب احتياجات طفلك وتدعم تطوره خطوة بخطوة.',
     phones: phonesHub(),
   },
   {
@@ -282,7 +280,7 @@ export const SERVICES: ServiceCard[] = [
     title: 'استشارة طبيب (حضوري / عن بُعد)',
     icon: '/assets/icons/services-grid/icon-doctor.svg',
     iconAlt: '',
-    badge: 'icon',
+    bannerText: 'لحجز استشارة طبية مع أفضل الأطباء، حضورياً أو عن بُعد، بما يناسبك.',
     phones: phonesDoctorConsultation(),
   },
   {
@@ -290,7 +288,7 @@ export const SERVICES: ServiceCard[] = [
     title: 'خدمة معلم الظل',
     icon: '/assets/icons/services-grid/icon-user-star.svg',
     iconAlt: '',
-    badge: 'icon',
+    bannerText: 'لتوفير مرافق تعليمي متخصص يدعم طفلك داخل الصف ويعزز اندماجه.',
     phones: phonesShadowTeacher(),
   },
   {
@@ -298,7 +296,7 @@ export const SERVICES: ServiceCard[] = [
     title: 'اختيار الحضانة الأنسب',
     icon: '/assets/icons/services-grid/icon-rocking-horse.svg',
     iconAlt: '',
-    badge: 'icon',
+    bannerText: 'لمساعدتك على اختيار الحضانة الأنسب لاحتياجات طفلك من بين خيارات موثوقة.',
     phones: phonesWideRow(),
   },
   {
@@ -306,7 +304,7 @@ export const SERVICES: ServiceCard[] = [
     title: 'مراكز الرعاية النهارية',
     icon: '/assets/icons/services-grid/icon-university.svg',
     iconAlt: '',
-    badge: 'icon',
+    bannerText: 'للتعرف على مراكز الرعاية النهارية المعتمدة القريبة منك ومقارنة خدماتها.',
     phones: phonesWideRow(),
   },
 ];

@@ -3,8 +3,9 @@
 /* Two one-off hex values from the new Figma file (node 1110:23531) with no
    Ynmotomic token yet — same convention as _tokens.scss's other one-offs. */
 $title-purple: #4e2f7d; /* Brand & interaction / secondary-pressed */
-$banner-bg: #f4f0fb; /* secondary/50 */
-$banner-border: #e9dff7; /* secondary/100 */
+$banner-bg: #ebfbff; /* secondary/50 (Figma node 1154:6235) */
+$banner-border: #d1f5fe; /* secondary/100 (Figma node 1154:6235) */
+$banner-text-blue: #0082ad; /* Brand & interaction/secondary-pressed, blue (Figma node 1154:6235) */
 
 .services {
   position: relative;
@@ -14,6 +15,14 @@ $banner-border: #e9dff7; /* secondary/100 */
   align-items: center;
   gap: var(--space-72);
   background: var(--surface-page);
+}
+
+.services__stack {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 13px;
 }
 
 .services__headline {
@@ -42,17 +51,26 @@ $banner-border: #e9dff7; /* secondary/100 */
 
 .services__doodle {
   position: absolute;
-  top: -4px;
   z-index: 0;
   pointer-events: none;
+  display: block;
 
+  /* Figma node 1110:23533/1110:23536 (Ynmo Website New Design) — exact
+     centers of each rotated squiggle group, converted from the 1440px
+     frame to this 696px headline box. */
   &--a {
-    inset-inline-start: 0;
-    width: 196px;
+    left: 100px;
+    top: 23px;
+    width: 238px;
+    height: 157px;
+    transform: rotate(-2.14deg);
   }
   &--b {
-    inset-inline-end: 0;
-    width: 195px;
+    left: 415px;
+    top: 23px;
+    width: 190px;
+    height: 157px;
+    transform: rotate(-2.14deg);
   }
 }
 
@@ -144,8 +162,8 @@ $banner-border: #e9dff7; /* secondary/100 */
   inset: 0;
   overflow: hidden;
   border-radius: inherit;
-  mask-image: linear-gradient(to top, transparent 0%, black 45%);
-  -webkit-mask-image: linear-gradient(to top, transparent 0%, black 45%);
+  mask-image: linear-gradient(to bottom, transparent 0%, black 65%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 65%);
 }
 
 .phone {
@@ -187,7 +205,7 @@ $banner-border: #e9dff7; /* secondary/100 */
 .svc-card__badge-wrap {
   position: absolute;
   top: 13px;
-  left: 13px;
+  right: 13px;
   z-index: 2;
 
   &:focus-visible {
@@ -202,7 +220,7 @@ $banner-border: #e9dff7; /* secondary/100 */
 .svc-card__badge {
   position: absolute;
   top: 13px;
-  left: 13px;
+  right: 13px;
   z-index: 1;
   display: flex;
   align-items: center;
@@ -263,7 +281,7 @@ $banner-border: #e9dff7; /* secondary/100 */
     font-size: var(--fs-12);
     font-weight: var(--fw-bold);
     line-height: 1.4;
-    color: $title-purple;
+    color: $banner-text-blue;
   }
 }
 
@@ -289,7 +307,7 @@ $banner-border: #e9dff7; /* secondary/100 */
   font-weight: var(--fw-bold);
   line-height: 1.3;
   color: $title-purple;
-  text-align: end;
+  text-align: right;
   max-width: 210px;
 }
 
