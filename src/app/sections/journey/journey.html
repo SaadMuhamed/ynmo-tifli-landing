@@ -33,7 +33,7 @@
     @for (promo of journey.promos; track promo.headingBrand; let last = $last) {
       <div class="app-promo">
         <div class="app-promo__row">
-          <div class="app-promo__icon">
+          <div class="app-promo__icon app-promo__icon--{{ promo.accent }}">
             @if (promo.isYnmoLogo) {
               <span class="app-promo__logo" aria-hidden="true">
                 <img src="/assets/icons/site-header/avatar-ring.svg" alt="" />
