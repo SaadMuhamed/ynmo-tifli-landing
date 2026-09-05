@@ -159,35 +159,19 @@
   margin-inline: auto;
   padding-inline: var(--gutter);
 
-  /* Figma: .hero__card's white continues down into the band, ending
-     between the two stacked stat rows — since .hero__stats is vertically
-     centered against the (taller) illustration, that seam sits exactly at
-     the band's own midpoint. Full-bleed via the 100vw trick since the band
-     itself is inset by the container/gutter, unlike .hero__card above it. */
-  &::before {
-    content: '';
-    position: absolute;
-    inset-block-start: 0;
-    inset-inline-start: 50%;
-    width: 100vw;
-    transform: translateX(-50%);
-    height: 50%;
-    background: var(--surface-2);
-    border-end-start-radius: 40px;
-    border-end-end-radius: 180px;
-    pointer-events: none;
-  }
-
   @include below-1024 {
     flex-wrap: wrap;
-
-    &::before {
-      content: none;
-    }
   }
 }
 
 .hero__stats {
+  position: relative;
+  /* z-index (not just position) so this stack above .hero__illustration's
+     ::before regardless of DOM order — the --start column comes before
+     illustration in markup, and an absolutely-positioned sibling always
+     paints above a static one, so without this the --start column would
+     end up hidden under the full-bleed white patch. */
+  z-index: 1;
   display: flex;
   flex-direction: column;
   gap: var(--space-72);
@@ -256,9 +240,45 @@
      flattened composite (photos, arch, doodles, stickers already baked in)
      fills the box with no letterboxing. */
   aspect-ratio: 1530 / 1255;
+
+  /* Figma node 1110:22371 — the white card is 846px tall, the illustration
+     starts at y=503, so the card overlaps 343px into the illustration's
+     601px height (343/601 = 57.07%), landing right between the two stat
+     rows. Full-bleed via the 100vw trick since both this and the band are
+     inset by the container/gutter, unlike .hero__card above them.
+     NOTE: not using `container-type: size` here to derive this height —
+     size containment forces `overflow: clip` on the container, which
+     would clip this child's `width: 100vw` right back down to the
+     illustration's own ~754px box, defeating the full-bleed entirely. */
+  &::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 50%;
+    width: 100vw;
+    transform: translateX(-50%);
+    height: 57.07%;
+    background: var(--surface-2);
+    border-end-start-radius: 40px;
+    border-end-end-radius: 180px;
+    pointer-events: none;
+  }
+
+  @include below-1024 {
+    &::before {
+      content: none;
+    }
+  }
 }
 
 .hero__visual {
+  /* position + z-index so the photo paints above .hero__illustration's
+     ::before (an absolutely-positioned decorative background patch always
+     paints above static in-flow siblings, regardless of DOM order — so
+     without this, the white patch would cover the photo instead of
+     sitting behind it). */
+  position: relative;
+  z-index: 1;
   display: block;
   width: 100%;
   height: 100%;

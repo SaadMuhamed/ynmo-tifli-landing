@@ -276,6 +276,38 @@ export const SPECIALISTS: SpecialistsContent = {
       avatar: '/assets/img/specialists/avatar-1.png',
       avatarWebp: '/assets/img/specialists/avatar-1.webp',
     },
+    {
+      name: 'أ. نورة السبيعي',
+      specialty: 'أخصائية علاج طبيعي للأطفال',
+      credential: 'اعتماد في إعادة التأهيل الحركي المبكر',
+      experience: '6 سنوات خبرة',
+      avatar: '/assets/img/specialists/avatar-2.png',
+      avatarWebp: '/assets/img/specialists/avatar-2.webp',
+    },
+    {
+      name: 'د. خالد المطيري',
+      specialty: 'استشاري طب نفسي للأطفال',
+      credential: 'زمالة الطب النفسي · عضو الجمعية السعودية لطب الأطفال',
+      experience: '12 سنة خبرة',
+      avatar: '/assets/img/specialists/avatar-3.png',
+      avatarWebp: '/assets/img/specialists/avatar-3.webp',
+    },
+    {
+      name: 'أ. ريم القرني',
+      specialty: 'أخصائية تكامل حسي',
+      credential: 'اعتماد دولي في التكامل الحسي للأطفال',
+      experience: '5 سنوات خبرة',
+      avatar: '/assets/img/specialists/avatar-4.png',
+      avatarWebp: '/assets/img/specialists/avatar-4.webp',
+    },
+    {
+      name: 'د. عمر الشهري',
+      specialty: 'استشاري تخاطب ونطق',
+      credential: 'زمالة اضطرابات التواصل · ترخيص مهني ساري',
+      experience: '11 سنة خبرة',
+      avatar: '/assets/img/specialists/avatar-1.png',
+      avatarWebp: '/assets/img/specialists/avatar-1.webp',
+    },
   ],
 };
 
