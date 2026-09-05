@@ -1,0 +1,175 @@
+<!-- S03 · replaces the old scroll-jacked feature flip with the static services
+     bento grid from Figma node 1110:23531 (Ynmo Website New Design). -->
+<section class="services" aria-labelledby="services-heading">
+  <div class="services__headline">
+    <img
+      class="services__doodle services__doodle--a"
+      src="/assets/icons/services-grid/doodle-top-2.svg"
+      aria-hidden="true"
+      alt=""
+    />
+    <img
+      class="services__doodle services__doodle--b"
+      src="/assets/icons/services-grid/doodle-top-1.svg"
+      aria-hidden="true"
+      alt=""
+    />
+    <h2 id="services-heading">
+      {{ headline.before }}<span class="hl">{{ headline.highlight1 }}</span
+      >{{ headline.middle }}<span class="hl">{{ headline.highlight2 }}</span>
+    </h2>
+  </div>
+
+  <div class="services__board">
+    <div class="services__col">
+      <ng-container
+        [ngTemplateOutlet]="cardTpl"
+        [ngTemplateOutletContext]="{ $implicit: growthAssessment, size: 'tall' }"
+      />
+      <ng-container
+        [ngTemplateOutlet]="cardTpl"
+        [ngTemplateOutletContext]="{ $implicit: shadowTeacher, size: 'short' }"
+      />
+    </div>
+
+    <div class="services__col services__col--center">
+      <ng-container
+        [ngTemplateOutlet]="cardTpl"
+        [ngTemplateOutletContext]="{ $implicit: hearingTest, size: 'short' }"
+      />
+
+      <article class="svc-card svc-card--hub">
+        <div class="svc-card__mockup">
+          @for (phone of comprehensiveDiagnosis.phones; track $index) {
+            <div
+              class="phone"
+              [style.width.px]="phone.width"
+              [style.height.px]="phone.height"
+              [style.--x.px]="phone.x"
+              [style.--y.px]="phone.y - 60"
+              [style.--r.deg]="phone.rotate"
+              [style.z-index]="phone.z"
+            >
+              <picture>
+                <source [srcset]="phone.screenWebp" type="image/webp" />
+                <img [src]="phone.screen" alt="" loading="lazy" decoding="async" />
+              </picture>
+            </div>
+          }
+          @for (phone of therapyPrograms.phones; track $index) {
+            <div
+              class="phone"
+              [style.width.px]="phone.width"
+              [style.height.px]="phone.height"
+              [style.--x.px]="phone.x"
+              [style.--y.px]="phone.y + 60"
+              [style.--r.deg]="phone.rotate"
+              [style.z-index]="phone.z"
+            >
+              <picture>
+                <source [srcset]="phone.screenWebp" type="image/webp" />
+                <img [src]="phone.screen" alt="" loading="lazy" decoding="async" />
+              </picture>
+            </div>
+          }
+        </div>
+
+        <div class="svc-card__hub-icon" aria-hidden="true">
+          <img
+            class="svc-card__hub-ring"
+            src="/assets/icons/services-grid/hub-ellipse.svg"
+            alt=""
+          />
+          <img
+            class="svc-card__hub-glyph svc-card__hub-glyph--a"
+            src="/assets/icons/services-grid/hub-group.svg"
+            alt=""
+          />
+          <img
+            class="svc-card__hub-glyph svc-card__hub-glyph--b"
+            src="/assets/icons/services-grid/hub-group1.svg"
+            alt=""
+          />
+        </div>
+
+        <div class="svc-card__head svc-card__head--top">
+          <p class="svc-card__title">{{ comprehensiveDiagnosis.title }}</p>
+          <span class="svc-card__icon"
+            ><img [src]="comprehensiveDiagnosis.icon" alt="" aria-hidden="true"
+          /></span>
+        </div>
+        <div class="svc-card__head svc-card__head--bottom">
+          <p class="svc-card__title">{{ therapyPrograms.title }}</p>
+          <span class="svc-card__icon"
+            ><img [src]="therapyPrograms.icon" alt="" aria-hidden="true"
+          /></span>
+        </div>
+      </article>
+    </div>
+
+    <div class="services__col">
+      <ng-container
+        [ngTemplateOutlet]="cardTpl"
+        [ngTemplateOutletContext]="{ $implicit: remoteSpecialist, size: 'short' }"
+      />
+      <ng-container
+        [ngTemplateOutlet]="cardTpl"
+        [ngTemplateOutletContext]="{ $implicit: doctorConsultation, size: 'tall' }"
+      />
+    </div>
+  </div>
+
+  <div class="services__row-bottom">
+    <ng-container
+      [ngTemplateOutlet]="cardTpl"
+      [ngTemplateOutletContext]="{ $implicit: nurseryPicker, size: 'short' }"
+    />
+    <ng-container
+      [ngTemplateOutlet]="cardTpl"
+      [ngTemplateOutletContext]="{ $implicit: daycareCenters, size: 'short' }"
+    />
+  </div>
+</section>
+
+<ng-template #cardTpl let-card let-size="size">
+  <article class="svc-card" [class.svc-card--tall]="size === 'tall'">
+    <div class="svc-card__mockup">
+      @for (phone of card.phones; track $index) {
+        <div
+          class="phone"
+          [style.width.px]="phone.width"
+          [style.height.px]="phone.height"
+          [style.--x.px]="phone.x"
+          [style.--y.px]="phone.y"
+          [style.--r.deg]="phone.rotate"
+          [style.z-index]="phone.z"
+        >
+          <picture>
+            <source [srcset]="phone.screenWebp" type="image/webp" />
+            <img [src]="phone.screen" alt="" loading="lazy" decoding="async" />
+          </picture>
+        </div>
+      }
+    </div>
+
+    @if (card.badge === 'banner') {
+      <div class="svc-card__banner">
+        <img
+          src="/assets/icons/services-grid/icon-info-diamond-banner.svg"
+          alt=""
+          aria-hidden="true"
+        />
+        <p>{{ card.bannerText }}</p>
+      </div>
+    } @else {
+      <span class="svc-card__badge" aria-hidden="true">
+        <img src="/assets/icons/services-grid/icon-info-diamond.svg" alt="" />
+      </span>
+    }
+
+    <div class="svc-card__head">
+      <p class="svc-card__title">{{ card.title }}</p>
+      <span class="svc-card__icon"><img [src]="card.icon" alt="" aria-hidden="true" /></span>
+    </div>
+  </article>
+</ng-template>

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { SiteHeader } from './sections/site-header/site-header';
 import { Hero } from './sections/hero/hero';
 import { Journey } from './sections/journey/journey';
-import { FeatureScroll } from './sections/feature-scroll/feature-scroll';
+import { ServicesGrid } from './sections/services-grid/services-grid';
 import { Specialists } from './sections/specialists/specialists';
 import { ScreeningTools } from './sections/screening-tools/screening-tools';
 import { WhyUs } from './sections/why-us/why-us';
@@ -19,7 +19,7 @@ import { WhatsappFab } from './sections/whatsapp-fab/whatsapp-fab';
     SiteHeader,
     Hero,
     Journey,
-    FeatureScroll,
+    ServicesGrid,
     Specialists,
     ScreeningTools,
     WhyUs,

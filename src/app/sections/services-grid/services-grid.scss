@@ -1,0 +1,320 @@
+@use '../../../styles/mixins' as *;
+
+/* Two one-off hex values from the new Figma file (node 1110:23531) with no
+   Ynmotomic token yet — same convention as _tokens.scss's other one-offs. */
+$title-purple: #4e2f7d; /* Brand & interaction / secondary-pressed */
+$banner-bg: #f4f0fb; /* secondary/50 */
+$banner-border: #e9dff7; /* secondary/100 */
+
+.services {
+  position: relative;
+  padding: var(--space-72) var(--gutter) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-72);
+  background: var(--surface-page);
+}
+
+.services__headline {
+  position: relative;
+  width: 100%;
+  max-width: 696px;
+  display: flex;
+  justify-content: center;
+
+  h2 {
+    position: relative;
+    z-index: 1;
+    font-size: var(--fs-44);
+    font-weight: var(--fw-bold);
+    line-height: 1.4;
+    text-align: center;
+    color: var(--text-primary);
+    word-break: break-word;
+    margin: 0;
+  }
+}
+
+.hl {
+  color: var(--brand-primary-pressed);
+}
+
+.services__doodle {
+  position: absolute;
+  top: -4px;
+  z-index: 0;
+  pointer-events: none;
+
+  &--a {
+    inset-inline-start: 0;
+    width: 196px;
+  }
+  &--b {
+    inset-inline-end: 0;
+    width: 195px;
+  }
+}
+
+.services__board {
+  width: 100%;
+  max-width: var(--container);
+  display: flex;
+  align-items: stretch;
+  gap: 13px;
+}
+
+.services__col {
+  flex: 1 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  min-width: 0;
+
+  &--center {
+    flex: none;
+    width: 474px;
+  }
+}
+
+.services__row-bottom {
+  width: 100%;
+  max-width: var(--container);
+  display: flex;
+  gap: 13px;
+
+  .svc-card {
+    flex: 1 0 0;
+    height: 200px;
+  }
+}
+
+.svc-card {
+  position: relative;
+  height: 200px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--surface-translucent-white);
+  backdrop-filter: blur(40px);
+  border: 1px solid var(--border-white);
+  padding: var(--space-16);
+  display: flex;
+  flex-direction: column;
+
+  &--tall {
+    height: 413px;
+    flex: 1 0 0;
+  }
+
+  &--hub {
+    height: 413px;
+  }
+}
+
+.svc-card__mockup {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  mask-image: linear-gradient(to top, transparent 0%, black 45%);
+  -webkit-mask-image: linear-gradient(to top, transparent 0%, black 45%);
+}
+
+.phone {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) rotate(var(--r));
+  border-radius: 18px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #fff;
+  box-shadow:
+    0 24px 20px 0 rgba(0, 0, 0, 0.03),
+    0 9px 7px 0 rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 6%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 32%;
+    height: 5%;
+    min-height: 6px;
+    background: #fff;
+    border-radius: 999px;
+    box-shadow: 0 3px 20px 0 rgba(192, 198, 216, 0.3);
+  }
+
+  img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.svc-card__badge {
+  position: absolute;
+  top: 13px;
+  left: 13px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background: var(--surface-translucent-white);
+  backdrop-filter: blur(40px);
+  border: 1px solid var(--border-white);
+  box-shadow: 0 8px 16px 0 rgba(192, 198, 216, 0.15);
+
+  img {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.svc-card__banner {
+  position: absolute;
+  top: 12px;
+  left: 13px;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-8);
+  width: 221px;
+  padding: var(--space-8);
+  border-radius: var(--radius-md);
+  background: $banner-bg;
+  border: 1px solid $banner-border;
+  backdrop-filter: blur(40px);
+  box-shadow: 0 12px 12px 0 rgba(57, 203, 249, 0.24);
+
+  img {
+    width: 24px;
+    height: 24px;
+    flex: none;
+  }
+
+  p {
+    margin: 0;
+    font-size: var(--fs-12);
+    font-weight: var(--fw-bold);
+    line-height: 1.4;
+    color: $title-purple;
+  }
+}
+
+.svc-card__head {
+  position: absolute;
+  z-index: 1;
+  bottom: 16px;
+  inset-inline-end: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-12);
+
+  &--top {
+    bottom: auto;
+    top: 16px;
+  }
+}
+
+.svc-card__title {
+  margin: 0;
+  font-size: var(--fs-24);
+  font-weight: var(--fw-bold);
+  line-height: 1.3;
+  color: $title-purple;
+  text-align: end;
+  max-width: 210px;
+}
+
+.svc-card__icon {
+  flex: none;
+  display: flex;
+  padding: var(--space-8);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  box-shadow: var(--shadow-app-icon);
+
+  img {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.svc-card__hub-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  width: 160px;
+  height: 166px;
+  pointer-events: none;
+
+  img {
+    position: absolute;
+  }
+}
+
+.svc-card__hub-ring {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.svc-card__hub-glyph {
+  &--a {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  &--b {
+    top: 27%;
+    left: 27%;
+    width: 46%;
+    height: 46%;
+  }
+}
+
+@include below-1024 {
+  .services {
+    padding-top: var(--space-48);
+    gap: var(--space-48);
+  }
+
+  .services__board {
+    flex-direction: column;
+  }
+
+  .services__col--center {
+    width: 100%;
+  }
+
+  .services__row-bottom {
+    flex-direction: column;
+  }
+
+  .services__doodle {
+    display: none;
+  }
+}
+
+@include below-768 {
+  .svc-card__title {
+    font-size: var(--fs-18);
+    max-width: 160px;
+  }
+
+  .svc-card--tall,
+  .svc-card--hub {
+    height: 320px;
+  }
+}
