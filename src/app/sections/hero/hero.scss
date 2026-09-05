@@ -159,8 +159,31 @@
   margin-inline: auto;
   padding-inline: var(--gutter);
 
+  /* Figma: .hero__card's white continues down into the band, ending
+     between the two stacked stat rows — since .hero__stats is vertically
+     centered against the (taller) illustration, that seam sits exactly at
+     the band's own midpoint. Full-bleed via the 100vw trick since the band
+     itself is inset by the container/gutter, unlike .hero__card above it. */
+  &::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 50%;
+    width: 100vw;
+    transform: translateX(-50%);
+    height: 50%;
+    background: var(--surface-2);
+    border-end-start-radius: 40px;
+    border-end-end-radius: 180px;
+    pointer-events: none;
+  }
+
   @include below-1024 {
     flex-wrap: wrap;
+
+    &::before {
+      content: none;
+    }
   }
 }
 

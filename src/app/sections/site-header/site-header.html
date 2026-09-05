@@ -1,15 +1,10 @@
 <!-- S00 · Figma node 956:11865 · content confirmed against the live node, not the plan's §7 draft -->
 <div class="bar" [class.bar--scrolled]="scrolled()">
   <a class="logo" href="#" [attr.aria-label]="header.logoAriaLabel">
-    <span class="logo__ring">
-      <img src="/assets/icons/site-header/avatar-ring.svg" alt="" />
-    </span>
-    <span class="logo__mark logo__mark--a">
-      <img src="/assets/icons/site-header/avatar-mark-a.svg" alt="" />
-    </span>
-    <span class="logo__mark logo__mark--b">
-      <img src="/assets/icons/site-header/avatar-mark-b.svg" alt="" />
-    </span>
+    <picture>
+      <source srcset="/assets/icons/site-header/logo.webp" type="image/webp" />
+      <img src="/assets/icons/site-header/logo.png" alt="" />
+    </picture>
   </a>
 
   <nav class="nav" [attr.aria-label]="header.navAriaLabel">

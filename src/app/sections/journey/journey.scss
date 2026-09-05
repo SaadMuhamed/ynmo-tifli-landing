@@ -27,19 +27,13 @@
   }
 }
 
-/* node 956:10782 — a 70x52 cluster of two glow stars; each asset's viewBox
-   already bakes in the drop-shadow's blur padding, so it must render at its
-   native pixel size (not a uniform 40px) or the visible glyph shrinks well
-   below Figma's real scale. Offsets below place each asset so its inner
-   circle (see the asset's own <rect>) lands at the cluster-relative spot
-   Figma specifies: big star at (0,0), small star at (40,22). */
 .journey__sparkles {
   position: absolute;
   inset-block-start: 8px;
   inset-inline-end: 23.7%;
-  width: 70px;
-  height: 52px;
+  width: 90px;
   pointer-events: none;
+  display: block;
 
   @include below-1024 {
     display: none;
@@ -47,21 +41,9 @@
 }
 
 .journey__sparkle {
-  position: absolute;
-
-  &--big {
-    inset-inline-start: -41px;
-    inset-block-start: -5px;
-    width: 122.233px;
-    height: 122.699px;
-  }
-
-  &--small {
-    inset-inline-start: -1px;
-    inset-block-start: 17px;
-    width: 112.699px;
-    height: 112.699px;
-  }
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .journey__heart {
