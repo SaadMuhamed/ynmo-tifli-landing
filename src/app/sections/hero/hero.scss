@@ -63,10 +63,10 @@
   display: block;
 }
 .hero__headline-highlight {
-  /* Figma's literal #39cbf9 fails WCAG AA even at large-text 3:1 (1.89:1) —
-     brand-primary-pressed matches the highlight treatment used elsewhere
-     (S02/S03/S04) at a compliant 12.0:1. */
-  color: var(--brand-primary-pressed);
+  /* Figma's literal color, per explicit request — note this fails WCAG AA
+     at large-text 3:1 (1.89:1 measured), unlike brand-primary-pressed used
+     for the equivalent highlight elsewhere (S02/S03/S04) at 12.0:1. */
+  color: #39cbf9;
 }
 .hero__headline-squiggle {
   display: inline-block;

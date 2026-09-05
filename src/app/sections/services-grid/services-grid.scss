@@ -288,6 +288,12 @@ $banner-text-blue: #0082ad; /* Brand & interaction/secondary-pressed, blue (Figm
     line-height: 1.4;
     color: $banner-text-blue;
   }
+
+  &--up {
+    top: auto;
+    bottom: -1px;
+    align-items: flex-end;
+  }
 }
 
 .svc-card__head {
