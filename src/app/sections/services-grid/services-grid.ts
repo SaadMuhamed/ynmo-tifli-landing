@@ -34,6 +34,12 @@ const ROW_ANCHOR_KEY: Record<BentoRow, BentoKey> = { r1: 'c1', r2: 'c4', r3: 'c8
 const EXTRA_VH_PER_ROW = 1;
 const ROW_INDEX: Record<BentoRow, number> = { r1: 0, r2: 1, r3: 2 };
 const ROW_COUNT = 3;
+/** Minimum sticky offset — clears the floating header (48px gap + ~90px
+ * bar) plus a little breathing room. The pinned assembly's actual top is
+ * this plus however much extra centers it in the remaining viewport
+ * height (see setupPin) — never less than this, since going lower would
+ * run the header over the headline. */
+const MIN_STICKY_TOP = 162;
 
 /** offsetTop walked up the offsetParent chain — transform-immune, unlike
  * getBoundingClientRect(), so it can't be corrupted by reading it while the
@@ -232,10 +238,20 @@ export class ServicesGrid implements OnDestroy {
     this.stage.classList.add('is-pinned');
     this.stack.classList.add('is-pinned');
 
-    this.extraScrollPx = window.innerHeight * EXTRA_VH_PER_ROW * ROW_COUNT;
+    const vh = window.innerHeight;
     // stage's own intrinsic height is unaffected by position: sticky, but
     // is affected by the stack's new max-height set just above.
-    this.track.style.height = `${this.stage.offsetHeight + this.extraScrollPx}px`;
+    const stageHeight = this.stage.offsetHeight;
+    // Center the whole pinned assembly (headline + whichever row is
+    // active) in the viewport below the header, instead of anchoring it
+    // to the header's edge — anchoring at the top left a large dead gap
+    // below the active row for the rest of the viewport. Never goes
+    // below MIN_STICKY_TOP (would run the header over the headline).
+    const extraTop = Math.max(0, (vh - MIN_STICKY_TOP - stageHeight) / 2);
+    this.stage.style.top = `${MIN_STICKY_TOP + extraTop}px`;
+
+    this.extraScrollPx = vh * EXTRA_VH_PER_ROW * ROW_COUNT;
+    this.track.style.height = `${stageHeight + this.extraScrollPx}px`;
     this.trackTop = pageOffsetTop(this.track);
   }
 
@@ -243,6 +259,7 @@ export class ServicesGrid implements OnDestroy {
     if (!this.track || !this.stage || !this.stack || !this.rows) return;
     this.stage.classList.remove('is-pinned');
     this.stack.classList.remove('is-pinned');
+    this.stage.style.top = '';
     this.stack.style.maxHeight = '';
     this.track.style.height = '';
     this.rows.style.transform = '';
