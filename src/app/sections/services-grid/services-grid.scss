@@ -26,11 +26,21 @@ $banner-text-blue: #0082ad; /* Brand & interaction/secondary-pressed, blue (Figm
 }
 
 .services__headline {
-  position: relative;
+  /* §4.1 optional refinement: headline stays put while the bento cards
+     scroll into place below it, releasing once the section ends (default
+     `position: sticky` behaviour — no JS needed). */
+  position: sticky;
+  top: 162px; /* floating header (48px gap + ~90px bar) + 24px clearance */
+  z-index: 40; /* above every card, including mid-flight (max z-index 31) */
   width: 100%;
   max-width: 696px;
   display: flex;
   justify-content: center;
+  background: var(--surface-page);
+
+  @include below-1024 {
+    top: 114px; /* header sits flush at the top below 1024 */
+  }
 
   h2 {
     position: relative;
@@ -117,7 +127,15 @@ $banner-text-blue: #0082ad; /* Brand & interaction/secondary-pressed, blue (Figm
   padding: var(--space-16);
   display: flex;
   flex-direction: column;
-  flex: 1 0 0;
+  /* `flex: 1 0 0` zeroes the basis, which wins over `height` as the flex
+     algorithm's main-size in a column context (.services__col) — every
+     card here has purely absolutely-positioned content, so with no
+     intrinsic min-content floor it collapsed to whatever sliver of
+     "grown" space was left instead of its intended 413px. `0 0 auto`
+     lets the explicit height stand. (.services__row-bottom overrides
+     this back to `1 0 0` deliberately — there it's sizing width, the
+     row's main axis, not height.) */
+  flex: 0 0 auto;
 
   /* Bento assembly-scroll animation §7.1 — the blur is invisible mid-flight
      anyway, and re-computing it every frame on 9 transformed/scaled cards is

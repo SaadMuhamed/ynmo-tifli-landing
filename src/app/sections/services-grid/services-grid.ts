@@ -25,6 +25,19 @@ const STAGE_WIDTH = 1440;
 /** representative card per row anchor (§4.2) — its measured centre stands in for the row line */
 const ROW_ANCHOR_KEY: Record<BentoRow, BentoKey> = { r1: 'c1', r2: 'c4', r3: 'c8' };
 
+/** offsetTop walked up the offsetParent chain — transform-immune, unlike
+ * getBoundingClientRect(), so it can't be corrupted by reading it while the
+ * element already has an in-flight animation transform applied. */
+function pageOffsetTop(el: HTMLElement): number {
+  let y = 0;
+  let node: HTMLElement | null = el;
+  while (node) {
+    y += node.offsetTop;
+    node = node.offsetParent as HTMLElement | null;
+  }
+  return y;
+}
+
 interface RuntimeCard {
   key: BentoKey;
   el: HTMLElement;
@@ -127,15 +140,23 @@ export class ServicesGrid implements OnDestroy {
   /** Cached geometry only — never read inside the rAF loop (§5, hard rule). */
   private measure(): void {
     if (!this.section) return;
-    this.narrow = window.matchMedia(NARROW_QUERY).matches;
     const rect = this.section.getBoundingClientRect();
+    // A ResizeObserver can fire mid-transition (e.g. a hidden tab, or a
+    // browser-chrome animation resizing the viewport) with a momentary
+    // zero/invalid box. Keep the last good measurement rather than
+    // corrupting every anchor with it.
+    if (rect.width <= 0) return;
+
+    this.narrow = window.matchMedia(NARROW_QUERY).matches;
     this.stageScale = Math.min(1, rect.width / STAGE_WIDTH);
 
     (Object.keys(ROW_ANCHOR_KEY) as BentoRow[]).forEach((row) => {
       const anchorEl = this.cards.find((c) => c.key === ROW_ANCHOR_KEY[row])?.el;
       if (!anchorEl) return;
-      const r = anchorEl.getBoundingClientRect();
-      this.rowAnchorY[row] = r.top + window.scrollY + r.height / 2;
+      // offsetTop (unlike getBoundingClientRect) ignores the in-flight
+      // transform, so a ResizeObserver re-measure mid-animation can't bake a
+      // transformed position in as the row's anchor.
+      this.rowAnchorY[row] = pageOffsetTop(anchorEl) + anchorEl.offsetHeight / 2;
     });
   }
 
@@ -151,7 +172,7 @@ export class ServicesGrid implements OnDestroy {
     this.reducedMotion = e.matches;
     if (this.reducedMotion) {
       cancelAnimationFrame(this.rafHandle);
-      for (const card of this.cards) this.applyRest(card.el);
+      for (const card of this.cards) this.applyRest(card.el, card.key);
     } else {
       this.rafHandle = requestAnimationFrame(this.frame);
     }
@@ -163,7 +184,7 @@ export class ServicesGrid implements OnDestroy {
     const key = cardEl?.dataset['bentoKey'] as BentoKey | undefined;
     if (!key || !cardEl) return;
     this.forcedRest.add(key);
-    this.applyRest(cardEl);
+    this.applyRest(cardEl, key);
   };
 
   private readonly frame = (): void => {
@@ -198,7 +219,11 @@ export class ServicesGrid implements OnDestroy {
 
       const pose = sampleTrack(cfg.track, p);
       el.style.visibility = 'visible';
-      el.style.transform = `translate3d(${(pose.dx * this.stageScale).toFixed(2)}px, ${(pose.dy * this.stageScale).toFixed(2)}px, 0) scale(${pose.s.toFixed(4)})`;
+      // .svc-card__hub-icon centres itself via a static CSS
+      // `translate(-50%, -50%)` — reapply it here or our own translate3d
+      // overwrites it and the logo anchors by its top-left corner instead.
+      const staticPrefix = card.key === 'logo' ? 'translate(-50%, -50%) ' : '';
+      el.style.transform = `${staticPrefix}translate3d(${(pose.dx * this.stageScale).toFixed(2)}px, ${(pose.dy * this.stageScale).toFixed(2)}px, 0) scale(${pose.s.toFixed(4)})`;
       el.style.opacity = easeOutQuad(p).toFixed(4);
       el.style.zIndex = String((p < 1 ? 30 : 10) + cfg.zBump);
 
@@ -212,10 +237,10 @@ export class ServicesGrid implements OnDestroy {
     }
   }
 
-  private applyRest(el: HTMLElement): void {
+  private applyRest(el: HTMLElement, key: BentoKey): void {
     el.style.visibility = 'visible';
     el.style.opacity = '1';
-    el.style.transform = 'none';
+    el.style.transform = key === 'logo' ? 'translate(-50%, -50%)' : 'none';
     el.style.zIndex = '';
     el.style.willChange = '';
     delete el.dataset['inFlight'];
