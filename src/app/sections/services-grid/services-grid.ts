@@ -226,7 +226,7 @@ export class ServicesGrid implements OnDestroy {
     // is computed from below, which is what keeps a released, unpinned
     // stage's real layout height matching what's actually visible —
     // otherwise the un-shown, un-shifted portion shows as a dead gap.
-    const overshoot = 240;
+    const overshoot = 90;
     const rowH = Math.max(row1?.offsetHeight ?? 0, row2?.offsetHeight ?? 0, row3?.offsetHeight ?? 0);
     this.stack.style.maxHeight = `${rowH + overshoot}px`;
     this.stage.classList.add('is-pinned');

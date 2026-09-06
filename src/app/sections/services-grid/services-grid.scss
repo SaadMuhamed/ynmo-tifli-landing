@@ -49,8 +49,8 @@ $banner-text-blue: #0082ad; /* Brand & interaction/secondary-pressed, blue (Figm
      bounds during the recede/entrance. */
   &.is-pinned {
     overflow: hidden;
-    mask-image: linear-gradient(to bottom, transparent 0, black 36px, black calc(100% - 24px), transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 36px, black calc(100% - 24px), transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, black 14px, black calc(100% - 10px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 14px, black calc(100% - 10px), transparent 100%);
   }
 }
 
