@@ -27,22 +27,26 @@
       </div>
 
       <div class="services__stack">
-      <div class="services__board">
-    <div class="services__col">
+      <div class="services__rows">
+    <div class="services__row" data-bento-row="r1">
       <ng-container
         [ngTemplateOutlet]="cardTpl"
         [ngTemplateOutletContext]="ctx(remoteSpecialist)"
       />
       <ng-container
         [ngTemplateOutlet]="cardTpl"
-        [ngTemplateOutletContext]="ctx(doctorConsultation)"
+        [ngTemplateOutletContext]="ctx(hearingTest)"
+      />
+      <ng-container
+        [ngTemplateOutlet]="cardTpl"
+        [ngTemplateOutletContext]="ctx(growthAssessment)"
       />
     </div>
 
-    <div class="services__col services__col--center">
+    <div class="services__row services__row--hub" data-bento-row="r2">
       <ng-container
         [ngTemplateOutlet]="cardTpl"
-        [ngTemplateOutletContext]="ctx(hearingTest)"
+        [ngTemplateOutletContext]="ctx(doctorConsultation)"
       />
 
       <!-- node 1110:24728 — two notched panels (each a Figma "Subtract" shape,
@@ -135,29 +139,23 @@
           </div>
         </div>
       </article>
-    </div>
 
-    <div class="services__col">
-      <ng-container
-        [ngTemplateOutlet]="cardTpl"
-        [ngTemplateOutletContext]="ctx(growthAssessment)"
-      />
       <ng-container
         [ngTemplateOutlet]="cardTpl"
         [ngTemplateOutletContext]="ctx(shadowTeacher)"
       />
     </div>
-  </div>
 
-  <div class="services__row-bottom">
-    <ng-container
-      [ngTemplateOutlet]="cardTpl"
-      [ngTemplateOutletContext]="ctx(daycareCenters)"
-    />
-    <ng-container
-      [ngTemplateOutlet]="cardTpl"
-      [ngTemplateOutletContext]="ctx(nurseryPicker)"
-    />
+    <div class="services__row-bottom" data-bento-row="r3">
+      <ng-container
+        [ngTemplateOutlet]="cardTpl"
+        [ngTemplateOutletContext]="ctx(daycareCenters)"
+      />
+      <ng-container
+        [ngTemplateOutlet]="cardTpl"
+        [ngTemplateOutletContext]="ctx(nurseryPicker)"
+      />
+    </div>
   </div>
       </div>
     </div>

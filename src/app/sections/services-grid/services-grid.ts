@@ -103,7 +103,12 @@ export class ServicesGrid implements OnDestroy {
   private section: HTMLElement | null = null;
   private track: HTMLElement | null = null;
   private stage: HTMLElement | null = null;
+  private stack: HTMLElement | null = null;
+  private rows: HTMLElement | null = null;
   private cards: RuntimeCard[] = [];
+  /** px (incl. row gap) that row 1 and row 2 each recede by once the next
+   * row starts entering — see render()'s groupOffsetY. */
+  private rowShiftPx: [number, number] = [0, 0];
   private rowAnchorY: Record<BentoRow, number> = { r1: 0, r2: 0, r3: 0 };
   private trackTop = 0;
   private extraScrollPx = 0;
@@ -141,6 +146,8 @@ export class ServicesGrid implements OnDestroy {
     this.section = section;
     this.track = section.querySelector('.services__pin-track') as HTMLElement | null;
     this.stage = section.querySelector('.services__pin-stage') as HTMLElement | null;
+    this.stack = section.querySelector('.services__stack') as HTMLElement | null;
+    this.rows = section.querySelector('.services__rows') as HTMLElement | null;
 
     this.cards = Array.from(section.querySelectorAll('[data-bento-key]'))
       .map((node) => {
@@ -203,18 +210,29 @@ export class ServicesGrid implements OnDestroy {
    * releases on its own once the track's bottom passes the sticky point,
    * no scroll-jacking JS required. */
   private setupPin(): void {
-    if (!this.track || !this.stage) return;
+    if (!this.track || !this.stage || !this.stack || !this.rows) return;
     this.stage.classList.add('is-pinned');
+    this.stack.classList.add('is-pinned');
     this.extraScrollPx = window.innerHeight * EXTRA_VH_PER_ROW * ROW_COUNT;
     // stage's own intrinsic height is unaffected by position: sticky.
     this.track.style.height = `${this.stage.offsetHeight + this.extraScrollPx}px`;
     this.trackTop = pageOffsetTop(this.track);
+
+    const row1 = this.rows.querySelector('[data-bento-row="r1"]') as HTMLElement | null;
+    const row2 = this.rows.querySelector('[data-bento-row="r2"]') as HTMLElement | null;
+    const gap = 13;
+    this.rowShiftPx = [
+      row1 ? row1.offsetHeight + gap : 0,
+      row2 ? row2.offsetHeight + gap : 0,
+    ];
   }
 
   private teardownPin(): void {
-    if (!this.track || !this.stage) return;
+    if (!this.track || !this.stage || !this.stack || !this.rows) return;
     this.stage.classList.remove('is-pinned');
+    this.stack.classList.remove('is-pinned');
     this.track.style.height = '';
+    this.rows.style.transform = '';
     this.extraScrollPx = 0;
   }
 
@@ -269,6 +287,11 @@ export class ServicesGrid implements OnDestroy {
       !this.narrow && this.extraScrollPx > 0
         ? clamp((scrollY - this.trackTop) / this.extraScrollPx, 0, 1)
         : 0;
+    // each row's own 0→1 window within the pin — row 2's is what drives row
+    // 1 receding (see groupOffsetY below), row 3's drives row 2 receding.
+    const rowProgress: [number, number, number] = [0, 1, 2].map((i) =>
+      clamp((pinnedProgress - i / ROW_COUNT) * ROW_COUNT, 0, 1),
+    ) as [number, number, number];
 
     for (const card of this.cards) {
       if (this.forcedRest.has(card.key)) continue;
@@ -277,7 +300,7 @@ export class ServicesGrid implements OnDestroy {
       const el = card.el;
       const q = this.narrow
         ? (scrollY + vh - this.rowAnchorY[cfg.row]) / vh
-        : clamp((pinnedProgress - ROW_INDEX[cfg.row] / ROW_COUNT) * ROW_COUNT, 0, 1);
+        : rowProgress[ROW_INDEX[cfg.row]];
       const p = clamp((q - cfg.delay) / duration, 0, 1);
 
       if (p <= 0) {
@@ -303,6 +326,15 @@ export class ServicesGrid implements OnDestroy {
         delete el.dataset['inFlight'];
         el.style.willChange = '';
       }
+    }
+
+    // Row 1 recedes (under the headline's fade mask) as row 2 enters; row 2
+    // recedes as row 3 enters. Row 3 never recedes — nothing follows it.
+    if (!this.narrow && this.rows) {
+      const groupOffsetY =
+        -this.rowShiftPx[0] * easeOutQuad(rowProgress[1]) -
+        this.rowShiftPx[1] * easeOutQuad(rowProgress[2]);
+      this.rows.style.transform = `translate3d(0, ${groupOffsetY.toFixed(2)}px, 0)`;
     }
   }
 
