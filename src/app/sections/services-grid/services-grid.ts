@@ -103,6 +103,12 @@ export class ServicesGrid implements OnDestroy {
       })
       .filter((c) => !!BENTO_CONFIG[c.key]);
 
+    for (const card of this.cards) {
+      if (BENTO_CONFIG[card.key].originY === 'top') {
+        card.el.style.transformOrigin = '50% 0%';
+      }
+    }
+
     this.measure();
 
     this.resizeObserver = new ResizeObserver(() => {

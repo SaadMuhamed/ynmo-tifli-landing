@@ -25,6 +25,10 @@ export interface BentoCardConfig {
   delay: number;
   zBump: 0 | 1;
   track: Keyframe[];
+  /** 'top' pivots the scale from the card's top edge — the card unfurls
+   * downward as it grows into place instead of scaling from its centre.
+   * Used for the cards that fly in from a row's sides (dropdown feel). */
+  originY?: 'top';
 }
 
 export const DURATION = 0.55;
@@ -47,9 +51,10 @@ export const BENTO_CONFIG: Record<BentoKey, BentoCardConfig> = {
     row: 'r1',
     delay: 0,
     zBump: 0,
+    originY: 'top',
     track: [
-      { at: 0, dx: -194, dy: -229, s: 1.971 },
-      { at: 0.5, dx: -45, dy: -0.2, s: 1.26 },
+      { at: 0, dx: 194, dy: -229, s: 1.971 },
+      { at: 0.5, dx: 45, dy: -0.2, s: 1.26 },
       { at: 1, dx: 0, dy: 0, s: 1 },
     ],
   },
@@ -58,20 +63,49 @@ export const BENTO_CONFIG: Record<BentoKey, BentoCardConfig> = {
     row: 'r1',
     delay: 0.04,
     zBump: 0,
+    originY: 'top',
     track: [
-      { at: 0, dx: 98.5, dy: -129.9, s: 1.494 },
-      { at: 0.5, dx: 0.5, dy: -0.4, s: 1.003 },
+      { at: 0, dx: -98.5, dy: -129.9, s: 1.494 },
+      { at: 0.5, dx: -0.5, dy: -0.4, s: 1.003 },
       { at: 1, dx: 0, dy: 0, s: 1 },
     ],
   },
   c2: { key: 'c2', row: 'r1', delay: 0.3, zBump: 1, track: rest(0, 336.75, 1.565) },
-  c4: { key: 'c4', row: 'r2', delay: 0, zBump: 0, track: rest(-178, -0.25, 1.59) },
-  c7: { key: 'c7', row: 'r2', delay: 0.04, zBump: 0, track: rest(204, -14.2, 1.74) },
+  c4: {
+    key: 'c4',
+    row: 'r2',
+    delay: 0,
+    zBump: 0,
+    originY: 'top',
+    track: rest(178, -0.25, 1.59),
+  },
+  c7: {
+    key: 'c7',
+    row: 'r2',
+    delay: 0.04,
+    zBump: 0,
+    originY: 'top',
+    track: rest(-204, -14.2, 1.74),
+  },
   logo: { key: 'logo', row: 'r2', delay: 0.08, zBump: 0, track: rest(0, 0, 0.575) },
-  c5: { key: 'c5', row: 'r2', delay: 0.3, zBump: 1, track: rest(2.6, -67.34, 1.657) },
-  c6: { key: 'c6', row: 'r2', delay: 0.36, zBump: 1, track: rest(0.5, 64.75, 1.648) },
-  c8: { key: 'c8', row: 'r3', delay: 0, zBump: 0, track: rest(-293.5, 158.5, 1.385) },
-  c9: { key: 'c9', row: 'r3', delay: 0.05, zBump: 0, track: rest(294.6, 228.0, 1.562) },
+  c5: { key: 'c5', row: 'r2', delay: 0.3, zBump: 1, track: rest(-2.6, -67.34, 1.657) },
+  c6: { key: 'c6', row: 'r2', delay: 0.36, zBump: 1, track: rest(-0.5, 64.75, 1.648) },
+  c8: {
+    key: 'c8',
+    row: 'r3',
+    delay: 0,
+    zBump: 0,
+    originY: 'top',
+    track: rest(293.5, 158.5, 1.385),
+  },
+  c9: {
+    key: 'c9',
+    row: 'r3',
+    delay: 0.05,
+    zBump: 0,
+    originY: 'top',
+    track: rest(-294.6, 228.0, 1.562),
+  },
 };
 
 /** Simplified sub-1024 fallback (build plan §8, ≤767 rule reused for the whole
