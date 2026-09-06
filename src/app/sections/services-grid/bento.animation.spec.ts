@@ -21,9 +21,16 @@ describe('bento.animation', () => {
         expect(pose.dy).toBeCloseTo(mid.dy, 5);
         expect(pose.s).toBeCloseTo(mid.s, 5);
       } else {
-        // two-point tracks: eased partway between enter and rest
-        expect(pose.s).toBeGreaterThan(1);
-        expect(pose.s).toBeLessThan(cfg.track[0].s);
+        // two-point tracks: eased partway between enter and rest (1) —
+        // most cards shrink down to 1, `logo` grows up to it (0.575 → 1)
+        const enterS = cfg.track[0].s;
+        if (enterS > 1) {
+          expect(pose.s).toBeGreaterThan(1);
+          expect(pose.s).toBeLessThan(enterS);
+        } else {
+          expect(pose.s).toBeLessThan(1);
+          expect(pose.s).toBeGreaterThan(enterS);
+        }
       }
     }
   });

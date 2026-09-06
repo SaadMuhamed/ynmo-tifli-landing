@@ -58,7 +58,7 @@ export class ServicesGrid implements OnDestroy {
   protected readonly nurseryPicker = this.get('nursery-picker');
   protected readonly daycareCenters = this.get('daycare-centers');
 
-  private readonly elRef = inject(ElementRef<HTMLElement>);
+  private readonly elRef: ElementRef<HTMLElement> = inject(ElementRef);
 
   private section: HTMLElement | null = null;
   private cards: RuntimeCard[] = [];
@@ -92,12 +92,15 @@ export class ServicesGrid implements OnDestroy {
     this.mqReduced.addEventListener('change', this.onMotionPrefChange);
     if (this.reducedMotion) return; // static rest markup stands as-is
 
-    const section = this.elRef.nativeElement.querySelector<HTMLElement>('.services');
+    const section = this.elRef.nativeElement.querySelector('.services') as HTMLElement | null;
     if (!section) return;
     this.section = section;
 
-    this.cards = Array.from(section.querySelectorAll<HTMLElement>('[data-bento-key]'))
-      .map((el) => ({ key: el.dataset['bentoKey'] as BentoKey, el }))
+    this.cards = Array.from(section.querySelectorAll('[data-bento-key]'))
+      .map((node) => {
+        const el = node as HTMLElement;
+        return { key: el.dataset['bentoKey'] as BentoKey, el };
+      })
       .filter((c) => !!BENTO_CONFIG[c.key]);
 
     this.measure();
