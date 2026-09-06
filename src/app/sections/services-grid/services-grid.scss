@@ -103,13 +103,12 @@ $banner-text-blue: #0082ad; /* Brand & interaction/secondary-pressed, blue (Figm
 
   .svc-card {
     flex: 1 0 0;
-    height: 200px;
   }
 }
 
 .svc-card {
   position: relative;
-  height: 200px;
+  height: 413px;
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--surface-translucent-white);
@@ -118,10 +117,15 @@ $banner-text-blue: #0082ad; /* Brand & interaction/secondary-pressed, blue (Figm
   padding: var(--space-16);
   display: flex;
   flex-direction: column;
+  flex: 1 0 0;
 
-  &--tall {
-    height: 413px;
-    flex: 1 0 0;
+  /* Bento assembly-scroll animation §7.1 — the blur is invisible mid-flight
+     anyway, and re-computing it every frame on 9 transformed/scaled cards is
+     the main risk of dropped frames on integrated graphics and Safari. */
+  &[data-in-flight='true'] {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(255, 255, 255, 0.72);
   }
 
   &--hub {
@@ -164,6 +168,24 @@ $banner-text-blue: #0082ad; /* Brand & interaction/secondary-pressed, blue (Figm
   border-radius: inherit;
   mask-image: linear-gradient(to bottom, transparent 0%, black 65%);
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 65%);
+
+  /* node 1110:26097 — Figma's single-phone cards clip hard to the card's own
+     rounded rect (no fade); the phone's fixed y offset already keeps its top
+     clear of the header content. */
+  &--flat {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+}
+
+.svc-card__hero {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  pointer-events: none;
 }
 
 .phone {
@@ -330,7 +352,7 @@ $banner-text-blue: #0082ad; /* Brand & interaction/secondary-pressed, blue (Figm
   flex: none;
   display: flex;
   padding: var(--space-8);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   background: var(--surface-2);
   box-shadow: var(--shadow-app-icon);
 
@@ -387,7 +409,7 @@ $banner-text-blue: #0082ad; /* Brand & interaction/secondary-pressed, blue (Figm
     max-width: 160px;
   }
 
-  .svc-card--tall,
+  .svc-card,
   .svc-card--hub {
     height: 320px;
   }

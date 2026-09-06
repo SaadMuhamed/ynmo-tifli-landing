@@ -25,25 +25,25 @@
     <div class="services__col">
       <ng-container
         [ngTemplateOutlet]="cardTpl"
-        [ngTemplateOutletContext]="{ $implicit: growthAssessment, size: 'tall' }"
+        [ngTemplateOutletContext]="{ $implicit: growthAssessment }"
       />
       <ng-container
         [ngTemplateOutlet]="cardTpl"
-        [ngTemplateOutletContext]="{ $implicit: shadowTeacher, size: 'short' }"
+        [ngTemplateOutletContext]="{ $implicit: shadowTeacher }"
       />
     </div>
 
     <div class="services__col services__col--center">
       <ng-container
         [ngTemplateOutlet]="cardTpl"
-        [ngTemplateOutletContext]="{ $implicit: hearingTest, size: 'short' }"
+        [ngTemplateOutletContext]="{ $implicit: hearingTest }"
       />
 
       <!-- node 1110:24728 — two notched panels (each a Figma "Subtract" shape,
            its translucent fill/blur baked into the asset) meeting around the
            shared hub icon. -->
       <article class="svc-card svc-card--hub">
-        <div class="hub-panel hub-panel--top">
+        <div class="hub-panel hub-panel--top" [attr.data-bento-key]="comprehensiveDiagnosis.bentoKey">
           <img
             class="hub-panel__bg"
             src="/assets/icons/services-grid/hub-subtract.svg"
@@ -73,11 +73,16 @@
             <span class="svc-card__icon"
               ><img [src]="comprehensiveDiagnosis.icon" alt="" aria-hidden="true"
             /></span>
-            <p class="svc-card__title">{{ comprehensiveDiagnosis.title }}</p>
+            <p
+              class="svc-card__title"
+              [class.svc-card__title--blue]="comprehensiveDiagnosis.titleAccent === 'blue'"
+            >
+              {{ comprehensiveDiagnosis.title }}
+            </p>
           </div>
         </div>
 
-        <div class="svc-card__hub-icon" aria-hidden="true">
+        <div class="svc-card__hub-icon" aria-hidden="true" data-bento-key="logo">
           <img
             class="svc-card__hub-logo"
             src="/assets/icons/services-grid/hub-logo.png"
@@ -85,7 +90,7 @@
           />
         </div>
 
-        <div class="hub-panel hub-panel--bottom">
+        <div class="hub-panel hub-panel--bottom" [attr.data-bento-key]="therapyPrograms.bentoKey">
           <img
             class="hub-panel__bg"
             src="/assets/icons/services-grid/hub-subtract.svg"
@@ -115,7 +120,12 @@
             <span class="svc-card__icon"
               ><img [src]="therapyPrograms.icon" alt="" aria-hidden="true"
             /></span>
-            <p class="svc-card__title">{{ therapyPrograms.title }}</p>
+            <p
+              class="svc-card__title"
+              [class.svc-card__title--blue]="therapyPrograms.titleAccent === 'blue'"
+            >
+              {{ therapyPrograms.title }}
+            </p>
           </div>
         </div>
       </article>
@@ -124,11 +134,11 @@
     <div class="services__col">
       <ng-container
         [ngTemplateOutlet]="cardTpl"
-        [ngTemplateOutletContext]="{ $implicit: remoteSpecialist, size: 'short' }"
+        [ngTemplateOutletContext]="{ $implicit: remoteSpecialist }"
       />
       <ng-container
         [ngTemplateOutlet]="cardTpl"
-        [ngTemplateOutletContext]="{ $implicit: doctorConsultation, size: 'tall' }"
+        [ngTemplateOutletContext]="{ $implicit: doctorConsultation }"
       />
     </div>
   </div>
@@ -136,11 +146,11 @@
   <div class="services__row-bottom">
     <ng-container
       [ngTemplateOutlet]="cardTpl"
-      [ngTemplateOutletContext]="{ $implicit: nurseryPicker, size: 'short' }"
+      [ngTemplateOutletContext]="{ $implicit: nurseryPicker }"
     />
     <ng-container
       [ngTemplateOutlet]="cardTpl"
-      [ngTemplateOutletContext]="{ $implicit: daycareCenters, size: 'short' }"
+      [ngTemplateOutletContext]="{ $implicit: daycareCenters }"
     />
   </div>
   </div>
@@ -165,13 +175,17 @@
   }
 </ng-template>
 
-<ng-template #cardTpl let-card let-size="size">
-  <article class="svc-card" [class.svc-card--tall]="size === 'tall'">
-    <div class="svc-card__mockup">
-      <ng-container
-        [ngTemplateOutlet]="phonesTpl"
-        [ngTemplateOutletContext]="{ $implicit: card.phones }"
-      />
+<ng-template #cardTpl let-card>
+  <article class="svc-card" [attr.data-bento-key]="card.bentoKey">
+    <div class="svc-card__mockup" [class.svc-card__mockup--flat]="card.mockupFlat">
+      @if (card.heroImage) {
+        <img class="svc-card__hero" [src]="card.heroImage" alt="" loading="lazy" decoding="async" />
+      } @else {
+        <ng-container
+          [ngTemplateOutlet]="phonesTpl"
+          [ngTemplateOutletContext]="{ $implicit: card.phones }"
+        />
+      }
     </div>
 
     <!-- node 1154:6227 (default) / 1154:6235 (hover) — plain badge at rest,
