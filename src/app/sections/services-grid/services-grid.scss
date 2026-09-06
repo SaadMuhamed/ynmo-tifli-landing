@@ -33,6 +33,10 @@ $banner-text-blue: #0082ad; /* Brand & interaction/secondary-pressed, blue (Figm
   &.is-pinned {
     position: sticky;
     top: 162px; /* floating header (48px gap + ~90px bar) + 24px clearance */
+    /* the 72px static design gap (§3.1) reads as dead space once the
+       headline is pinned directly above a porthole that only ever shows
+       one row — tighten it for the pinned view specifically. */
+    gap: var(--space-24);
   }
 }
 
