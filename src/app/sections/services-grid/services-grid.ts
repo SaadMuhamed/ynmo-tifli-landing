@@ -34,12 +34,22 @@ const ROW_ANCHOR_KEY: Record<BentoRow, BentoKey> = { r1: 'c1', r2: 'c4', r3: 'c8
 const EXTRA_VH_PER_ROW = 1;
 const ROW_INDEX: Record<BentoRow, number> = { r1: 0, r2: 1, r3: 2 };
 const ROW_COUNT = 3;
-/** Minimum sticky offset — clears the floating header (48px gap + ~90px
- * bar) plus a little breathing room. The pinned assembly's actual top is
- * this plus however much extra centers it in the remaining viewport
- * height (see setupPin) — never less than this, since going lower would
- * run the header over the headline. */
+/** Minimum sticky offset for the whole pinned stage — clears the floating
+ * header (48px gap + ~90px bar) plus a little breathing room. The
+ * headline always sits here; only the porthole below it (.services__stack)
+ * shifts further down to center itself in whatever viewport height
+ * remains (see setupPin). */
 const MIN_STICKY_TOP = 162;
+/** Headline-to-porthole gap while pinned (the static 72px design gap,
+ * §3.1, reads as dead space here) — must match the SCSS `gap` on
+ * `.services__pin-stage.is-pinned`. */
+const PINNED_HEADLINE_GAP = 24;
+/** Porthole headroom above/below one row's own height. Small at the top —
+ * that's the mask's fade zone, and a receding row is meant to visibly
+ * clip there. Generous at the bottom so an entering row's own
+ * downward-displaced start pose isn't cut off. */
+const OVERSHOOT_TOP = 50;
+const OVERSHOOT_BOTTOM = 150;
 
 /** offsetTop walked up the offsetParent chain — transform-immune, unlike
  * getBoundingClientRect(), so it can't be corrupted by reading it while the
@@ -226,30 +236,34 @@ export class ServicesGrid implements OnDestroy {
 
     // Only one row is ever visible at a time (the rest recede off-porthole
     // via .services__rows' transform) — size the porthole to the tallest
-    // row plus headroom for an entering/receding row's own scale-up
-    // overshoot, not the sum of all three rows' heights. That headroom is
-    // also what the stage/track height (and so the pin's scroll length)
-    // is computed from below, which is what keeps a released, unpinned
-    // stage's real layout height matching what's actually visible —
-    // otherwise the un-shown, un-shifted portion shows as a dead gap.
-    const overshoot = 90;
+    // row plus headroom, not the sum of all three rows' heights (that
+    // reserved space for content that's never actually shown at once,
+    // which is what left a dead gap once the pin released). Asymmetric on
+    // purpose: OVERSHOOT_TOP only needs to cover the mask's own fade zone
+    // (a receding row is meant to visibly clip there); OVERSHOOT_BOTTOM
+    // is generous so an entering row's own downward-displaced start pose
+    // isn't cut off.
     const rowH = Math.max(row1?.offsetHeight ?? 0, row2?.offsetHeight ?? 0, row3?.offsetHeight ?? 0);
-    this.stack.style.maxHeight = `${rowH + overshoot}px`;
+    this.stack.style.maxHeight = `${rowH + OVERSHOOT_TOP + OVERSHOOT_BOTTOM}px`;
     this.stage.classList.add('is-pinned');
     this.stack.classList.add('is-pinned');
+    // Headline stays fixed right below the header; only the porthole
+    // shifts down within the remaining viewport to center itself there —
+    // centering the whole stage (headline included) moved the headline
+    // away from its usual place, which isn't wanted.
+    this.stage.style.top = `${MIN_STICKY_TOP}px`;
 
     const vh = window.innerHeight;
-    // stage's own intrinsic height is unaffected by position: sticky, but
-    // is affected by the stack's new max-height set just above.
-    const stageHeight = this.stage.offsetHeight;
-    // Center the whole pinned assembly (headline + whichever row is
-    // active) in the viewport below the header, instead of anchoring it
-    // to the header's edge — anchoring at the top left a large dead gap
-    // below the active row for the rest of the viewport. Never goes
-    // below MIN_STICKY_TOP (would run the header over the headline).
-    const extraTop = Math.max(0, (vh - MIN_STICKY_TOP - stageHeight) / 2);
-    this.stage.style.top = `${MIN_STICKY_TOP + extraTop}px`;
+    const headlineEl = this.stage.querySelector('.services__headline') as HTMLElement | null;
+    const headlineH = headlineEl?.offsetHeight ?? 0;
+    const stackNaturalTop = MIN_STICKY_TOP + headlineH + PINNED_HEADLINE_GAP;
+    const stackHeight = this.stack.offsetHeight; // reflects the max-height just set
+    const extraMargin = Math.max(0, (vh - stackNaturalTop - stackHeight) / 2);
+    this.stack.style.marginTop = `${extraMargin}px`;
 
+    // stage's own intrinsic height is unaffected by position: sticky, but
+    // is affected by the stack's new max-height/margin set just above.
+    const stageHeight = this.stage.offsetHeight;
     this.extraScrollPx = vh * EXTRA_VH_PER_ROW * ROW_COUNT;
     this.track.style.height = `${stageHeight + this.extraScrollPx}px`;
     this.trackTop = pageOffsetTop(this.track);
@@ -261,6 +275,7 @@ export class ServicesGrid implements OnDestroy {
     this.stack.classList.remove('is-pinned');
     this.stage.style.top = '';
     this.stack.style.maxHeight = '';
+    this.stack.style.marginTop = '';
     this.track.style.height = '';
     this.rows.style.transform = '';
     this.extraScrollPx = 0;

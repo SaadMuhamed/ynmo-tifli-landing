@@ -32,15 +32,14 @@ $banner-text-blue: #0082ad; /* Brand & interaction/secondary-pressed, blue (Figm
 
   &.is-pinned {
     position: sticky;
-    /* JS sets the real value — centers the headline+active-row assembly
-       in the viewport below the floating header instead of anchoring it
-       to the header's edge, which otherwise left a large dead gap below
-       whichever row is currently showing. This is just a pre-JS
-       fallback. */
+    /* fixed — the headline stays right below the header; JS centers only
+       the porthole below it (.services__stack's margin-top), not the
+       headline along with it. */
     top: 162px;
     /* the 72px static design gap (§3.1) reads as dead space once the
        headline is pinned directly above a porthole that only ever shows
-       one row — tighten it for the pinned view specifically. */
+       one row — tighten it for the pinned view specifically. Must match
+       PINNED_HEADLINE_GAP in services-grid.ts. */
     gap: var(--space-24);
   }
 }
@@ -50,15 +49,19 @@ $banner-text-blue: #0082ad; /* Brand & interaction/secondary-pressed, blue (Figm
 
   /* Desktop pin only (toggled by JS alongside .is-pinned on the stage): a
      fixed-height "porthole" sized to one row (not all three stacked rows'
-     combined height) — JS sets max-height. Only one row is ever meant to
+     combined height) — JS sets max-height + margin-top (the latter
+     centers it in the remaining viewport). Only one row is ever meant to
      be visible at a time (the others recede via .services__rows'
      transform), so reserving space for all three left a large dead gap
-     in normal flow once the pin released. Hard clip, no fade mask — a
-     receding/entering row's own motion (opacity + scale, already eased)
-     carries the transition; a mask here only ate into a settled row's
-     own always-visible content for no benefit. */
+     in normal flow once the pin released.
+     Top only fades (a receding row is meant to visibly clip there, under
+     the headline) — bottom is intentionally not masked/clipped tight; the
+     porthole has generous headroom there instead (OVERSHOOT_BOTTOM) so an
+     entering row's own downward-displaced start pose isn't cut off. */
   &.is-pinned {
     overflow: hidden;
+    mask-image: linear-gradient(to bottom, transparent 0, black 40px);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 40px);
   }
 }
 
