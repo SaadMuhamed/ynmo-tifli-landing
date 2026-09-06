@@ -39,14 +39,18 @@ $banner-text-blue: #0082ad; /* Brand & interaction/secondary-pressed, blue (Figm
 .services__stack {
   width: 100%;
 
-  /* Desktop pin only (toggled by JS alongside .is-pinned on the stage):
-     masks the row(s) already assembled so they fade out — rather than
-     hard-clip — as .services__rows translates them up under the sticky
-     headline to bring the next row into the middle of the screen. */
+  /* Desktop pin only (toggled by JS alongside .is-pinned on the stage): a
+     fixed-height "porthole" sized to one row (not all three stacked rows'
+     combined height) — JS sets max-height. Only one row is ever meant to
+     be visible at a time (the others recede via .services__rows'
+     transform), so reserving space for all three left a large dead gap
+     in normal flow once the pin released. Masks both edges so a row
+     fades out — rather than hard-clips — as it slides past the porthole
+     bounds during the recede/entrance. */
   &.is-pinned {
     overflow: hidden;
-    mask-image: linear-gradient(to bottom, transparent 0, black 90px);
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 90px);
+    mask-image: linear-gradient(to bottom, transparent 0, black 36px, black calc(100% - 24px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 36px, black calc(100% - 24px), transparent 100%);
   }
 }
 

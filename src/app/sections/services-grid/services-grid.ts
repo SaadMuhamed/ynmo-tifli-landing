@@ -211,26 +211,39 @@ export class ServicesGrid implements OnDestroy {
    * no scroll-jacking JS required. */
   private setupPin(): void {
     if (!this.track || !this.stage || !this.stack || !this.rows) return;
-    this.stage.classList.add('is-pinned');
-    this.stack.classList.add('is-pinned');
-    this.extraScrollPx = window.innerHeight * EXTRA_VH_PER_ROW * ROW_COUNT;
-    // stage's own intrinsic height is unaffected by position: sticky.
-    this.track.style.height = `${this.stage.offsetHeight + this.extraScrollPx}px`;
-    this.trackTop = pageOffsetTop(this.track);
 
     const row1 = this.rows.querySelector('[data-bento-row="r1"]') as HTMLElement | null;
     const row2 = this.rows.querySelector('[data-bento-row="r2"]') as HTMLElement | null;
+    const row3 = this.rows.querySelector('[data-bento-row="r3"]') as HTMLElement | null;
     const gap = 13;
-    this.rowShiftPx = [
-      row1 ? row1.offsetHeight + gap : 0,
-      row2 ? row2.offsetHeight + gap : 0,
-    ];
+    this.rowShiftPx = [row1 ? row1.offsetHeight + gap : 0, row2 ? row2.offsetHeight + gap : 0];
+
+    // Only one row is ever visible at a time (the rest recede off-porthole
+    // via .services__rows' transform) — size the porthole to the tallest
+    // row plus headroom for an entering/receding row's own scale-up
+    // overshoot, not the sum of all three rows' heights. That headroom is
+    // also what the stage/track height (and so the pin's scroll length)
+    // is computed from below, which is what keeps a released, unpinned
+    // stage's real layout height matching what's actually visible —
+    // otherwise the un-shown, un-shifted portion shows as a dead gap.
+    const overshoot = 240;
+    const rowH = Math.max(row1?.offsetHeight ?? 0, row2?.offsetHeight ?? 0, row3?.offsetHeight ?? 0);
+    this.stack.style.maxHeight = `${rowH + overshoot}px`;
+    this.stage.classList.add('is-pinned');
+    this.stack.classList.add('is-pinned');
+
+    this.extraScrollPx = window.innerHeight * EXTRA_VH_PER_ROW * ROW_COUNT;
+    // stage's own intrinsic height is unaffected by position: sticky, but
+    // is affected by the stack's new max-height set just above.
+    this.track.style.height = `${this.stage.offsetHeight + this.extraScrollPx}px`;
+    this.trackTop = pageOffsetTop(this.track);
   }
 
   private teardownPin(): void {
     if (!this.track || !this.stage || !this.stack || !this.rows) return;
     this.stage.classList.remove('is-pinned');
     this.stack.classList.remove('is-pinned');
+    this.stack.style.maxHeight = '';
     this.track.style.height = '';
     this.rows.style.transform = '';
     this.extraScrollPx = 0;
