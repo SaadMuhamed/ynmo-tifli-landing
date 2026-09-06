@@ -234,17 +234,6 @@ export class ServicesGrid implements OnDestroy {
     const gap = 13;
     this.rowShiftPx = [row1 ? row1.offsetHeight + gap : 0, row2 ? row2.offsetHeight + gap : 0];
 
-    // Only one row is ever visible at a time (the rest recede off-porthole
-    // via .services__rows' transform) — size the porthole to the tallest
-    // row plus headroom, not the sum of all three rows' heights (that
-    // reserved space for content that's never actually shown at once,
-    // which is what left a dead gap once the pin released). Asymmetric on
-    // purpose: OVERSHOOT_TOP only needs to cover the mask's own fade zone
-    // (a receding row is meant to visibly clip there); OVERSHOOT_BOTTOM
-    // is generous so an entering row's own downward-displaced start pose
-    // isn't cut off.
-    const rowH = Math.max(row1?.offsetHeight ?? 0, row2?.offsetHeight ?? 0, row3?.offsetHeight ?? 0);
-    this.stack.style.maxHeight = `${rowH + OVERSHOOT_TOP + OVERSHOOT_BOTTOM}px`;
     this.stage.classList.add('is-pinned');
     this.stack.classList.add('is-pinned');
     // Headline stays fixed right below the header; only the porthole
@@ -253,16 +242,30 @@ export class ServicesGrid implements OnDestroy {
     // away from its usual place, which isn't wanted.
     this.stage.style.top = `${MIN_STICKY_TOP}px`;
 
+    // Only one row is ever visible at a time (the rest recede off-porthole
+    // via .services__rows' transform). First find a nominal, centered
+    // position for it using a modest bottom buffer (just enough that an
+    // entering row's own downward-displaced start pose isn't cut off) —
+    // then stretch the porthole's actual bottom edge the rest of the way
+    // to the real viewport edge, so the boundary a card meets is the
+    // browser window itself, not a gray box stopping short of it.
+    const rowH = Math.max(row1?.offsetHeight ?? 0, row2?.offsetHeight ?? 0, row3?.offsetHeight ?? 0);
     const vh = window.innerHeight;
     const headlineEl = this.stage.querySelector('.services__headline') as HTMLElement | null;
     const headlineH = headlineEl?.offsetHeight ?? 0;
     const stackNaturalTop = MIN_STICKY_TOP + headlineH + PINNED_HEADLINE_GAP;
-    const stackHeight = this.stack.offsetHeight; // reflects the max-height just set
-    const extraMargin = Math.max(0, (vh - stackNaturalTop - stackHeight) / 2);
+    const nominalHeight = rowH + OVERSHOOT_TOP + OVERSHOOT_BOTTOM;
+    const extraMargin = Math.max(0, (vh - stackNaturalTop - nominalHeight) / 2);
+    const stackTop = stackNaturalTop + extraMargin;
     this.stack.style.marginTop = `${extraMargin}px`;
+    this.stack.style.maxHeight = `${Math.max(nominalHeight, vh - stackTop)}px`;
 
     // stage's own intrinsic height is unaffected by position: sticky, but
-    // is affected by the stack's new max-height/margin set just above.
+    // is affected by the stack's new max-height/margin set just above —
+    // reaching the viewport edge here does grow the post-release gap
+    // somewhat versus a tightly-sized porthole, but a card meeting the
+    // real window boundary instead of stopping short at an arbitrary one
+    // was the more visible problem.
     const stageHeight = this.stage.offsetHeight;
     this.extraScrollPx = vh * EXTRA_VH_PER_ROW * ROW_COUNT;
     this.track.style.height = `${stageHeight + this.extraScrollPx}px`;
