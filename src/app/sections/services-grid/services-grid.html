@@ -1,42 +1,48 @@
-<!-- S03 · replaces the old scroll-jacked feature flip with the static services
-     bento grid from Figma node 1110:23531 (Ynmo Website New Design). -->
+<!-- S03 · bento grid from Figma node 1110:23531 (Ynmo Website New Design),
+     with the scroll-driven assembly animation from
+     YNMO-TIFLI-FEATURES-BENTO-ANIMATION.md. Desktop pins the grid
+     (.services__pin-track/--stage) for the length of the assembly, then
+     releases; narrow viewports skip the pin (§9 forbids it on touch) and
+     each card just fades up as it's individually scrolled to. -->
 <section class="services" aria-labelledby="services-heading">
-  <div class="services__headline">
-    <img
-      class="services__doodle services__doodle--a"
-      src="/assets/icons/services-grid/doodle-top-2.svg"
-      aria-hidden="true"
-      alt=""
-    />
-    <img
-      class="services__doodle services__doodle--b"
-      src="/assets/icons/services-grid/doodle-top-1.svg"
-      aria-hidden="true"
-      alt=""
-    />
-    <h2 id="services-heading">
-      {{ headline.before }}<span class="hl">{{ headline.highlight1 }}</span
-      >{{ headline.middle }}<span class="hl">{{ headline.highlight2 }}</span>
-    </h2>
-  </div>
+  <div class="services__pin-track">
+    <div class="services__pin-stage">
+      <div class="services__headline">
+        <img
+          class="services__doodle services__doodle--a"
+          src="/assets/icons/services-grid/doodle-top-2.svg"
+          aria-hidden="true"
+          alt=""
+        />
+        <img
+          class="services__doodle services__doodle--b"
+          src="/assets/icons/services-grid/doodle-top-1.svg"
+          aria-hidden="true"
+          alt=""
+        />
+        <h2 id="services-heading">
+          {{ headline.before }}<span class="hl">{{ headline.highlight1 }}</span
+          >{{ headline.middle }}<span class="hl">{{ headline.highlight2 }}</span>
+        </h2>
+      </div>
 
-  <div class="services__stack">
-  <div class="services__board">
+      <div class="services__stack">
+      <div class="services__board">
     <div class="services__col">
       <ng-container
         [ngTemplateOutlet]="cardTpl"
-        [ngTemplateOutletContext]="{ $implicit: growthAssessment }"
+        [ngTemplateOutletContext]="ctx(remoteSpecialist)"
       />
       <ng-container
         [ngTemplateOutlet]="cardTpl"
-        [ngTemplateOutletContext]="{ $implicit: shadowTeacher }"
+        [ngTemplateOutletContext]="ctx(doctorConsultation)"
       />
     </div>
 
     <div class="services__col services__col--center">
       <ng-container
         [ngTemplateOutlet]="cardTpl"
-        [ngTemplateOutletContext]="{ $implicit: hearingTest }"
+        [ngTemplateOutletContext]="ctx(hearingTest)"
       />
 
       <!-- node 1110:24728 — two notched panels (each a Figma "Subtract" shape,
@@ -53,7 +59,7 @@
           <div class="svc-card__mockup">
             <ng-container
               [ngTemplateOutlet]="phonesTpl"
-              [ngTemplateOutletContext]="{ $implicit: comprehensiveDiagnosis.phones }"
+              [ngTemplateOutletContext]="ctx(comprehensiveDiagnosis.phones)"
             />
           </div>
           <div class="svc-card__badge-wrap" tabindex="0">
@@ -100,7 +106,7 @@
           <div class="svc-card__mockup">
             <ng-container
               [ngTemplateOutlet]="phonesTpl"
-              [ngTemplateOutletContext]="{ $implicit: therapyPrograms.phones }"
+              [ngTemplateOutletContext]="ctx(therapyPrograms.phones)"
             />
           </div>
           <div class="svc-card__badge-wrap svc-card__badge-wrap--bottom" tabindex="0">
@@ -134,11 +140,11 @@
     <div class="services__col">
       <ng-container
         [ngTemplateOutlet]="cardTpl"
-        [ngTemplateOutletContext]="{ $implicit: remoteSpecialist }"
+        [ngTemplateOutletContext]="ctx(growthAssessment)"
       />
       <ng-container
         [ngTemplateOutlet]="cardTpl"
-        [ngTemplateOutletContext]="{ $implicit: doctorConsultation }"
+        [ngTemplateOutletContext]="ctx(shadowTeacher)"
       />
     </div>
   </div>
@@ -146,13 +152,15 @@
   <div class="services__row-bottom">
     <ng-container
       [ngTemplateOutlet]="cardTpl"
-      [ngTemplateOutletContext]="{ $implicit: nurseryPicker }"
+      [ngTemplateOutletContext]="ctx(daycareCenters)"
     />
     <ng-container
       [ngTemplateOutlet]="cardTpl"
-      [ngTemplateOutletContext]="{ $implicit: daycareCenters }"
+      [ngTemplateOutletContext]="ctx(nurseryPicker)"
     />
   </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -183,7 +191,7 @@
       } @else {
         <ng-container
           [ngTemplateOutlet]="phonesTpl"
-          [ngTemplateOutletContext]="{ $implicit: card.phones }"
+          [ngTemplateOutletContext]="ctx(card.phones)"
         />
       }
     </div>

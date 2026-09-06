@@ -11,13 +11,17 @@ html {
   /* Also set here, not just on body: relying solely on body→viewport
      overflow propagation left the fixed header's containing block sized to
      the underlying (unclipped) layout width in RTL, shifting it visibly
-     off-center even though the page itself couldn't actually scroll. */
-  overflow-x: hidden;
+     off-center even though the page itself couldn't actually scroll.
+     `clip`, not `hidden`: overflow-x: hidden forces overflow-y to compute
+     as auto (the CSS visible/non-visible pairing rule), which turns
+     html/body into a scroll container that breaks `position: sticky` for
+     every descendant on the page (e.g. the S03 features headline/pin). */
+  overflow-x: clip;
 }
 
 body {
   min-height: 100vh;
-  overflow-x: hidden; /* the S03 stage and hero decorations must never force page scroll */
+  overflow-x: clip; /* the S03 stage and hero decorations must never force page scroll */
 }
 
 img, picture, video, canvas, svg {

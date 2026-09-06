@@ -44,7 +44,11 @@ const rest = (dx: number, dy: number, s: number): Keyframe[] => [
   { at: 1, dx: 0, dy: 0, s: 1 },
 ];
 
-/** §4.3 — measured off the storyboard artboards, stage px at 1440 width. */
+/** §4.3 — measured off the storyboard artboards, stage px at 1440 width.
+ * dx is horizontal displacement as drawn in the (LTR-authored) storyboard.
+ * The page is dir="rtl", which mirrors the grid's flex column/row order —
+ * every side-pair here (c1/c3, c4/c7, c8/c9) has its card content swapped
+ * left↔right in the template to compensate, so dx stays as-authored. */
 export const BENTO_CONFIG: Record<BentoKey, BentoCardConfig> = {
   c1: {
     key: 'c1',
@@ -53,8 +57,8 @@ export const BENTO_CONFIG: Record<BentoKey, BentoCardConfig> = {
     zBump: 0,
     originY: 'top',
     track: [
-      { at: 0, dx: 194, dy: -229, s: 1.971 },
-      { at: 0.5, dx: 45, dy: -0.2, s: 1.26 },
+      { at: 0, dx: -194, dy: -229, s: 1.971 },
+      { at: 0.5, dx: -45, dy: -0.2, s: 1.26 },
       { at: 1, dx: 0, dy: 0, s: 1 },
     ],
   },
@@ -65,8 +69,8 @@ export const BENTO_CONFIG: Record<BentoKey, BentoCardConfig> = {
     zBump: 0,
     originY: 'top',
     track: [
-      { at: 0, dx: -98.5, dy: -129.9, s: 1.494 },
-      { at: 0.5, dx: -0.5, dy: -0.4, s: 1.003 },
+      { at: 0, dx: 98.5, dy: -129.9, s: 1.494 },
+      { at: 0.5, dx: 0.5, dy: -0.4, s: 1.003 },
       { at: 1, dx: 0, dy: 0, s: 1 },
     ],
   },
@@ -77,7 +81,7 @@ export const BENTO_CONFIG: Record<BentoKey, BentoCardConfig> = {
     delay: 0,
     zBump: 0,
     originY: 'top',
-    track: rest(178, -0.25, 1.59),
+    track: rest(-178, -0.25, 1.59),
   },
   c7: {
     key: 'c7',
@@ -85,18 +89,18 @@ export const BENTO_CONFIG: Record<BentoKey, BentoCardConfig> = {
     delay: 0.04,
     zBump: 0,
     originY: 'top',
-    track: rest(-204, -14.2, 1.74),
+    track: rest(204, -14.2, 1.74),
   },
   logo: { key: 'logo', row: 'r2', delay: 0.08, zBump: 0, track: rest(0, 0, 0.575) },
-  c5: { key: 'c5', row: 'r2', delay: 0.3, zBump: 1, track: rest(-2.6, -67.34, 1.657) },
-  c6: { key: 'c6', row: 'r2', delay: 0.36, zBump: 1, track: rest(-0.5, 64.75, 1.648) },
+  c5: { key: 'c5', row: 'r2', delay: 0.3, zBump: 1, track: rest(2.6, -67.34, 1.657) },
+  c6: { key: 'c6', row: 'r2', delay: 0.36, zBump: 1, track: rest(0.5, 64.75, 1.648) },
   c8: {
     key: 'c8',
     row: 'r3',
     delay: 0,
     zBump: 0,
     originY: 'top',
-    track: rest(293.5, 158.5, 1.385),
+    track: rest(-293.5, 158.5, 1.385),
   },
   c9: {
     key: 'c9',
@@ -104,7 +108,7 @@ export const BENTO_CONFIG: Record<BentoKey, BentoCardConfig> = {
     delay: 0.05,
     zBump: 0,
     originY: 'top',
-    track: rest(-294.6, 228.0, 1.562),
+    track: rest(294.6, 228.0, 1.562),
   },
 };
 

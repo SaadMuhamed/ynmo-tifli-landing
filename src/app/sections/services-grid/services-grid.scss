@@ -10,11 +10,30 @@ $banner-text-blue: #0082ad; /* Brand & interaction/secondary-pressed, blue (Figm
 .services {
   position: relative;
   padding: var(--space-72) var(--gutter) 0;
+  background: var(--surface-page);
+}
+
+/* Desktop: JS gives this an explicit height (stage height + 3 viewport
+   heights of scroll room) and adds `is-pinned` to the stage below, pinning
+   the whole assembly for that much scroll before releasing — no
+   scroll-jacking JS, just a tall box + `position: sticky`. Forbidden on
+   touch (§9); narrow viewports leave this at its default auto height. */
+.services__pin-track {
+  position: relative;
+  width: 100%;
+}
+
+.services__pin-stage {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-72);
-  background: var(--surface-page);
+
+  &.is-pinned {
+    position: sticky;
+    top: 162px; /* floating header (48px gap + ~90px bar) + 24px clearance */
+  }
 }
 
 .services__stack {
@@ -26,21 +45,13 @@ $banner-text-blue: #0082ad; /* Brand & interaction/secondary-pressed, blue (Figm
 }
 
 .services__headline {
-  /* §4.1 optional refinement: headline stays put while the bento cards
-     scroll into place below it, releasing once the section ends (default
-     `position: sticky` behaviour — no JS needed). */
-  position: sticky;
-  top: 162px; /* floating header (48px gap + ~90px bar) + 24px clearance */
+  position: relative;
   z-index: 40; /* above every card, including mid-flight (max z-index 31) */
   width: 100%;
   max-width: 696px;
   display: flex;
   justify-content: center;
   background: var(--surface-page);
-
-  @include below-1024 {
-    top: 114px; /* header sits flush at the top below 1024 */
-  }
 
   h2 {
     position: relative;
@@ -401,6 +412,9 @@ $banner-text-blue: #0082ad; /* Brand & interaction/secondary-pressed, blue (Figm
 @include below-1024 {
   .services {
     padding-top: var(--space-48);
+  }
+
+  .services__pin-stage {
     gap: var(--space-48);
   }
 

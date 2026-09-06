@@ -22,8 +22,18 @@ import {
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
 const NARROW_QUERY = '(max-width: 1023px)';
 const STAGE_WIDTH = 1440;
-/** representative card per row anchor (§4.2) — its measured centre stands in for the row line */
+/** representative card per row anchor (§4.2), used by the narrow/mobile
+ * fallback only — its measured centre stands in for the row line. */
 const ROW_ANCHOR_KEY: Record<BentoRow, BentoKey> = { r1: 'c1', r2: 'c4', r3: 'c8' };
+
+/** Desktop pin: the section is captured for this many viewport-heights of
+ * scroll per row (3 rows, in sequence) before releasing, so a reader keeps
+ * scrolling through the assembly instead of it playing out passively in
+ * normal flow. Forbidden on touch (§9 of the build plan) — narrow viewports
+ * use the plain per-card fallback below instead. */
+const EXTRA_VH_PER_ROW = 1;
+const ROW_INDEX: Record<BentoRow, number> = { r1: 0, r2: 1, r3: 2 };
+const ROW_COUNT = 3;
 
 /** offsetTop walked up the offsetParent chain — transform-immune, unlike
  * getBoundingClientRect(), so it can't be corrupted by reading it while the
@@ -71,11 +81,32 @@ export class ServicesGrid implements OnDestroy {
   protected readonly nurseryPicker = this.get('nursery-picker');
   protected readonly daycareCenters = this.get('daycare-centers');
 
+  /** `[ngTemplateOutletContext]="{ $implicit: x }"` builds a new object
+   * literal every change-detection run; NgTemplateOutlet compares that
+   * context by reference and, seeing a "new" one, tears down and rebuilds
+   * the embedded view — destroying and recreating every card's DOM even
+   * though the underlying data never changed. That silently orphans the
+   * animation driver's cached element references. Cache one stable context
+   * object per value instead. */
+  private readonly ctxCache = new Map<unknown, { $implicit: unknown }>();
+  protected ctx<T>(value: T): { $implicit: T } {
+    let entry = this.ctxCache.get(value);
+    if (!entry) {
+      entry = { $implicit: value };
+      this.ctxCache.set(value, entry);
+    }
+    return entry as { $implicit: T };
+  }
+
   private readonly elRef: ElementRef<HTMLElement> = inject(ElementRef);
 
   private section: HTMLElement | null = null;
+  private track: HTMLElement | null = null;
+  private stage: HTMLElement | null = null;
   private cards: RuntimeCard[] = [];
   private rowAnchorY: Record<BentoRow, number> = { r1: 0, r2: 0, r3: 0 };
+  private trackTop = 0;
+  private extraScrollPx = 0;
   private stageScale = 1;
   private narrow = false;
   private reducedMotion = false;
@@ -108,6 +139,8 @@ export class ServicesGrid implements OnDestroy {
     const section = this.elRef.nativeElement.querySelector('.services') as HTMLElement | null;
     if (!section) return;
     this.section = section;
+    this.track = section.querySelector('.services__pin-track') as HTMLElement | null;
+    this.stage = section.querySelector('.services__pin-stage') as HTMLElement | null;
 
     this.cards = Array.from(section.querySelectorAll('[data-bento-key]'))
       .map((node) => {
@@ -150,14 +183,39 @@ export class ServicesGrid implements OnDestroy {
     this.narrow = window.matchMedia(NARROW_QUERY).matches;
     this.stageScale = Math.min(1, rect.width / STAGE_WIDTH);
 
-    (Object.keys(ROW_ANCHOR_KEY) as BentoRow[]).forEach((row) => {
-      const anchorEl = this.cards.find((c) => c.key === ROW_ANCHOR_KEY[row])?.el;
-      if (!anchorEl) return;
-      // offsetTop (unlike getBoundingClientRect) ignores the in-flight
-      // transform, so a ResizeObserver re-measure mid-animation can't bake a
-      // transformed position in as the row's anchor.
-      this.rowAnchorY[row] = pageOffsetTop(anchorEl) + anchorEl.offsetHeight / 2;
-    });
+    if (this.narrow) {
+      this.teardownPin();
+      (Object.keys(ROW_ANCHOR_KEY) as BentoRow[]).forEach((row) => {
+        const anchorEl = this.cards.find((c) => c.key === ROW_ANCHOR_KEY[row])?.el;
+        if (!anchorEl) return;
+        // offsetTop (unlike getBoundingClientRect) ignores the in-flight
+        // transform, so a ResizeObserver re-measure mid-animation can't bake
+        // a transformed position in as the row's anchor.
+        this.rowAnchorY[row] = pageOffsetTop(anchorEl) + anchorEl.offsetHeight / 2;
+      });
+    } else {
+      this.setupPin();
+    }
+  }
+
+  /** Pins `.services__pin-stage` in place for `extraScrollPx` of scroll by
+   * giving its `.services__pin-track` parent that much extra height —
+   * releases on its own once the track's bottom passes the sticky point,
+   * no scroll-jacking JS required. */
+  private setupPin(): void {
+    if (!this.track || !this.stage) return;
+    this.stage.classList.add('is-pinned');
+    this.extraScrollPx = window.innerHeight * EXTRA_VH_PER_ROW * ROW_COUNT;
+    // stage's own intrinsic height is unaffected by position: sticky.
+    this.track.style.height = `${this.stage.offsetHeight + this.extraScrollPx}px`;
+    this.trackTop = pageOffsetTop(this.track);
+  }
+
+  private teardownPin(): void {
+    if (!this.track || !this.stage) return;
+    this.stage.classList.remove('is-pinned');
+    this.track.style.height = '';
+    this.extraScrollPx = 0;
   }
 
   private readonly onScroll = (): void => {
@@ -166,6 +224,7 @@ export class ServicesGrid implements OnDestroy {
 
   private readonly onResize = (): void => {
     this.dirty = true;
+    this.measure();
   };
 
   private readonly onMotionPrefChange = (e: MediaQueryListEvent): void => {
@@ -202,13 +261,23 @@ export class ServicesGrid implements OnDestroy {
     const table = this.narrow ? BENTO_CONFIG_REDUCED : BENTO_CONFIG;
     const duration = this.narrow ? DURATION_REDUCED : DURATION;
 
+    // Desktop: one pinned progress (0→1) split into 3 equal sequential
+    // windows, one per row — row 2 doesn't start until row 1's window ends.
+    // Narrow: no pin, each row triggers independently as its own anchor
+    // line crosses the viewport bottom during normal scroll (§4.2 as built).
+    const pinnedProgress =
+      !this.narrow && this.extraScrollPx > 0
+        ? clamp((scrollY - this.trackTop) / this.extraScrollPx, 0, 1)
+        : 0;
+
     for (const card of this.cards) {
       if (this.forcedRest.has(card.key)) continue;
 
       const cfg: BentoCardConfig = table[card.key];
       const el = card.el;
-      const anchorY = this.rowAnchorY[cfg.row];
-      const q = (scrollY + vh - anchorY) / vh;
+      const q = this.narrow
+        ? (scrollY + vh - this.rowAnchorY[cfg.row]) / vh
+        : clamp((pinnedProgress - ROW_INDEX[cfg.row] / ROW_COUNT) * ROW_COUNT, 0, 1);
       const p = clamp((q - cfg.delay) / duration, 0, 1);
 
       if (p <= 0) {
