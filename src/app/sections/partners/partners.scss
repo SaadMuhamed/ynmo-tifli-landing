@@ -65,7 +65,10 @@
 
 .partners__scribble {
   position: absolute;
-  inset: -20% -8%;
+  /* shifted down from the original -20%/-20% split (top/bottom) so the
+     purple highlight sits behind the white text's actual vertical
+     position instead of riding high above it. */
+  inset: -12% -8% -28% -8%;
   width: auto;
   height: auto;
   max-width: none;

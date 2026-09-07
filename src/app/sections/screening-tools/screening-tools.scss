@@ -158,7 +158,9 @@
   font-weight: var(--fw-bold);
   line-height: 1.2;
   color: var(--text-primary);
-  text-align: end;
+  /* `end` resolves to the LEFT edge under this doc's dir="rtl" — wrong for
+     Arabic. `start` is the RTL-correct "packs right" value. */
+  text-align: start;
 }
 
 .tool-card__age {

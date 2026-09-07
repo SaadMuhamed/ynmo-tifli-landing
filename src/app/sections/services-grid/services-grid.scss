@@ -9,7 +9,8 @@ $banner-text-blue: #0082ad; /* Brand & interaction/secondary-pressed, blue (Figm
 
 .services {
   position: relative;
-  padding: var(--space-72) var(--gutter) 0;
+  padding-block: var(--space-72);
+  padding-inline: var(--gutter);
   background: var(--surface-page);
 }
 

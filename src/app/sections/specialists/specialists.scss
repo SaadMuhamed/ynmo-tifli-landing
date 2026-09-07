@@ -20,19 +20,59 @@
 }
 
 .specialists__collage {
-  flex: 1 1 0;
+  /* node 956:11313 — collage (526px) and text (594px) are NOT an even 50/50
+     split; flex-grow in that ratio (with basis:0) reproduces it regardless
+     of container width. An equal split over-widens the collage, which
+     over-heightens it too (fixed aspect ratio), inflating the row's
+     align-items:center gap on both sides.
+     max-width caps it further below the Figma-exact 526px: with
+     align-items:center kept, the collage's own (tall, portrait) aspect
+     ratio against the much shorter text column still leaves real breathing
+     room above/below the text even at the correct ratio — capping narrower
+     shrinks that gap toward the section's normal padding-driven size
+     without giving up centering. The surplus flex space goes to
+     .specialists__text (uncapped, same flex-grow). */
+  flex: 526 1 0;
+  max-width: 300px;
   min-width: 0;
-  display: block;
+  position: relative;
+  aspect-ratio: 526 / 547;
+}
 
-  img {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
+/* node 1110:23617 — the team photo (blob mask + globe badge), its own
+   frame with no accreditation logos baked in. Figma coordinates are
+   physical/LTR, used as plain left/top regardless of the page's RTL. */
+.specialists__collage-photo {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 86.7%;
+  /* the width/height HTML attributes set the img's intrinsic aspect ratio
+     for the browser's lazy-load viewport check before it's loaded — without
+     an explicit height:auto here, the unscaled height="485" attribute wins
+     outright over the scaled width, distorting the image. */
+  height: auto;
+  display: block;
+  pointer-events: none;
+}
+
+/* node 1110:23628 — the separate "معتمدين من" + accreditation-logo card
+   stack, exported with its own drop-shadow bleed baked in (hence the
+   canvas being bigger than the nominal 399×254 layout box) — positioned
+   so that bled canvas's actual visible content lines up with Figma's
+   nominal (127, 293) offset, not the canvas's own edges. */
+.specialists__collage-badges {
+  position: absolute;
+  left: 8.9%;
+  top: 52.1%;
+  width: 100%;
+  height: auto;
+  display: block;
+  pointer-events: none;
 }
 
 .specialists__text {
-  flex: 1 1 0;
+  flex: 594 1 0;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -71,18 +111,20 @@
 }
 
 .specialists__highlight-bg {
-  /* A percentage `inset` shorthand + auto width/height computes against
-     this span's height, which is indeterminate (inline-flex, no explicit
-     height) — that resolves to a zero-height box and the image silently
-     never paints. Sizing from a fixed width (auto height derives safely
-     from *that*, per the image's own aspect ratio) and centering via
-     transform sidesteps the indeterminate-container-height trap. */
+  /* node 1307:35436 — Figma positions this as a 244.18×165.76 box flush
+     with the heading line's own left edge (top -47.32px, i.e. mostly above
+     the text), centering a 238.48×156.96 rotated (-2.14deg) image inside
+     it. Baked that centering math into fixed left/top so a plain <img>
+     lands exactly where Figma's wrapper+centered-image pair would. Uses
+     physical left/top (not logical inset-inline-start) because Figma's
+     coordinates are already physical/LTR — this is right regardless of
+     the heading's RTL direction. */
   position: absolute;
-  top: 50%;
-  inset-inline-start: -10px;
-  width: 160px;
-  height: auto;
-  transform: translateY(-50%);
+  left: 2.85px;
+  top: -42.92px;
+  width: 238.48px;
+  height: 156.96px;
+  transform: rotate(-2.14deg);
   z-index: 0;
   pointer-events: none;
 }
@@ -179,8 +221,13 @@
   width: calc(100% + var(--gutter) + var(--rail-shadow-room));
   margin-inline-start: calc(-1 * var(--rail-shadow-room));
   margin-inline-end: calc(-1 * var(--gutter));
-  margin-block-start: var(--space-72);
-  padding-block: var(--space-24);
+  margin-block-start: var(--space-24);
+  /* overflow-x: auto forces overflow-y to auto too (CSS can't mix visible
+     with a non-visible axis) — the extra bottom padding keeps the card's
+     box-shadow (0 16px 32px) from getting clipped at the scrollport edge. */
+  padding-block-start: calc(var(--space-24) / 2);
+  padding-block-end: var(--space-56);
+  margin-block-end: calc(-1 * (var(--space-56) - var(--space-24)));
   padding-inline-start: var(--rail-shadow-room);
   scroll-padding-inline: 0;
   -webkit-mask-image: var(--rail-mask);
@@ -219,7 +266,7 @@
   flex-direction: column;
   gap: var(--space-32);
   background: color-mix(in srgb, var(--surface-2) 50%, var(--surface-page));
-  border: 2px solid var(--border-white);
+  border-block: 2px solid var(--border-white);
   border-radius: var(--radius-lg);
   box-shadow: 0 16px 32px 0 var(--shadow-tint-neutral);
   padding: var(--space-40);

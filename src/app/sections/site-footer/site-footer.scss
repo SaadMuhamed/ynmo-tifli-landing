@@ -19,13 +19,25 @@
   border-start-start-radius: var(--radius-hero);
   border-end-end-radius: var(--radius-hero);
   border-end-start-radius: 40px;
-  padding: var(--space-124);
+  /* Figma node 1110:24001 (see also 956:11733): the white card's own box
+     doesn't span the full section width — it's flush against the
+     inline-end (left, in RTL) edge (0 gap, illustration bleeds there) but
+     stops one standard --gutter short of the inline-start (right) edge,
+     revealing the page background in that strip. That outer gap is a
+     margin on the card itself, not padding inside it — the previous fix
+     (doubling inline-start padding) faked the text's inset correctly but
+     kept the white background spanning full-bleed, which doesn't match. */
+  margin-inline-start: var(--gutter);
+  padding-block: var(--space-124);
+  padding-inline-start: var(--gutter);
   padding-inline-end: 0;
   margin-block-end: -140px;
 
   @include below-1024 {
     flex-direction: column;
-    padding: var(--space-48) 32px;
+    margin-inline-start: 0;
+    padding-block: var(--space-48);
+    padding-inline: var(--gutter);
     margin-block-end: 0;
   }
 }
@@ -148,13 +160,14 @@
   background: var(--brand-primary);
   border-start-start-radius: var(--radius-hero);
   overflow: clip;
-  padding: var(--space-124);
+  padding-inline: var(--gutter);
+  padding-block-end: var(--space-124);
   padding-block-start: calc(var(--space-124) + 140px);
   color: var(--text-on-brand);
 
   @include below-1024 {
-    padding: 32px;
-    padding-block-start: 32px;
+    padding-inline: var(--gutter);
+    padding-block: 32px;
     gap: var(--space-48);
   }
 }
@@ -189,7 +202,10 @@
   z-index: 1;
   display: flex;
   align-items: flex-end;
-  justify-content: center;
+  /* space-between lets the gap between the two blocks grow to fill the
+     row, anchoring one to each side, instead of clustering them in the
+     middle with a fixed gap. */
+  justify-content: space-between;
   gap: var(--space-48);
   width: 100%;
 

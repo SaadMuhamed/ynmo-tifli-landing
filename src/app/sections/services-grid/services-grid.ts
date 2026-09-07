@@ -31,7 +31,20 @@ const ROW_ANCHOR_KEY: Record<BentoRow, BentoKey> = { r1: 'c1', r2: 'c4', r3: 'c8
  * scrolling through the assembly instead of it playing out passively in
  * normal flow. Forbidden on touch (§9 of the build plan) — narrow viewports
  * use the plain per-card fallback below instead. */
-const EXTRA_VH_PER_ROW = 1;
+/* How much scroll distance (in viewport-heights) each row's reveal takes —
+   higher = slower/more deliberate scroll-through. This does NOT add visible
+   dead space on its own: position: sticky consumes the whole buffer by
+   keeping the stage visibly pinned in view while it's scrolled through,
+   releasing cleanly right as the track's bottom reaches the sticky point.
+   (The dead-space bug this comment used to warn about was actually a
+   hydration-timing issue — see the constructor — not this constant; don't
+   re-shrink this to fight a gap, check there first. Also: 0 breaks the
+   animation outright, since it collapses extraScrollPx to 0, which
+   permanently pins pinnedProgress at 0 — every card stuck at p=0/hidden,
+   since the progress calc guards div-by-zero by short-circuiting to 0
+   rather than 1.) */
+const EXTRA_VH_PER_ROW = 0.45;
+const PIN_ENABLED = true;
 const ROW_INDEX: Record<BentoRow, number> = { r1: 0, r2: 1, r3: 2 };
 const ROW_COUNT = 3;
 /** Minimum sticky offset for the whole pinned stage — clears the floating
@@ -49,7 +62,7 @@ const PINNED_HEADLINE_GAP = 24;
  * clip there. Generous at the bottom so an entering row's own
  * downward-displaced start pose isn't cut off. */
 const OVERSHOOT_TOP = 50;
-const OVERSHOOT_BOTTOM = 150;
+const OVERSHOOT_BOTTOM = 80;
 
 /** offsetTop walked up the offsetParent chain — transform-immune, unlike
  * getBoundingClientRect(), so it can't be corrupted by reading it while the
@@ -139,10 +152,33 @@ export class ServicesGrid implements OnDestroy {
   private mqReduced?: MediaQueryList;
 
   constructor() {
-    afterNextRender(() => this.init());
+    // afterNextRender fires before a later hydration-mismatch reconciliation
+    // pass finishes discarding and recreating this section's DOM (confirmed
+    // via instrumentation: the very node init() grabs and mutates goes
+    // isConnected:false within ~200ms while a fresh replacement takes its
+    // place) — init() was silently applying the pin setup to a soon-to-be
+    // orphaned tree while the live one stayed untouched.
+    //
+    // ApplicationRef.isStable looked like the principled fix, but other
+    // components on this page (carousels/timers) keep NgZone perpetually
+    // bouncing between stable/unstable — it never settles, so it can't be
+    // used as a one-shot "reconciliation is done" signal here. A fixed delay
+    // is a blunter tool, but instrumentation confirmed setup applied at
+    // 4000ms survives (vs. ~200ms getting silently discarded), and this
+    // section sits well below the fold, so the delay is imperceptible in
+    // practice — by the time a reader scrolls this far, far more than 1s has
+    // already elapsed since load.
+    afterNextRender(() => setTimeout(() => this.init(), 1000));
   }
 
   ngOnDestroy(): void {
+    // init() (and everything it registers — rAF, window listeners,
+    // ResizeObserver) only ever runs client-side (afterNextRender skips SSR
+    // outright). But ngOnDestroy itself runs on the server too, when the SSR
+    // injector tears down after each render — cancelAnimationFrame and
+    // window are browser-only globals, undefined in Node, so calling them
+    // unconditionally threw on every single SSR request.
+    if (typeof window === 'undefined') return;
     cancelAnimationFrame(this.rafHandle);
     window.removeEventListener('scroll', this.onScroll);
     window.removeEventListener('resize', this.onResize);
@@ -155,7 +191,7 @@ export class ServicesGrid implements OnDestroy {
     this.mqReduced = window.matchMedia(REDUCED_MOTION_QUERY);
     this.reducedMotion = this.mqReduced.matches;
     this.mqReduced.addEventListener('change', this.onMotionPrefChange);
-    if (this.reducedMotion) return; // static rest markup stands as-is
+    if (this.reducedMotion || !PIN_ENABLED) return; // static rest markup stands as-is
 
     const section = this.elRef.nativeElement.querySelector('.services') as HTMLElement | null;
     if (!section) return;

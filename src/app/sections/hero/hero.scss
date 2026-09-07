@@ -9,10 +9,10 @@
      would butt straight up against the overhanging illustration. Below
      1024 that overhang is disabled (.hero__band height:auto there), so
      only the normal section gap applies. */
-  padding-block-end: calc(258px + var(--space-64));
+  padding-block-end: calc(258px + var(--space-32));
 
   @include below-1024 {
-    padding-block-end: var(--space-64);
+    padding-block-end: var(--space-32);
   }
 }
 
@@ -75,6 +75,7 @@
 }
 
 .hero__headline {
+  position: relative;
   font-size: var(--fs-60);
   font-weight: var(--fw-bold);
   line-height: 1.2;
@@ -97,13 +98,34 @@
      for the equivalent highlight elsewhere (S02/S03/S04) at 12.0:1. */
   color: #39cbf9;
 }
-.hero__headline-squiggle {
-  display: inline-block;
-  width: 32px;
-  height: 32px;
-  vertical-align: middle;
-  margin-inline-start: var(--space-8);
-  transform: rotate(13.59deg) skewX(-2.95deg);
+.hero__headline-icon {
+  /* sticks to the bottom-end corner of the blue highlight text ("خطوة
+     واحدة") — end is the physical-left side since the page is dir="rtl".
+     .hero__headline-icon isn't a child of .hero__headline-highlight (it's
+     a sibling in the markup), so it's positioned off .hero__headline
+     instead using that corner's measured offset from the headline's own
+     box (771x144 @ fs-60). below-1024/768 figures are that same offset
+     scaled by the fs-44/fs-60 ratio (0.733) used for the icon's size. */
+  position: absolute;
+  z-index: 2;
+  right: 634px;
+  bottom: -9px;
+  /* native art is 89x96 with its own baked-in glow — no rotation needed. */
+  width: 40px;
+  height: 43px;
+
+  @include below-1024 {
+    right: 465px;
+    bottom: -7px;
+    width: 29px;
+    height: 32px;
+  }
+  @include below-768 {
+    right: 465px;
+    bottom: -7px;
+    width: 29px;
+    height: 32px;
+  }
 }
 
 .hero__subhead {
@@ -116,6 +138,10 @@
 
 .hero__ctas {
   display: flex;
+  /* default (stretch) was silently forcing both buttons to the taller
+     primary's height regardless of their own padding — every previous
+     size tweak to --secondary's padding-block was a no-op because of this. */
+  align-items: center;
   flex-wrap: wrap;
   justify-content: center;
   gap: var(--space-24);
@@ -136,7 +162,9 @@
     color: var(--brand-primary);
     font-size: var(--fs-16);
     font-weight: var(--fw-bold);
-    padding-block: var(--space-16);
+    /* deliberately shorter than --primary's padding-block (space-20) — the
+       two buttons aren't meant to match height, per feedback. */
+    padding-block: var(--space-12);
     box-shadow: var(--shadow-header-float);
   }
 

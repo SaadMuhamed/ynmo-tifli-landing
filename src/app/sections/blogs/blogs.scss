@@ -43,7 +43,9 @@
   font-weight: var(--fw-bold);
   line-height: 1.2;
   color: var(--text-primary);
-  text-align: end;
+  /* `end` resolves to the LEFT edge under this doc's dir="rtl" — wrong for
+     Arabic. `start` is the RTL-correct "packs right" value. */
+  text-align: start;
 
   @include below-1024 {
     text-align: center;
@@ -146,7 +148,8 @@
   display: flex;
   gap: var(--space-16);
   flex-wrap: wrap;
-  justify-content: center;
+  /* flex-start packs to the RTL start (right) instead of centering. */
+  justify-content: flex-start;
   width: 100%;
 }
 
@@ -177,11 +180,22 @@
   width: 100%;
   /* Sits outside .blogs__body's max-width (see the template) so this fills
      the section's own wider content box instead of the letterboxed
-     container; the padding keeps card shadows clear of the scroll clip. */
+     container. Bleeds past .blogs's own inline-end (left, in RTL) gutter
+     so the rail's scrollable content can reach the true viewport edge
+     instead of stopping at the section's normal side margin. */
+  margin-inline-end: calc(-1 * var(--gutter));
   margin-block-start: -40px;
-  padding-inline: var(--space-24);
+  padding-inline-start: var(--space-24);
+  padding-inline-end: calc(var(--gutter) + var(--space-24));
   scroll-padding-inline: var(--space-24);
-  padding-block: var(--space-16);
+  /* overflow-x:auto forces overflow-y non-visible too — the cards' own
+     drop shadow (0 56px 32px) reaches ~88px below and ~32px past every
+     other edge, so it needs padding this generous or it gets hard-clipped
+     by the scrollport; the negative margin-block-end reclaims most of
+     that added space so the section's total height doesn't grow to match. */
+  padding-block-start: var(--space-32);
+  padding-block-end: var(--space-80);
+  margin-block-end: calc(-1 * (var(--space-80) - var(--space-24)));
 
   &::-webkit-scrollbar {
     display: none;

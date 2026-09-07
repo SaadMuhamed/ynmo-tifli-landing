@@ -174,7 +174,7 @@ export const JOURNEY: JourneyContent = {
    */
   promos: [
     {
-      headingPrefix: 'ابدأ الآن و حمّل تطبيق ',
+      headingPrefix: 'ابدأ الآن و حمّل\nتطبيق ',
       headingBrand: 'ينمو طفلي',
       accent: 'ynmo',
       icon: '/assets/icons/journey/ynmo-app-icon.png',
@@ -387,7 +387,7 @@ export const WHY_US: WhyUsContent = {
     { titleLine1: 'التركيز على', titleLine2: 'الراحة', icon: '/assets/icons/why-us/tile-family-love.svg' },
     { titleLine1: 'خصوصية', titleLine2: 'تامة', icon: '/assets/icons/why-us/tile-shield-check.svg' },
     { titleLine1: 'برامج تدخل', titleLine2: 'مبكر فعالة', icon: '/assets/icons/why-us/tile-favorite-chat.svg' },
-    { titleLine1: 'مراقبة الطفل', titleLine2: 'في بيئته الطبيعية', icon: '/assets/icons/why-us/tile-house.svg' },
+    { titleLine1: 'مراقبة الطفل', titleLine2: 'في بيئته الطبيعية', icon: '/assets/icons/why-us/tile-house.png' },
   ],
 };
 

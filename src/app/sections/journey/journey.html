@@ -10,9 +10,11 @@
   </div>
 
   <ol class="journey__steps">
-    @for (step of journey.steps; track step.number) {
+    @for (step of journey.steps; track step.number; let last = $last) {
       <li class="step-card">
-        <span class="step-card__badge">{{ step.number }}</span>
+        <span class="step-card__badge">
+          <img [src]="'/assets/icons/journey/badge-' + step.number + '.png'" alt="{{ step.number }}" />
+        </span>
         <div class="step-card__body">
           <h3 class="step-card__title">{{ step.title }}</h3>
           <p class="step-card__desc">{{ step.description }}</p>
@@ -28,6 +30,12 @@
           <img class="step-card__illustration" [src]="step.illustration" alt="" aria-hidden="true" loading="lazy" decoding="async" />
         </picture>
       </li>
+      @if (!last) {
+        <!-- node 1110:23090 / 22879 / 22660 — connector between adjacent step cards -->
+        <li class="journey__connector" aria-hidden="true">
+          <img src="/assets/icons/journey/step-connector.svg" alt="" />
+        </li>
+      }
     }
   </ol>
 
