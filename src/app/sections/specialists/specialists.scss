@@ -22,18 +22,10 @@
 .specialists__collage {
   /* node 956:11313 — collage (526px) and text (594px) are NOT an even 50/50
      split; flex-grow in that ratio (with basis:0) reproduces it regardless
-     of container width. An equal split over-widens the collage, which
-     over-heightens it too (fixed aspect ratio), inflating the row's
-     align-items:center gap on both sides.
-     max-width caps it further below the Figma-exact 526px: with
-     align-items:center kept, the collage's own (tall, portrait) aspect
-     ratio against the much shorter text column still leaves real breathing
-     room above/below the text even at the correct ratio — capping narrower
-     shrinks that gap toward the section's normal padding-driven size
-     without giving up centering. The surplus flex space goes to
-     .specialists__text (uncapped, same flex-grow). */
+     of container width — at the full 1192px container this lands the
+     collage at its Figma-exact 526px, scaling down proportionally below
+     that. */
   flex: 526 1 0;
-  max-width: 300px;
   min-width: 0;
   position: relative;
   aspect-ratio: 526 / 547;
@@ -49,23 +41,27 @@
   width: 86.7%;
   /* the width/height HTML attributes set the img's intrinsic aspect ratio
      for the browser's lazy-load viewport check before it's loaded — without
-     an explicit height:auto here, the unscaled height="485" attribute wins
+     an explicit height:auto here, the unscaled height attribute wins
      outright over the scaled width, distorting the image. */
   height: auto;
   display: block;
   pointer-events: none;
 }
 
-/* node 1110:23628 — the separate "معتمدين من" + accreditation-logo card
-   stack, exported with its own drop-shadow bleed baked in (hence the
-   canvas being bigger than the nominal 399×254 layout box) — positioned
-   so that bled canvas's actual visible content lines up with Figma's
-   nominal (127, 293) offset, not the canvas's own edges. */
+/* node 1110:23628 ("Logos") — per Figma metadata the CARD content sits at
+   (127, 293) with a 399×254 nominal box inside the 526×547 collage frame
+   (24.14%/53.56%, 75.86% wide). The export's canvas is bigger than that —
+   deliberately kept wide, uncropped, to preserve the cards' drop-shadow
+   fading smoothly to transparent instead of being cut mid-falloff — so the
+   *image element* is offset/sized larger than the nominal box (14.16%/
+   53.02%, 97.06% wide) such that the card content within it still lands
+   exactly on that nominal position; the extra canvas bleeds outward
+   unclipped. */
 .specialists__collage-badges {
   position: absolute;
-  left: 8.9%;
-  top: 52.1%;
-  width: 100%;
+  left: 14.16%;
+  top: 53.02%;
+  width: 97.06%;
   height: auto;
   display: block;
   pointer-events: none;
@@ -172,6 +168,7 @@
 
 .chip {
   display: inline-flex;
+  flex-direction: row-reverse;
   align-items: center;
   gap: var(--space-8);
   background: var(--surface-2);
@@ -221,7 +218,7 @@
   width: calc(100% + var(--gutter) + var(--rail-shadow-room));
   margin-inline-start: calc(-1 * var(--rail-shadow-room));
   margin-inline-end: calc(-1 * var(--gutter));
-  margin-block-start: var(--space-24);
+  margin-block-start: var(--space-56);
   /* overflow-x: auto forces overflow-y to auto too (CSS can't mix visible
      with a non-visible axis) — the extra bottom padding keeps the card's
      box-shadow (0 16px 32px) from getting clipped at the scrollport edge. */

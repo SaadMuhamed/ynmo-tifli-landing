@@ -2,25 +2,32 @@
 <section id="specialists" class="specialists" aria-labelledby="specialists-heading">
   <div class="specialists__intro">
     <div class="specialists__collage">
-      <img
-        class="specialists__collage-photo"
-        src="/assets/img/specialists/collage-photo.png"
-        [alt]="specialists.collageAlt"
-        loading="lazy"
-        decoding="async"
-        width="456"
-        height="485"
-      />
-      <img
-        class="specialists__collage-badges"
-        src="/assets/img/specialists/collage-badges.png"
-        alt=""
-        aria-hidden="true"
-        loading="lazy"
-        decoding="async"
-        width="527"
-        height="398"
-      />
+      <picture>
+        <source srcset="/assets/img/specialists/collage-photo-v2.webp" type="image/webp" />
+        <img
+          class="specialists__collage-photo"
+          src="/assets/img/specialists/collage-photo-v2.png"
+          [alt]="specialists.collageAlt"
+          loading="lazy"
+          decoding="async"
+          width="874"
+          height="959"
+        />
+      </picture>
+
+      <picture>
+        <source srcset="/assets/img/specialists/collage-badges.webp" type="image/webp" />
+        <img
+          class="specialists__collage-badges"
+          src="/assets/img/specialists/collage-badges.png"
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+          width="1021"
+          height="774"
+        />
+      </picture>
     </div>
 
     <div class="specialists__text">

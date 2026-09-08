@@ -52,9 +52,9 @@
 
         <div class="testimonial-card__body">
           <div class="testimonial-card__head">
-            <picture>
+            <picture class="testimonial-card__avatar">
               <source [srcset]="card.avatarWebp" type="image/webp" />
-              <img class="testimonial-card__avatar" [src]="card.avatar" [alt]="card.name" width="64" height="64" loading="lazy" decoding="async" />
+              <img [src]="card.avatar" [alt]="card.name" width="64" height="64" loading="lazy" decoding="async" />
             </picture>
             <div class="testimonial-card__names">
               <h3 class="testimonial-card__name">{{ card.name }}</h3>

@@ -2,6 +2,11 @@
 
 .why-us {
   position: relative;
+  /* the reason-tiles' box-shadow bleeds past the section's own box; without
+     a stacking order above its normal-flow sibling, the next section's
+     opaque background paints over (clips) that bleed instead of it showing
+     through normally. */
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -112,10 +117,12 @@
 
 /* ---------- reason tiles ---------- */
 .reason-grid {
-  /* Figma's exact composition (node 956:11516): a fixed 3-column, 228px-wide
-     grid — 3 tiles on row 1, 2 tiles on row 2 sitting under columns 1–2. */
+  /* Figma's exact composition (node 956:11516): a 3-column grid — 3 tiles
+     on row 1, 2 tiles on row 2 sitting under columns 1–2. Columns are
+     flexible (1fr) rather than fixed-228px so the tiles stretch to fill
+     the frame's full width instead of leaving trailing space. */
   display: grid;
-  grid-template-columns: repeat(3, 228px);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   justify-content: flex-start;
   gap: var(--space-16) var(--space-24);
   flex: 1 1 0;
@@ -132,7 +139,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-32);
-  width: 228px;
+  width: 100%;
   background: var(--surface-translucent-white);
   border: 2px solid var(--border-white);
   border-radius: var(--radius-xxl);

@@ -177,7 +177,17 @@
   gap: var(--space-24);
   overflow-x: auto;
   scroll-snap-type: x proximity;
-  width: 100%;
+  /* Flex alignment positions the MARGIN box, not the border box — sizing
+     this at 100% and relying only on a negative margin to bleed past
+     .blogs's padding just shrinks the margin box during alignment instead
+     of extending past the container. Growing the box itself by the gutter
+     (then anchoring to the inline-start/right edge below) is what actually
+     lands the left edge at the section's true edge. */
+  width: calc(100% + var(--gutter));
+  /* .blogs centers its children (align-items: center) by default; anchor
+     to the inline-start (right) edge instead so the extra width above
+     lands entirely on the left, not split evenly across both sides. */
+  align-self: flex-start;
   /* Sits outside .blogs__body's max-width (see the template) so this fills
      the section's own wider content box instead of the letterboxed
      container. Bleeds past .blogs's own inline-end (left, in RTL) gutter
@@ -221,11 +231,17 @@
   position: relative;
   width: 100%;
   height: 208px;
+  overflow: hidden;
 
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    /* the source photos have a baked-in white border/rounded-corner frame
+       inside the file itself (not CSS padding) — scaling past 100% and
+       clipping at the container crops that frame out so the photo fills
+       the card edge-to-edge. */
+    transform: scale(1.18);
   }
 }
 
@@ -250,7 +266,7 @@
   font-weight: var(--fw-bold);
   line-height: 1.4;
   color: var(--text-primary);
-  text-align: end;
+  text-align: start;
 }
 
 .blog-card__meta {

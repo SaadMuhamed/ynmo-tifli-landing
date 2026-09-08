@@ -138,15 +138,26 @@
 .site-footer__illustration {
   flex: none;
   display: block;
-  width: 420px;
+  /* Fill the CTA row's own height (set by the text column's padding-block)
+     instead of being sized off a fixed width and shrink-wrapping to a
+     shorter height than the row actually has. */
+  align-self: stretch;
+  width: auto;
 
   img {
-    width: 100%;
-    height: auto;
+    width: auto;
+    height: 100%;
+    object-fit: contain;
   }
 
   @include below-1024 {
     width: 280px;
+    align-self: center;
+
+    img {
+      width: 100%;
+      height: auto;
+    }
   }
 }
 
@@ -157,7 +168,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-72);
-  background: var(--brand-primary);
+  background: var(--brand-primary) url('/assets/img/footer/footer-bg.webp') center / cover no-repeat;
   border-start-start-radius: var(--radius-hero);
   overflow: clip;
   padding-inline: var(--gutter);
@@ -172,31 +183,6 @@
   }
 }
 
-.site-footer__watermark {
-  /* Real Figma composite (node 956:11752 "Logo / Symbol-Mask") — the ynmo
-     swirl mark, blurred, faded via a linear-gradient mask. Was a reused
-     header icon placeholder; now the actual vector art + mask. */
-  position: absolute;
-  inset-inline-end: -20%;
-  inset-block-end: -25%;
-  width: 70%;
-  max-width: 900px;
-  aspect-ratio: 1080 / 988;
-  background-image: url('/assets/icons/footer/watermark-symbol.svg');
-  background-size: cover;
-  background-position: center;
-  transform: scaleX(-1);
-  -webkit-mask-image: url('/assets/icons/footer/watermark-fade-mask.svg');
-  mask-image: url('/assets/icons/footer/watermark-fade-mask.svg');
-  -webkit-mask-size: cover;
-  mask-size: cover;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  opacity: 0.25;
-  pointer-events: none;
-  z-index: 0;
-}
-
 .site-footer__main-info {
   position: relative;
   z-index: 1;
@@ -208,6 +194,13 @@
   justify-content: space-between;
   gap: var(--space-48);
   width: 100%;
+  /* Cap + center to --container, same as every other section's content
+     row — .site-footer__bottom's own padding-inline is only a flat
+     --gutter, so without this the row keeps growing past 1192px on wide
+     viewports and its edges drift outward relative to the rest of the
+     page. */
+  max-width: var(--container);
+  margin-inline: auto;
 
   @include below-1024 {
     flex-direction: column;
@@ -307,6 +300,8 @@
   display: block;
   height: 1px;
   width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
   background: var(--border-white);
   opacity: 0.2;
 }
@@ -318,6 +313,8 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
   font-size: var(--fs-14);
 
   @include below-768 {
