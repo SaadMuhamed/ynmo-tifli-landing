@@ -17,7 +17,9 @@ import {
   headIconPose,
   headPose,
   poseFor,
-  tileGlyphOpacity,
+  ramp,
+  tileActiveIconOpacity,
+  tileInactiveIconOpacity,
   tileRingFill,
 } from './carousel.animation';
 
@@ -54,6 +56,22 @@ const SETTLE_EPSILON = 0.00005;
  * on the page holds its headline the same distance under the header. */
 const MIN_STICKY_TOP = 162;
 
+/** Staged entrance sub-windows, in entrance progress E (0 → 1; E = 1 at
+ * pinStart()). Explicit order — headline, then the rail, then the head+
+ * mockup column — mirrors the read a reader should get approaching the
+ * section: the section's own name first, then its own navigation, then its
+ * content, never the mockup arriving ahead of the title the way the old
+ * single all-at-once reveal did. */
+const ENTRANCE_HEADLINE: readonly [number, number] = [0, 0.35];
+const ENTRANCE_RAIL: readonly [number, number] = [0.35, 0.7];
+const ENTRANCE_COLUMN: readonly [number, number] = [0.7, 1];
+
+/** px the rail slides in from — physical, matching the mockup stack's own
+ * "translateX doesn't mirror under RTL" convention (§8): the rail already
+ * sits at the physical right edge, so entering "from the right" (explicit
+ * request) means starting even further right and sliding to rest. */
+const RAIL_ENTER_TRAVEL = 32;
+
 /** offsetTop walked up the offsetParent chain — transform-immune, unlike
  * getBoundingClientRect(), so it cannot be corrupted by being read while an
  * element already carries an in-flight animation transform. */
@@ -88,21 +106,31 @@ export class FeaturesCarousel implements OnDestroy {
   private sticky: HTMLElement | null = null;
   /** the mockup stage region — measured only to scale SLOT_STEP */
   private stage: HTMLElement | null = null;
+  /** the four elements the staged entrance (updateEntrance()) fades in */
+  private headlineEl: HTMLElement | null = null;
+  private railEl: HTMLElement | null = null;
+  private dividerEl: HTMLElement | null = null;
+  private columnEl: HTMLElement | null = null;
   private mockups: HTMLElement[] = [];
   private heads: HTMLElement[] = [];
   private headIcons: HTMLElement[] = [];
-  private tileGlyphs: HTMLElement[] = [];
+  /** two stacked glyphs per tile (node 1521:34733/1521:34740 — different
+   * assets per state, not one dimmed/brightened) — see
+   * tileActiveIconOpacity's doc comment. */
+  private tileGlyphsInactive: HTMLElement[] = [];
+  private tileGlyphsActive: HTMLElement[] = [];
   private tiles: HTMLElement[] = [];
   /** one ring per tile, fixed in place — see tileRingFill's doc comment for
    * why this replaced a single ring translated between tiles. */
   private ringPaths: SVGPathElement[] = [];
 
   private trackTop = 0;
+  /** document-flow top of the SECTION itself (not the track) — see
+   * updateEntrance()'s doc comment for why the entrance is timed off this
+   * instead of a fixed lead distance. */
+  private sectionTop = 0;
   private extraScrollPx = 0;
   private stageWidth = STAGE_WIDTH;
-  /** whether the reader has scrolled far enough to reveal the section — see
-   * updateRevealed()'s doc comment. */
-  private revealed = false;
   private narrow = false;
   private reducedMotion = false;
   private rafHandle = 0;
@@ -146,11 +174,16 @@ export class FeaturesCarousel implements OnDestroy {
     this.track = section.querySelector('.fcar__track') as HTMLElement | null;
     this.sticky = section.querySelector('.fcar__sticky') as HTMLElement | null;
     this.stage = section.querySelector('.fcar__stage') as HTMLElement | null;
+    this.headlineEl = section.querySelector('.fcar__headline') as HTMLElement | null;
+    this.railEl = section.querySelector('.fcar__rail') as HTMLElement | null;
+    this.dividerEl = section.querySelector('.fcar__divider') as HTMLElement | null;
+    this.columnEl = section.querySelector('.fcar__column') as HTMLElement | null;
     this.mockups = Array.from(section.querySelectorAll<HTMLElement>('[data-mockup]'));
     this.heads = Array.from(section.querySelectorAll<HTMLElement>('[data-head]'));
     this.headIcons = Array.from(section.querySelectorAll<HTMLElement>('[data-head-icon]'));
     this.tiles = Array.from(section.querySelectorAll<HTMLElement>('[data-tile]'));
-    this.tileGlyphs = Array.from(section.querySelectorAll<HTMLElement>('[data-tile-glyph]'));
+    this.tileGlyphsInactive = Array.from(section.querySelectorAll<HTMLElement>('[data-tile-glyph-inactive]'));
+    this.tileGlyphsActive = Array.from(section.querySelectorAll<HTMLElement>('[data-tile-glyph-active]'));
     this.ringPaths = Array.from(section.querySelectorAll<SVGPathElement>('[data-ring]'));
 
     // The rest markup renders feature 1 finished; hand the driver the same
@@ -209,21 +242,31 @@ export class FeaturesCarousel implements OnDestroy {
     this.extraScrollPx = window.innerHeight * VH_PER_FEATURE * this.count;
     this.track.style.height = `${stickyHeight + this.extraScrollPx}px`;
     this.trackTop = pageOffsetTop(this.track);
-    // trackTop just changed, so pinStart() did too — resync immediately
-    // rather than waiting for the next scroll event, otherwise a reader who
-    // loads the page already scrolled past the section would briefly see it
-    // hidden.
-    this.updateRevealed();
+    this.sectionTop = pageOffsetTop(this.section);
+    // trackTop/sectionTop just changed, so pinStart() and the entrance
+    // window did too — resync immediately rather than waiting for the next
+    // scroll event, otherwise a reader who loads the page already scrolled
+    // past the section would briefly see it hidden.
+    this.updateEntrance();
   }
 
   private teardownPin(): void {
     if (!this.section || !this.track || !this.sticky) return;
-    this.section.classList.remove('is-pinned', 'is-revealed');
-    this.revealed = false;
+    this.section.classList.remove('is-pinned');
     this.sticky.style.top = '';
     this.track.style.height = '';
     this.extraScrollPx = 0;
-    for (const el of [...this.mockups, ...this.heads, ...this.headIcons, ...this.tileGlyphs]) {
+    const entranceEls = [this.headlineEl, this.railEl, this.dividerEl, this.columnEl].filter(
+      (el): el is HTMLElement => el !== null,
+    );
+    for (const el of [
+      ...this.mockups,
+      ...this.heads,
+      ...this.headIcons,
+      ...this.tileGlyphsInactive,
+      ...this.tileGlyphsActive,
+      ...entranceEls,
+    ]) {
       el.style.transform = '';
       el.style.opacity = '';
       el.style.visibility = '';
@@ -233,29 +276,49 @@ export class FeaturesCarousel implements OnDestroy {
   }
 
   /**
-   * Hides the section (features-carousel.scss' `.fcar.is-pinned:not(.is-
-   * revealed)` rule) until the reader has scrolled far enough that the pin
-   * is about to engage — explicit request: the section's own "feature 1
-   * finished" rest state (rail lit, mockups full size) was otherwise
-   * visible peeking up from below the fold while still reading the
-   * PREVIOUS section. Threshold is exactly pinStart(), the same scroll
-   * position position:sticky itself starts holding the header at, so
-   * reveal and "already fixed under the header" happen in the same frame.
-   * Symmetric (re-hides on scrolling back above it) rather than sticky-once,
-   * matching "hide them till I scroll down till I reach the section"
-   * literally in both directions.
+   * Fades the section in over ORDINARY pre-pin scroll — features-carousel.
+   * scss' `.fcar.is-pinned` rule starts every one of these at opacity 0, and
+   * this is what raises them, tracking scroll continuously rather than
+   * flipping a single threshold. Explicit staged order: the headline first,
+   * then the rail (sliding in from further right — physical, §8), then the
+   * head+mockup column last, together — so the mockup never reads as
+   * arriving ahead of the section's own title/rail the way a single
+   * all-at-once reveal did.
+   *
+   * E runs 0 → 1 from the instant the section's own top edge first touches
+   * the viewport's bottom (sectionTop - innerHeight — i.e. nothing of the
+   * section is visible yet) through pinStart() (position:sticky itself
+   * starts holding the header there), so by the time the column finishes
+   * fading in the headline is already sitting fixed under the header, not
+   * still mid-page. Anchoring to the section's OWN geometry here — rather
+   * than a fixed lead distance counted back from pinStart — matters
+   * specifically because whatever sits ABOVE this section on the page can
+   * be taller than that fixed distance: a fixed-vh lead was measured
+   * starting the headline while the PREVIOUS section still filled the
+   * screen, well before the reader had scrolled anywhere near this one.
+   * Tying it to the section's own top instead makes the entrance begin
+   * exactly when the reader could first possibly see any part of it,
+   * regardless of how tall the preceding content is.
    */
-  private updateRevealed(): void {
-    if (!this.section || this.extraScrollPx <= 0) return;
-    const shouldReveal = window.scrollY >= this.pinStart();
-    if (shouldReveal === this.revealed) return;
-    this.revealed = shouldReveal;
-    this.section.classList.toggle('is-revealed', shouldReveal);
+  private updateEntrance(): void {
+    if (!this.headlineEl || !this.railEl || !this.columnEl) return;
+    const E =
+      this.extraScrollPx > 0
+        ? ramp(window.scrollY, this.sectionTop - window.innerHeight, this.pinStart())
+        : 1;
+
+    this.headlineEl.style.opacity = ramp(E, ...ENTRANCE_HEADLINE).toFixed(4);
+
+    const railP = ramp(E, ...ENTRANCE_RAIL);
+    this.railEl.style.opacity = railP.toFixed(4);
+    this.railEl.style.transform = `translate3d(${((1 - railP) * RAIL_ENTER_TRAVEL).toFixed(2)}px, 0, 0)`;
+    if (this.dividerEl) this.dividerEl.style.opacity = railP.toFixed(4);
+
+    this.columnEl.style.opacity = ramp(E, ...ENTRANCE_COLUMN).toFixed(4);
   }
 
   private readonly onScroll = (): void => {
     this.dirty = true;
-    this.updateRevealed();
   };
 
   private readonly onResize = (): void => {
@@ -308,6 +371,12 @@ export class FeaturesCarousel implements OnDestroy {
   private readonly frame = (): void => {
     if (this.dirty) {
       this.targetT = this.readTargetT();
+      // Always recomputed on scroll, independent of whether T actually
+      // changed: T stays pinned at 0 for the whole pre-pin approach (T only
+      // moves once scrollY reaches pinStart()), so gating this behind T's
+      // own settle check below would mean it never runs during exactly the
+      // stretch it exists for.
+      this.updateEntrance();
       this.dirty = false;
     }
 
@@ -385,8 +454,9 @@ export class FeaturesCarousel implements OnDestroy {
       }
     }
 
-    for (let i = 0; i < this.tileGlyphs.length; i++) {
-      this.tileGlyphs[i].style.opacity = tileGlyphOpacity(i, T, this.count).toFixed(4);
+    for (let i = 0; i < this.tileGlyphsActive.length; i++) {
+      this.tileGlyphsActive[i].style.opacity = tileActiveIconOpacity(i, T, this.count).toFixed(4);
+      this.tileGlyphsInactive[i].style.opacity = tileInactiveIconOpacity(i, T, this.count).toFixed(4);
     }
 
     // Each tile's ring is fixed in place — only its own fill changes, never

@@ -5,6 +5,7 @@ import {
   MOCKUP_ENTER_END,
   MOCKUP_ENTER_START,
   OPACITY_SIDE,
+  TEXT_IN_OPACITY,
   RING_FILL_END,
   RING_FILL_START,
   SHRINK_MULT,
@@ -19,7 +20,8 @@ import {
   headPose,
   poseFor,
   ramp,
-  tileGlyphOpacity,
+  tileActiveIconOpacity,
+  tileInactiveIconOpacity,
   tileRingFill,
 } from './carousel.animation';
 
@@ -131,16 +133,15 @@ describe('carousel.animation', () => {
    * mean step of SLOT_STEP x 0.001 / 0.16 — so the steepest sample is that
    * mean x 2.855 by construction. SLOT_STEP was deliberately retuned from
    * its original 194.51px (see that constant's own doc comment: the
-   * 25%-hidden side-mockup overlap, solved against the centre mockup's own
-   * design width, itself bounded by not sliding into the head zone beside
-   * it) — recompute (SLOT_STEP x 0.001 / 0.16) x 2.855 whenever SLOT_STEP
-   * changes; at 187.33px that's ~3.34px. §9.3,
+   * 50%-hidden side-mockup overlap, solved against the centre mockup's own
+   * design width) — recompute (SLOT_STEP x 0.001 / 0.16) x 2.855 whenever
+   * SLOT_STEP changes; at 164.86px that's ~2.94px. §9.3,
    * §3.3 and §3.4 are jointly over-constrained; the intent (no
    * discontinuity) is what is asserted here, at the true geometric bound. A
    * real discontinuity — the floor/ceil slot-indexing bug this suite caught
    * during the build — shows up as tens/hundreds of px, not single digits.
    */
-  const MAX_STEP_PX = 4;
+  const MAX_STEP_PX = 3;
 
   // §9.3
   it('poseFor is continuous across the handoff', () => {
@@ -312,10 +313,37 @@ describe('carousel.animation', () => {
     expect(headPose(3, 3.5).y).toBeCloseTo(0, 10);
   });
 
-  it('the app icon leads the text in (§3.7 stagger)', () => {
-    // At p = 0.05 the icon has finished fading in; the text has not started.
+  it('the app icon finishes fading in before the head is fully opaque', () => {
+    // The icon's own window ([0, 0.05]) still finishes well before the
+    // head's ([TEXT_IN_OPACITY[0], 0.11]) — at p = 0.05 the icon has
+    // fully faded in, while the head (icon-frame + text together) is only
+    // partway there.
     expect(headIconPose(1, 1.05).opacity).toBeCloseTo(1, 6);
-    expect(headPose(1, 1.05).opacity).toBeCloseTo(0, 10);
+    const headAtSameMoment = headPose(1, 1.05).opacity;
+    expect(headAtSameMoment).toBeGreaterThan(0);
+    expect(headAtSameMoment).toBeLessThan(1);
+  });
+
+  // Explicit request: the head (icon-frame + title + description) must
+  // fade in WHILE the incoming mockup is still sliding into the centre —
+  // it used to start only at p = 0.06, well after the slide (which runs
+  // MOCKUP_ENTER_START..HANDOFF_END - 1, i.e. -0.19..-0.03) had already
+  // finished, reading as a dead gap with nothing on screen.
+  it('the head starts fading in at the same offset the mockup slide does, not after', () => {
+    for (const i of indices) {
+      // Before the window: still fully gone.
+      expect(headPose(i, i + MOCKUP_ENTER_START - 0.05).opacity).toBeCloseTo(0, 6);
+      // Right at the slide's own start offset: just beginning.
+      const atSlideStart = headPose(i, i + MOCKUP_ENTER_START).opacity;
+      expect(atSlideStart).toBeCloseTo(0, 6);
+      // Partway through the slide: already visible, not still blank.
+      const midSlide = headPose(i, i + MOCKUP_ENTER_START / 2).opacity;
+      expect(midSlide).toBeGreaterThan(0);
+      expect(midSlide).toBeLessThan(1);
+      // By TEXT_IN_OPACITY's own end, fully opaque — same moment the
+      // mockup's own fade-in (MOCKUP_ENTER_END) finishes.
+      expect(headPose(i, i + TEXT_IN_OPACITY[1]).opacity).toBeCloseTo(1, 6);
+    }
   });
 
   it('the head exits during the handoff and enters from above', () => {
@@ -332,12 +360,27 @@ describe('carousel.animation', () => {
     }
   });
 
-  // §3.8 rail
-  it('tileGlyphOpacity lights only the active tile and cross-fades on handoff', () => {
-    expect(tileGlyphOpacity(2, 2.4)).toBeCloseTo(1, 10);
-    expect(tileGlyphOpacity(3, 2.4)).toBeCloseTo(OPACITY_SIDE, 10);
-    expect(tileGlyphOpacity(2, 2.9)).toBeCloseTo(OPACITY_SIDE, 10);
-    expect(tileGlyphOpacity(3, 2.9)).toBeCloseTo(1, 10);
+  // §3.8 rail — two separate glyph assets per tile (grey outline vs
+  // brand-purple filled, node 1521:34733/1521:34740), cross-fading on
+  // handoff rather than one glyph dimming/brightening.
+  it('tileActiveIconOpacity lights only the active tile, snapping exactly on activeIndex', () => {
+    // Explicit request: the icon must switch WITH its frame (is-active), not
+    // ahead of it — so tile 2 stays lit for its entire dwell, right up to
+    // (but not including) the T = 3 boundary where tile 3 takes over.
+    expect(tileActiveIconOpacity(2, 2.4)).toBeCloseTo(1, 10);
+    expect(tileActiveIconOpacity(3, 2.4)).toBeCloseTo(0, 10);
+    expect(tileActiveIconOpacity(2, 2.99)).toBeCloseTo(1, 10);
+    expect(tileActiveIconOpacity(3, 2.99)).toBeCloseTo(0, 10);
+    expect(tileActiveIconOpacity(2, 3)).toBeCloseTo(0, 10);
+    expect(tileActiveIconOpacity(3, 3)).toBeCloseTo(1, 10);
+  });
+
+  it('tileInactiveIconOpacity is always the exact complement of the active glyph', () => {
+    for (const i of indices) {
+      for (const T of [0, 1.4, 2.85, 5.5, 8.9]) {
+        expect(tileInactiveIconOpacity(i, T)).toBeCloseTo(1 - tileActiveIconOpacity(i, T), 10);
+      }
+    }
   });
 
   // timeline decomposition
@@ -394,7 +437,7 @@ function snapshot(T: number): string {
       `${f6(p.x)},${f6(p.scale)},${f6(p.opacity)},${p.visible ? 1 : 0}`,
       `${f6(h.opacity)},${f6(h.y)}`,
       `${f6(ic.opacity)},${f6(ic.y)}`,
-      f6(tileGlyphOpacity(i, T)),
+      f6(tileActiveIconOpacity(i, T)),
       f6(tileRingFill(i, T)),
     );
   }

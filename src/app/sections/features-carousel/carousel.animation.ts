@@ -30,21 +30,28 @@ export interface HeadPose {
  * column — see STAGE_WIDTH), one slot step.
  *
  * Deliberately overridden from the literal Figma export (194.51385) per
- * explicit request: the side mockups must sit mostly BEHIND the centre one,
- * ~25% of each side mockup's own (scaled) width hidden under it, rather than
- * sitting apart at arm's length. Solved for step where the visible side
- * mockup width satisfies step = Wc/2 + 0.25·Ws, Ws = SIDE_SCALE·Wc, at this
- * file's own centre-mockup design width (features-carousel.scss'
- * $mockup-zone-fill · STAGE_WIDTH) — so this must be recomputed whenever
- * that fill fraction or STAGE_WIDTH changes.
+ * explicit request: the side mockups must sit mostly BEHIND the centre one
+ * — HIDDEN_FRACTION of each side mockup's own (scaled) width hidden under
+ * it, rather than sitting apart at arm's length. For a hidden fraction f,
+ * the visible sliver of the side mockup satisfies
+ *   f·Ws = Wc/2 - step + Ws/2  ⇒  step = Wc/2 + Ws·(0.5 - f), Ws = SIDE_SCALE·Wc
+ * at this file's own centre-mockup design width (features-carousel.scss'
+ * $mockup-zone-fill · STAGE_WIDTH) — note step SHRINKS as f grows (more
+ * hidden ⇒ less separation needed, not more); recompute whenever f, the
+ * fill fraction, or STAGE_WIDTH changes.
  *
- * That fill fraction (0.52) is itself capped by THIS step: x is physical
- * (§8, doesn't mirror under RTL), and the R-slot mockup slides toward the
- * head zone, so too large a fill pushes the slide straight into the head's
- * own text — see $mockup-zone-fill's own doc comment for the measured
- * incident (fill 0.94 landed the slide ~270px into the head text) and the
- * shared bound the two constants solve together. */
-export const SLOT_STEP = 187.33443820000002;
+ * f was bumped from an initial 0.25 to 0.5 per explicit follow-up request
+ * ("hide the half of them"). Because a bigger f pulls the mockups CLOSER
+ * together, not further apart, this made room to also satisfy a second,
+ * previously-conflicting request in the same round: zero spill of the
+ * R-slot's slide into the head zone beside it (x is physical, §8 — doesn't
+ * mirror under RTL). An earlier pass at f = 0.25 had let that slide reach
+ * ~144px into the head zone, relying on .fcar__head's z-index to keep the
+ * text readable underneath — which still read as crowded, so
+ * $mockup-zone-fill was retuned alongside this constant to remove the
+ * spill outright rather than just paint over it; see that variable's own
+ * doc comment for the full budget. */
+export const SLOT_STEP = 164.8581669296211;
 /** side mockup ÷ centre mockup */
 export const SIDE_SCALE = 0.7712195;
 /** side → centre (1 / SIDE_SCALE) */
@@ -58,9 +65,9 @@ export const TILE_PITCH = 64;
  * and mockup sit side by side (features-carousel.scss' .fcar__head /
  * .fcar__mockup), so `.fcar__stage` (what features-carousel.ts actually
  * measures into `stageWidth`) is sized to just the mockup zone: a 1068px
- * column minus that file's $fcar-head-zone-w (500) and $fcar-zone-gap (48)
- * leaves 520. SLOT_STEP scales by (actualStageWidth / STAGE_WIDTH). */
-export const STAGE_WIDTH = 520;
+ * column minus that file's $fcar-head-zone-w (420) and $fcar-zone-gap (64)
+ * leaves 584. SLOT_STEP scales by (actualStageWidth / STAGE_WIDTH). */
+export const STAGE_WIDTH = 584;
 
 export const DEFAULT_COUNT = 9;
 
@@ -77,22 +84,28 @@ export const HANDOFF_END = 0.97;
 
 export const ICON_IN_OPACITY: readonly [number, number] = [0.0, 0.05];
 export const ICON_IN_MOVE: readonly [number, number] = [0.0, 0.08];
-export const TEXT_IN_OPACITY: readonly [number, number] = [0.06, 0.11];
-export const TEXT_IN_MOVE: readonly [number, number] = [0.06, 0.14];
 
 /** Window (T offset from the arriving feature's own index) the mockup fades
- * from OPACITY_SIDE to full opacity while becoming the centre layer. Starts
- * where the old opacity blend used to (HANDOFF_START - 1, alongside the
- * position/scale slide, which keeps that original timing untouched), but
- * EXTENDS through TEXT_IN_OPACITY's own end instead of finishing before the
- * slide even arrives — explicit request: the mockup must not already sit at
- * full opacity before the incoming title has finished its own fade-in. */
+ * from OPACITY_SIDE to full opacity while becoming the centre layer — same
+ * offset the position/scale slide itself runs on (HANDOFF_START - 1), so
+ * the two are one continuous motion rather than the mockup arriving fully
+ * formed and then fading. */
 export const MOCKUP_ENTER_START = HANDOFF_START - 1;
+
+/** Explicit request: the head (icon + title + description) must fade in
+ * WHILE the incoming mockup is still sliding into the centre, not sit
+ * blank until the slide has already finished — it used to start only at
+ * T = index (p = 0.06 for the text specifically), well after the slide
+ * (which runs index-0.19 → index-0.03) had already completed, reading as a
+ * dead gap with nothing on screen. Starting here — the same offset the
+ * mockup's own fade-in and the slide both use — means the head, the slide,
+ * and the mockup's fade-in all run as one continuous motion. */
+export const TEXT_IN_OPACITY: readonly [number, number] = [MOCKUP_ENTER_START, 0.11];
+export const TEXT_IN_MOVE: readonly [number, number] = [MOCKUP_ENTER_START, 0.14];
+
 export const MOCKUP_ENTER_END = TEXT_IN_OPACITY[1];
 export const HEAD_OUT_OPACITY: readonly [number, number] = [0.81, 0.91];
 export const HEAD_OUT_MOVE: readonly [number, number] = [0.81, 0.93];
-/** rail glyph cross-fade window (§3.8) */
-export const GLYPH_SWAP_END = 0.9;
 
 /** px the head travels on enter (from) and exit (to) */
 export const HEAD_TRAVEL = 40;
@@ -296,8 +309,14 @@ function headEnvelope(
 ): HeadPose {
   const p = effectiveT(T, count) - index;
   // Outside its own unit the head is fully gone. The exit finishes at 0.93,
-  // so p >= 1 is safely past it; p < 0 has not entered yet.
-  if (p < 0 || p >= 1) return { opacity: 0, y: p < 0 ? -HEAD_TRAVEL : HEAD_TRAVEL };
+  // so p >= 1 is safely past it; below MOCKUP_ENTER_START the mockup's own
+  // slide hasn't started yet either, so there is nothing to sync with —
+  // widened from a flat 0 specifically so TEXT_IN_OPACITY's start there
+  // (see that constant's own doc comment) actually takes effect instead of
+  // being masked by this guard.
+  if (p < MOCKUP_ENTER_START || p >= 1) {
+    return { opacity: 0, y: p < MOCKUP_ENTER_START ? -HEAD_TRAVEL : HEAD_TRAVEL };
+  }
 
   const enterO = easeEnterOpacity(ramp(p, inOpacity[0], inOpacity[1]));
   const enterM = easeEnterMove(ramp(p, inMove[0], inMove[1]));
@@ -348,16 +367,29 @@ export function tileRingFill(index: number, T: number): number {
 }
 
 /**
- * Glyph opacity for rail tile `index` — cross-fades between the outgoing and
- * incoming tile across p 0.81 → 0.90 (§3.8). The tile background is
- * deliberately not animated; the ring slide carries the eye.
- */
-export function tileGlyphOpacity(index: number, T: number, count = DEFAULT_COUNT): number {
-  const i = activeIndex(T, count);
-  const p = featureProgress(T, count);
-  const handover = ramp(p, HANDOFF_START, GLYPH_SWAP_END);
+ * Rail tile `index`'s ACTIVE (brand-purple filled) glyph opacity — 1 for
+ * exactly the active tile, 0 for every other, switching at the same instant
+ * `activeIndex` itself does.
+ *
+ * This used to cross-fade smoothly across p 0.81 → 0.90, matching the old
+ * single-glyph dimming's own handover window — harmless there, since a
+ * dimmed copy of the same icon reads fine at any intermediate brightness.
+ * Now that inactive tiles show a wholly DIFFERENT asset (node 1521:34733's
+ * grey outline glyph vs 1521:34740's filled one, two separate <img>s — see
+ * tileInactiveIconOpacity) with its own differently-styled frame (bordered
+ * white/15% vs solid --tag-primary-bg, no border, see .fcar__tile.is-active
+ * in features-carousel.scss), that early window meant the icon swapped
+ * ~19% of a dwell BEFORE the frame did — an active-purple icon briefly
+ * sitting in a still-inactive-white frame, and vice versa. Snapping both on
+ * the same activeIndex boundary keeps the icon and its frame switching as
+ * one visual unit. */
+export function tileActiveIconOpacity(index: number, T: number, count = DEFAULT_COUNT): number {
+  return index === activeIndex(T, count) ? 1 : 0;
+}
 
-  if (index === i) return lerp(1, OPACITY_SIDE, handover);
-  if (index === i + 1) return lerp(OPACITY_SIDE, 1, handover);
-  return OPACITY_SIDE;
+/** The complementary grey-outline glyph (node 1521:34733) — always the
+ * exact inverse of tileActiveIconOpacity, so exactly one of the two shows
+ * at a time, never both nor neither. */
+export function tileInactiveIconOpacity(index: number, T: number, count = DEFAULT_COUNT): number {
+  return 1 - tileActiveIconOpacity(index, T, count);
 }

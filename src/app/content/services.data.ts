@@ -18,6 +18,20 @@ export interface ServiceCard {
   title: string;
   icon: string;
   iconAlt: string;
+  /** features-carousel rail glyph — outline/grey, shown while this tile is
+   * not the active one. Distinct from `icon` (the services-grid/bento
+   * card's own glyph — a different asset set, unrelated to the carousel). */
+  railIconInactive: string;
+  /** features-carousel rail glyph — filled/brand-purple, shown only while
+   * this tile is the active one. */
+  railIconActive: string;
+  /** features-carousel head's own big app-icon (node "Big Icons" set,
+   * 64x64, brand-purple filled) — distinct from both `icon` (bento grid)
+   * and the two rail glyphs above; every feature's head only ever shows
+   * this one glyph, since the head itself is only ever rendered for
+   * whichever feature is currently displayed (there's no separate
+   * "inactive head icon" state the way the rail has one). */
+  headIcon: string;
   /** shown in the description tooltip that reveals on badge hover/focus */
   bannerText: string;
   /** features-carousel head copy (§5 of the carousel build spec). Distinct
@@ -44,13 +58,18 @@ const SCREEN_ALT_WEBP = '/assets/img/services-grid/frame-mask.webp';
 
 /**
  * Per-feature carousel mockups, exported from Figma section 1390:9880 and
- * delivered as `<title>.png` per feature. Most are 913×1474 (a phone with a
- * soft glow ring baked into the canvas); nursery-picker and daycare-centers
- * are wider (1214×1474 / 1379×1474) because their source frames carry
- * floating ListRow cards that overhang the phone body — the component
- * centres each on its own natural width rather than forcing a common one.
+ * delivered as `<title>.png` per feature — a phone with a soft glow ring
+ * baked into the canvas, 913×1474. nursery-picker and daycare-centers were
+ * originally delivered wider (1214×1474 / 1379×1474 — their source frames
+ * carried floating ListRow cards that overhung the phone body) which read
+ * visibly smaller than the rest at the same CSS width; both were
+ * re-exported without the overhang (958×1474 / 913×1474) to match. The
+ * component still sizes each mockup off its own intrinsic aspect rather
+ * than forcing a shared one, so a future outlier wouldn't break layout —
+ * it would just read a little smaller, as these two did.
  */
 const MOCKUP_DIR = '/assets/img/features-carousel';
+const RAIL_ICON_DIR = '/assets/icons/features-rail';
 
 /** node 1110:26097 — single large upright phone, centered, no tilt (updated Figma design). */
 const phonesGrowthAssessment = (): ServicePhone[] => [
@@ -240,6 +259,9 @@ export const SERVICES: ServiceCard[] = [
     title: 'تقييم مراحل النمو',
     icon: '/assets/icons/services-grid/icon-analytics-up.svg',
     iconAlt: '',
+    railIconInactive: `${RAIL_ICON_DIR}/growth-assessment-inactive.svg`,
+    railIconActive: `${RAIL_ICON_DIR}/growth-assessment-active.svg`,
+    headIcon: `${RAIL_ICON_DIR}/growth-assessment-big.svg`,
     bannerText: 'للتعرف على مراحل نمو طفلك والاطمئنان على تطوره النمائي خطوة بخطوة.',
     description: 'للتعرف على مراحل نمو طفلك والاطمئنان على تطوره النمائي خطوة بخطوة.',
     carouselMockup: `${MOCKUP_DIR}/growth-assessment.png`,
@@ -254,6 +276,9 @@ export const SERVICES: ServiceCard[] = [
     title: 'فحص السمع',
     icon: '/assets/icons/services-grid/icon-ear.svg',
     iconAlt: '',
+    railIconInactive: `${RAIL_ICON_DIR}/hearing-test-inactive.svg`,
+    railIconActive: `${RAIL_ICON_DIR}/hearing-test-active.svg`,
+    headIcon: `${RAIL_ICON_DIR}/hearing-test-big.svg`,
     bannerText: 'لتقييم قدرة طفلك على السمع مبكراً واكتشاف أي تأخر يؤثر على النطق والتواصل.',
     description:
       'للاطمئنان على حاسة السمع واكتشاف أي مشكلات محتملة مبكراً لضمان النمو اللغوي والاجتماعي السليم.',
@@ -269,6 +294,9 @@ export const SERVICES: ServiceCard[] = [
     title: 'جلسة استشارية مع أخصائي (عن بُعد)',
     icon: '/assets/icons/services-grid/icon-live-streaming.svg',
     iconAlt: '',
+    railIconInactive: `${RAIL_ICON_DIR}/remote-specialist-inactive.svg`,
+    railIconActive: `${RAIL_ICON_DIR}/remote-specialist-active.svg`,
+    headIcon: `${RAIL_ICON_DIR}/remote-specialist-big.svg`,
     bannerText: 'للتواصل مباشرة مع أخصائي مؤهل من أي مكان، والحصول على التوجيه المناسب لحالة طفلك.',
     description: 'فهم احتياجات طفلك الدقيقة ودعم تطوره اليومي من المنزل.',
     carouselMockup: `${MOCKUP_DIR}/remote-specialist.png`,
@@ -284,6 +312,9 @@ export const SERVICES: ServiceCard[] = [
     title: 'خدمة التشخيص الشامل',
     icon: '/assets/icons/services-grid/icon-task.svg',
     iconAlt: '',
+    railIconInactive: `${RAIL_ICON_DIR}/comprehensive-diagnosis-inactive.svg`,
+    railIconActive: `${RAIL_ICON_DIR}/comprehensive-diagnosis-active.svg`,
+    headIcon: `${RAIL_ICON_DIR}/comprehensive-diagnosis-big.svg`,
     bannerText: 'لتحديد احتياجات طفلك بدقة من خلال تقييم شامل يجمع بين عدة تخصصات.',
     description: 'تقييم متكامل ودقيق لحالة الطفل وتشخيص احتياجاته النمائية والسلوكية.',
     carouselMockup: `${MOCKUP_DIR}/comprehensive-diagnosis.png`,
@@ -297,6 +328,9 @@ export const SERVICES: ServiceCard[] = [
     title: 'البرامج العلاجية',
     icon: '/assets/icons/services-grid/icon-healthcare.svg',
     iconAlt: '',
+    railIconInactive: `${RAIL_ICON_DIR}/therapy-programs-inactive.svg`,
+    railIconActive: `${RAIL_ICON_DIR}/therapy-programs-active.svg`,
+    headIcon: `${RAIL_ICON_DIR}/therapy-programs-big.svg`,
     bannerText: 'لوضع خطة علاجية مخصصة تناسب احتياجات طفلك وتدعم تطوره خطوة بخطوة.',
     description: 'جلسات وبرامج متخصصة تُقدّم عن بُعد حضوري بالمنزل لتناسب أسلوب حياة أسرتك.',
     carouselMockup: `${MOCKUP_DIR}/therapy-programs.png`,
@@ -310,6 +344,9 @@ export const SERVICES: ServiceCard[] = [
     title: 'استشارة طبيب (حضوري / عن بُعد)',
     icon: '/assets/icons/services-grid/icon-doctor.svg',
     iconAlt: '',
+    railIconInactive: `${RAIL_ICON_DIR}/doctor-consultation-inactive.svg`,
+    railIconActive: `${RAIL_ICON_DIR}/doctor-consultation-active.svg`,
+    headIcon: `${RAIL_ICON_DIR}/doctor-consultation-big.svg`,
     bannerText: 'لحجز استشارة طبية مع أفضل الأطباء، حضورياً أو عن بُعد، بما يناسبك.',
     description: 'استشارات متخصصة في تخصصات متعددة للاطمئنان الشامل على نمو وصحة الطفل.',
     carouselMockup: `${MOCKUP_DIR}/doctor-consultation.png`,
@@ -323,6 +360,9 @@ export const SERVICES: ServiceCard[] = [
     title: 'خدمة معلم الظل',
     icon: '/assets/icons/services-grid/icon-user-star.svg',
     iconAlt: '',
+    railIconInactive: `${RAIL_ICON_DIR}/shadow-teacher-inactive.svg`,
+    railIconActive: `${RAIL_ICON_DIR}/shadow-teacher-active.svg`,
+    headIcon: `${RAIL_ICON_DIR}/shadow-teacher-big.svg`,
     bannerText: 'لتوفير مرافق تعليمي متخصص يدعم طفلك داخل الصف ويعزز اندماجه.',
     description:
       'مرافقة مؤهلة للطفل من ذوي الإعاقة لمساعدته على التأقلم والاندماج داخل البيئة المدرسية.',
@@ -337,6 +377,9 @@ export const SERVICES: ServiceCard[] = [
     title: 'اختيار الحضانة الأنسب',
     icon: '/assets/icons/services-grid/icon-rocking-horse.svg',
     iconAlt: '',
+    railIconInactive: `${RAIL_ICON_DIR}/nursery-picker-inactive.svg`,
+    railIconActive: `${RAIL_ICON_DIR}/nursery-picker-active.svg`,
+    headIcon: `${RAIL_ICON_DIR}/nursery-picker-big.svg`,
     bannerText: 'لمساعدتك على اختيار الحضانة الأنسب لاحتياجات طفلك من بين خيارات موثوقة.',
     description: 'نساعدك في اختيار الحضانة الأفضل والأقرب لطفلك لضمان بداية آمنة ومحفزة.',
     carouselMockup: `${MOCKUP_DIR}/nursery-picker.png`,
@@ -350,6 +393,9 @@ export const SERVICES: ServiceCard[] = [
     title: 'مراكز الرعاية النهارية',
     icon: '/assets/icons/services-grid/icon-university.svg',
     iconAlt: '',
+    railIconInactive: `${RAIL_ICON_DIR}/daycare-centers-inactive.svg`,
+    railIconActive: `${RAIL_ICON_DIR}/daycare-centers-active.svg`,
+    headIcon: `${RAIL_ICON_DIR}/daycare-centers-big.svg`,
     bannerText: 'للتعرف على مراكز الرعاية النهارية المعتمدة القريبة منك ومقارنة خدماتها.',
     description: 'ترشيح واختيار أفضل وأقرب مراكز الرعاية النهارية المعتمدة لحالة طفلك.',
     carouselMockup: `${MOCKUP_DIR}/daycare-centers.png`,

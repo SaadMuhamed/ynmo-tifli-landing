@@ -61,9 +61,9 @@
             >
               <svg
                 class="fcar__ring"
-                width="50"
-                height="50"
-                viewBox="0 0 50 50"
+                width="48"
+                height="48"
+                viewBox="0 0 48 48"
                 fill="none"
                 aria-hidden="true"
                 focusable="false"
@@ -72,14 +72,26 @@
                   class="fcar__ring-path"
                   [attr.data-ring]="i"
                   pathLength="1"
-                  d="M25 1 H36 A13 13 0 0 1 49 14 V36 A13 13 0 0 1 36 49 H14 A13 13 0 0 1 1 36 V14 A13 13 0 0 1 14 1 Z"
+                  d="M24 1 H36 A11 11 0 0 1 47 12 V36 A11 11 0 0 1 36 47 H12 A11 11 0 0 1 1 36 V12 A11 11 0 0 1 12 1 Z"
                   vector-effect="non-scaling-stroke"
                 />
               </svg>
+              <!-- node 1521:34733/1521:34740 — two separate glyph assets per
+                   state (grey outline vs brand-purple filled), not one glyph
+                   dimmed/brightened, so both sit stacked and cross-fade
+                   (data-tile-glyph-inactive/-active) instead of sharing a
+                   single <img>. -->
               <img
                 class="fcar__tile-glyph"
-                [attr.data-tile-glyph]="i"
-                [src]="f.icon"
+                [attr.data-tile-glyph-inactive]="i"
+                [src]="f.railIconInactive"
+                alt=""
+                aria-hidden="true"
+              />
+              <img
+                class="fcar__tile-glyph"
+                [attr.data-tile-glyph-active]="i"
+                [src]="f.railIconActive"
                 alt=""
                 aria-hidden="true"
               />
@@ -115,7 +127,7 @@
                   <img
                     class="fcar__head-icon"
                     [attr.data-head-icon]="i"
-                    [src]="f.icon"
+                    [src]="f.headIcon"
                     [alt]="f.iconAlt"
                     aria-hidden="true"
                   />

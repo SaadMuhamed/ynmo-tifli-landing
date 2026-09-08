@@ -7,39 +7,54 @@ $side-scale: 0.7712195;
 $opacity-side: 0.35;
 $tile-pitch: 64px;
 $tile-size: 48px;
+/** Same in both rail-tile states (.fcar__tile.is-active only swaps its
+ * color to transparent, never its width) — shared so .fcar__ring can
+ * compensate for it explicitly rather than via a magic offset. */
+$tile-border-width: 2px;
 
 /* node 1390:6619's head+mockup pairing, laid out side by side per explicit
    direction (supersedes the earlier "head stacked above its mockup" build):
    head at the column's own inline-start edge, the mockup stack filling the
    remaining inline-end zone. $fcar-head-zone-w is a layout BUDGET (icon
-   frame 96 + gap 24 + text's own 380px max-width) that the mockup zone's
+   frame 96 + gap 24 + text's own 300px max-width) that the mockup zone's
    width and its stage's inset (below) are carved out against — it is not a
    width applied to .fcar__head itself, which sizes to its own content,
-   already bounded by that same 380px text max-width. Must track
+   already bounded by that same 300px text max-width. Must track
    carousel.animation.ts' own STAGE_WIDTH, which is authored against this
-   same zone at a 1068px-wide column. */
-$fcar-head-zone-w: 500px;
-$fcar-zone-gap: 48px; // var(--space-48)
+   same zone at a 1068px-wide column.
+   $fcar-zone-gap is real breathing room now, not a spill allowance — see
+   $mockup-zone-fill's own doc comment for why it grew from 48 to 64px. */
+$fcar-head-zone-w: 420px;
+$fcar-zone-gap: 64px; // var(--space-64)
 /** Fraction of the mockup zone's own width the centre mockup fills — the
- * rest is breathing margin, auto-centred. Capped well below "fill the whole
- * zone": the R-slot mockup's own slide (carousel.animation.ts' SLOT_STEP)
- * shifts it TOWARD the head zone (the model's x is physical, per §8 — it
- * doesn't mirror under RTL), so a fill too close to 1 pushes that slide
- * straight into the head's own text — measured and caught visually at
- * fill 0.94: the side mockup landed ~270px into the head zone, on top of
- * the title/description. 0.52 is solved so, at the 25%-hidden overlap
- * SLOT_STEP is set for, the side mockup's outer edge lands only ~32px past
- * the zone's own edge — inside the $fcar-zone-gap (48px), never into the
- * head's text. Recompute both this and SLOT_STEP together if either
- * changes — see that constant's own doc comment for the shared formula. */
-$mockup-zone-fill: 0.52;
+ * rest is breathing margin, auto-centred. The R-slot mockup's own slide
+ * (carousel.animation.ts' SLOT_STEP) shifts it TOWARD the head zone (the
+ * model's x is physical, per §8 — it doesn't mirror under RTL).
+ *
+ * An earlier pass (fill 0.72, solved for a 25%-hidden overlap between
+ * mockups) deliberately let that slide spill ~144px into the head zone,
+ * relying on .fcar__head's z-index to keep the text readable underneath.
+ * Explicit follow-up request: even readable-through-z-index still looked
+ * crowded ("the description overlaps the mockups container") — the two
+ * need real separation, not a paint-order trick. Combined with a second
+ * request to deepen the overlap AMONG the mockups themselves from 25% to
+ * 50% (which, at a fixed centre width, pushes the slide even FURTHER
+ * toward the head zone — see SLOT_STEP's own doc comment for why bigger
+ * overlap means a SMALLER step, not a larger one), this fill is solved for
+ * ZERO spill past $fcar-zone-gap instead of relying on any masking: shrunk
+ * from 0.72, and $fcar-head-zone-w/$fcar-zone-gap retuned alongside it
+ * (text max-width 380 → 300, gap 48 → 64) to keep the centre mockup as
+ * large as that zero-spill constraint allows. Recompute this and SLOT_STEP
+ * together if any of the four change — see SLOT_STEP's doc comment for the
+ * shared formula. */
+$mockup-zone-fill: 0.5645827634576065;
 
 .fcar {
   --fcar-rail-w: #{$tile-size};
-  --fcar-head-text-w: 380px;
-  /* 94% of the mockup zone (column width minus the head budget and the gap
-     between zones) — NOT a percentage of the full column, now that the head
-     and the mockup sit side by side instead of stacked. */
+  --fcar-head-text-w: 300px;
+  /* ~56.5% of the mockup zone (column width minus the head budget and the
+     gap between zones) — NOT a percentage of the full column, now that the
+     head and the mockup sit side by side instead of stacked. */
   --fcar-mockup-w: calc((100% - #{$fcar-head-zone-w} - #{$fcar-zone-gap}) * #{$mockup-zone-fill});
 
   position: relative;
@@ -71,26 +86,32 @@ $mockup-zone-fill: 0.52;
      floating header. */
 }
 
-.fcar__headline,
-.fcar__body {
-  transition: opacity 0.4s ease;
-}
-
-/* Hidden until the reader has actually scrolled down to this section.
- * Without this, the section's own "feature 1 finished" rest state (needed
- * for SSR/no-JS/narrow — §8) would otherwise already be peeking up from
- * below the fold — rail icons lit, mockups at full size — while the reader
- * is still on the PREVIOUS section, well before the pin engages. The driver
- * adds/removes is-revealed at exactly pinStart() (features-carousel.ts),
- * the same scroll position that position:sticky itself starts holding at,
- * so the headline is already sitting fixed under the header the instant it's
- * revealed. Gated on is-pinned so SSR/no-JS/narrow readers — who never get
- * is-pinned — always see the section plainly: this hides a pinned-desktop
- * transition, not the section itself. */
-.fcar.is-pinned:not(.is-revealed) .fcar__headline,
-.fcar.is-pinned:not(.is-revealed) .fcar__body {
+/* Default-hidden ONLY while pinned — SSR/no-JS/narrow never get is-pinned
+ * (§8), so they always see the plain, fully visible section; this is a
+ * pinned-desktop entrance, not the section's baseline state. Without it,
+ * the section's own "feature 1 finished" rest state would otherwise already
+ * be peeking up from below the fold — headline, rail icons lit, mockups at
+ * full size, all at once — while the reader is still well before the pin,
+ * scrolling past what used to just be a blank stretch of page (the section's
+ * own un-stuck height, sitting there fully hidden until reached).
+ *
+ * The driver's updateEntrance() (features-carousel.ts) overwrites these via
+ * inline `style.opacity` every scroll tick well before that stretch is
+ * reached, so in practice this CSS default only covers the instant between
+ * is-pinned being added and that first inline write. It ties the fade to
+ * ORDINARY pre-pin scroll — not the pinned T timeline, which hasn't started
+ * yet at that point — and stages it explicitly, per direction: headline
+ * first, then the rail (sliding in from further right), then the head+
+ * mockup column last, together — never the mockup ahead of the title the
+ * way a single all-at-once reveal used to read. No CSS transition here on
+ * purpose: a timed transition would fight a value that's already
+ * continuously scroll-driven, lagging behind fast scrolls instead of
+ * tracking them. */
+.fcar.is-pinned .fcar__headline,
+.fcar.is-pinned .fcar__rail,
+.fcar.is-pinned .fcar__divider,
+.fcar.is-pinned .fcar__column {
   opacity: 0;
-  pointer-events: none;
 }
 
 /* node 1466:31307 — same headline text as services-grid's (identical
@@ -174,15 +195,20 @@ $mockup-zone-fill: 0.52;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-lg);
+  /* node 1521:34733/1521:34740 — both states share this radius. */
+  border-radius: var(--radius-chip);
   /* §3.8 — the tile background is deliberately not animated; each tile's
      own ring fill carries the eye now instead of a shared ring's slide. */
   background: color-mix(in srgb, var(--border-white) 15%, transparent);
-  border: 2px solid var(--border-white);
+  border: $tile-border-width solid var(--border-white);
   cursor: pointer;
 
   &.is-active {
     background: var(--tag-primary-bg);
+    /* node 1521:34740 drops the border entirely — border-color (not
+       `border: none`) so the box model stays identical between states and
+       toggling doesn't shift anything by the border's own width. */
+    border-color: transparent;
   }
 
   &:focus-visible {
@@ -198,9 +224,30 @@ $mockup-zone-fill: 0.52;
 .fcar__ring {
   position: absolute;
   z-index: 2;
-  /* 50x50 over a 48px tile — the -1 centres the 2px stroke on the tile edge. */
-  inset-inline-start: -1px;
-  inset-block-start: -1px;
+  /* Sized to the tile's true 48x48 BORDER-box, not its containing block —
+     a position:absolute child's containing block is its ancestor's PADDING
+     box (border excluded, CSS spec), so a plain `inset: 0` here actually
+     lands $tile-border-width inside the tile's real visual edge on the
+     inline/block-start sides, not flush with it. Pulling this box outward
+     by exactly that border width on every side (a negative inset) is what
+     makes its own 0–48 coordinate space finally line up with the tile's
+     TRUE painted boundary. */
+  inset: -$tile-border-width;
+  /* The path itself (features-carousel.html) is then inset a further 1px
+     (half the 2px stroke width) from THIS box's own edges, at corner
+     radius 11 — a stroke paints CENTRED on its path by default, so drawing
+     the path exactly ON the tile's true edge (as an earlier pass did) always
+     bled the stroke 1px past the frame no matter the radius (explicit
+     follow-up: "stroke should be at the edges of the frame", not straddling
+     them). Insetting the path by the stroke's own half-width and growing
+     the radius by that same 1px (11 → 12 at the outer edge) puts the
+     stroke's outer edge exactly on --radius-chip's 12px corner, flush with
+     the frame, zero overflow either way. */
+  /* The global `svg { max-width: 100% }` reset (_reset.scss) would otherwise
+     cap this SVG's width at whatever `inset: -$tile-border-width` leaves as
+     its containing block's width — opt out entirely; this box's size must
+     stay exactly 48x48 regardless. */
+  max-width: none;
   pointer-events: none;
   overflow: visible;
 }
@@ -221,17 +268,42 @@ $mockup-zone-fill: 0.52;
   display: none;
 }
 
+/* Explicit request: the ring is the ACTIVE frame's own stroke — once a tile
+   stops being active (scrolled past, moved on from), hide it outright
+   rather than leaving it sitting there fully filled. No fade: the frame
+   itself snaps between the two Figma states (border+15%-white vs solid
+   --tag-primary-bg, see .fcar__tile.is-active above) at the same instant,
+   so the ring disappearing with it reads as one switch, not two. */
+.fcar__tile:not(.is-active) .fcar__ring {
+  display: none;
+}
+
+/* node 1521:34733/1521:34740 — inactive (grey outline) and active (brand-
+   purple filled) are two DIFFERENT glyph assets, not one glyph dimmed and
+   brightened, so both stack in the exact same spot and cross-fade opacity
+   (features-carousel.ts) instead of sharing a single <img>. */
 .fcar__tile-glyph {
-  position: relative;
+  position: absolute;
+  inset: 0;
+  margin: auto;
   z-index: 1;
   width: 24px;
   height: 24px;
-  /* rest state: only the first tile is lit */
-  opacity: $opacity-side;
 }
 
-.fcar__tile[data-tile='0'] .fcar__tile-glyph {
-  opacity: 1;
+/* Rest state: every tile shows its inactive glyph, tile 0 (SSR/no-JS
+   "feature 1 finished" convention, §8) shows its active one instead. */
+[data-tile-glyph-active] {
+  opacity: 0;
+}
+
+.fcar__tile[data-tile='0'] {
+  [data-tile-glyph-inactive] {
+    opacity: 0;
+  }
+  [data-tile-glyph-active] {
+    opacity: 1;
+  }
 }
 
 /* node 1390:6644 — dashed divider between the rail and the head+mockup
@@ -257,12 +329,12 @@ $mockup-zone-fill: 0.52;
   position: relative;
   flex: 1 1 0;
   min-width: 0;
-  /* Tall enough for the mockup's own rendered height (~440px at a typical
+  /* Tall enough for the mockup's own rendered height (~530px at a typical
      desktop column width) plus slack — head and mockup both centre on the
      column's own 50% line (see .fcar__head/.fcar__mockup below), so this
      only ever has to clear the taller of the two, which is usually the
      mockup. */
-  min-height: 500px;
+  min-height: 580px;
 }
 
 /* Measuring reference only — the driver reads its width to scale SLOT_STEP
@@ -296,6 +368,12 @@ $mockup-zone-fill: 0.52;
   inset-inline-start: 0;
   inset-block-start: 50%;
   transform: translateY(-50%);
+  /* Above every mockup z-index (max 4, see .fcar__mockup), belt-and-braces:
+     $mockup-zone-fill is solved for zero spill past $fcar-zone-gap (see its
+     own doc comment), so this shouldn't matter in practice — but if any
+     future retune leaves the R-slot's slide reaching this far, the head
+     must paint OVER it, never the other way round. */
+  z-index: 10;
   display: flex;
   flex-direction: row;
   align-items: flex-start;
@@ -406,7 +484,7 @@ $mockup-zone-fill: 0.52;
    mockup zone and overwrites this on its first frame. Keeps the
    translateY(-50%) piece so the R slot still centres correctly before
    hydration. */
-$slot-step-rest: 187px;
+$slot-step-rest: 165px;
 
 .fcar__feature[data-feature='1'] .fcar__mockup {
   opacity: $opacity-side;
