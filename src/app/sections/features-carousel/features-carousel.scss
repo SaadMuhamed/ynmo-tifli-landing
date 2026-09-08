@@ -1,0 +1,519 @@
+@use '../../../styles/mixins' as *;
+
+/* Geometry mirrored from carousel.animation.ts — these two files must agree.
+   Only the *rest* state is expressed here; every animated value is written by
+   the driver. Colours are tokens throughout (§8), numbers are geometry. */
+$side-scale: 0.7712195;
+$opacity-side: 0.35;
+$tile-pitch: 64px;
+$tile-size: 48px;
+
+/* node 1390:6619's head+mockup pairing, laid out side by side per explicit
+   direction (supersedes the earlier "head stacked above its mockup" build):
+   head at the column's own inline-start edge, the mockup stack filling the
+   remaining inline-end zone. $fcar-head-zone-w is a layout BUDGET (icon
+   frame 96 + gap 24 + text's own 380px max-width) that the mockup zone's
+   width and its stage's inset (below) are carved out against — it is not a
+   width applied to .fcar__head itself, which sizes to its own content,
+   already bounded by that same 380px text max-width. Must track
+   carousel.animation.ts' own STAGE_WIDTH, which is authored against this
+   same zone at a 1068px-wide column. */
+$fcar-head-zone-w: 500px;
+$fcar-zone-gap: 48px; // var(--space-48)
+/** Fraction of the mockup zone's own width the centre mockup fills — the
+ * rest is breathing margin, auto-centred. Capped well below "fill the whole
+ * zone": the R-slot mockup's own slide (carousel.animation.ts' SLOT_STEP)
+ * shifts it TOWARD the head zone (the model's x is physical, per §8 — it
+ * doesn't mirror under RTL), so a fill too close to 1 pushes that slide
+ * straight into the head's own text — measured and caught visually at
+ * fill 0.94: the side mockup landed ~270px into the head zone, on top of
+ * the title/description. 0.52 is solved so, at the 25%-hidden overlap
+ * SLOT_STEP is set for, the side mockup's outer edge lands only ~32px past
+ * the zone's own edge — inside the $fcar-zone-gap (48px), never into the
+ * head's text. Recompute both this and SLOT_STEP together if either
+ * changes — see that constant's own doc comment for the shared formula. */
+$mockup-zone-fill: 0.52;
+
+.fcar {
+  --fcar-rail-w: #{$tile-size};
+  --fcar-head-text-w: 380px;
+  /* 94% of the mockup zone (column width minus the head budget and the gap
+     between zones) — NOT a percentage of the full column, now that the head
+     and the mockup sit side by side instead of stacked. */
+  --fcar-mockup-w: calc((100% - #{$fcar-head-zone-w} - #{$fcar-zone-gap}) * #{$mockup-zone-fill});
+
+  position: relative;
+  background: var(--surface-page);
+  padding-block: var(--space-72);
+  padding-inline: var(--gutter);
+}
+
+.fcar__track {
+  /* height is set by the driver to stageHeight + extraScrollPx; until then
+     the section is exactly as tall as its content. */
+  position: relative;
+}
+
+.fcar__sticky {
+  display: flex;
+  flex-direction: column;
+  /* node 956:11265: the feature card frame (y 196) sits exactly 72px below
+     the headline frame's own bottom (y 124) — was var(--space-24), visibly
+     tight next to the headline. */
+  gap: var(--space-72);
+  max-width: var(--container);
+  margin-inline: auto;
+}
+
+.fcar.is-pinned .fcar__sticky {
+  position: sticky;
+  /* `top` is set by the driver (MIN_STICKY_TOP) so the headline clears the
+     floating header. */
+}
+
+.fcar__headline,
+.fcar__body {
+  transition: opacity 0.4s ease;
+}
+
+/* Hidden until the reader has actually scrolled down to this section.
+ * Without this, the section's own "feature 1 finished" rest state (needed
+ * for SSR/no-JS/narrow — §8) would otherwise already be peeking up from
+ * below the fold — rail icons lit, mockups at full size — while the reader
+ * is still on the PREVIOUS section, well before the pin engages. The driver
+ * adds/removes is-revealed at exactly pinStart() (features-carousel.ts),
+ * the same scroll position that position:sticky itself starts holding at,
+ * so the headline is already sitting fixed under the header the instant it's
+ * revealed. Gated on is-pinned so SSR/no-JS/narrow readers — who never get
+ * is-pinned — always see the section plainly: this hides a pinned-desktop
+ * transition, not the section itself. */
+.fcar.is-pinned:not(.is-revealed) .fcar__headline,
+.fcar.is-pinned:not(.is-revealed) .fcar__body {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* node 1466:31307 — same headline text as services-grid's (identical
+   SERVICES_HEADLINE), same treatment: centred, capped at 696px, with two
+   rotated squiggle doodles behind it. */
+.fcar__headline {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 696px;
+  margin-inline: auto;
+  display: flex;
+  justify-content: center;
+  background: var(--surface-page);
+
+  h2 {
+    position: relative;
+    z-index: 1;
+    font-size: var(--fs-44);
+    font-weight: var(--fw-bold);
+    line-height: 1.4;
+    color: var(--text-primary);
+    text-align: center;
+    word-break: break-word;
+    margin: 0;
+  }
+
+  .hl {
+    color: var(--brand-primary-pressed);
+  }
+}
+
+.fcar__doodle {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  display: block;
+
+  /* Figma node 1110:23533/1110:23536 — exact centres of each rotated
+     squiggle group, converted from the 1440px frame to this 696px box.
+     Matches services-grid's .services__doodle exactly (identical headline). */
+  &--a {
+    left: 100px;
+    top: 23px;
+    width: 238px;
+    height: 157px;
+    transform: rotate(-2.14deg);
+  }
+  &--b {
+    left: 415px;
+    top: 23px;
+    width: 190px;
+    height: 157px;
+    transform: rotate(-2.14deg);
+  }
+}
+
+/* ---------- body: rail | divider | column ---------- */
+.fcar__body {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-32);
+}
+
+/* ---------- rail ---------- */
+.fcar__rail {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: calc(#{$tile-pitch} - #{$tile-size});
+  width: var(--fcar-rail-w);
+}
+
+.fcar__tile {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: $tile-size;
+  height: $tile-size;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-lg);
+  /* §3.8 — the tile background is deliberately not animated; each tile's
+     own ring fill carries the eye now instead of a shared ring's slide. */
+  background: color-mix(in srgb, var(--border-white) 15%, transparent);
+  border: 2px solid var(--border-white);
+  cursor: pointer;
+
+  &.is-active {
+    background: var(--tag-primary-bg);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+/* One ring per tile, fixed to that tile — never translated. An earlier
+   build shared a single ring translated between tiles; seeing it built, that
+   read as the ring dragging a curved trail across the gap between icons on
+   every handoff instead of "progress moving to the next feature". Each tile
+   now owns its ring outright; only its stroke-dashoffset (fill) animates. */
+.fcar__ring {
+  position: absolute;
+  z-index: 2;
+  /* 50x50 over a 48px tile — the -1 centres the 2px stroke on the tile edge. */
+  inset-inline-start: -1px;
+  inset-block-start: -1px;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.fcar__ring-path {
+  fill: none;
+  stroke: var(--brand-primary);
+  stroke-width: 2;
+  stroke-linecap: round;
+  /* pathLength="1" makes the fill a plain 0→1 dashoffset. */
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+}
+
+/* No JS (or no motion): don't leave a static 0%-filled ring sitting on the
+   first tile pretending to be a progress indicator (§8). */
+.fcar:not(.is-driven) .fcar__ring {
+  display: none;
+}
+
+.fcar__tile-glyph {
+  position: relative;
+  z-index: 1;
+  width: 24px;
+  height: 24px;
+  /* rest state: only the first tile is lit */
+  opacity: $opacity-side;
+}
+
+.fcar__tile[data-tile='0'] .fcar__tile-glyph {
+  opacity: 1;
+}
+
+/* node 1390:6644 — dashed divider between the rail and the head+mockup
+   column. A CSS `dashed` border can't hit Figma's exact 2px-dash/3px-gap
+   ratio (browsers pick their own), so this is a repeating-gradient instead,
+   at the exact stroke color/opacity. */
+.fcar__divider {
+  flex: none;
+  align-self: stretch;
+  width: 1px;
+  opacity: 0.5;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--border-divider-dashed) 0,
+    var(--border-divider-dashed) 2px,
+    transparent 2px,
+    transparent 5px
+  );
+}
+
+/* ---------- column: head beside its mockup ---------- */
+.fcar__column {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  /* Tall enough for the mockup's own rendered height (~440px at a typical
+     desktop column width) plus slack — head and mockup both centre on the
+     column's own 50% line (see .fcar__head/.fcar__mockup below), so this
+     only ever has to clear the taller of the two, which is usually the
+     mockup. */
+  min-height: 500px;
+}
+
+/* Measuring reference only — the driver reads its width to scale SLOT_STEP
+   (§3.4) and to know the mockups' shared horizontal centre. Renders
+   nothing. Sized to the MOCKUP ZONE (column width minus the head budget and
+   the gap above it), not the full column, now that the two sit side by
+   side. */
+.fcar__stage {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: calc(#{$fcar-head-zone-w} + #{$fcar-zone-gap});
+  inset-inline-end: 0;
+  pointer-events: none;
+}
+
+/* display:contents lets each feature author its head and its mockup
+   together while both position absolutely against .fcar__column directly.
+   The narrow/reduced fallback turns this back into a real box. */
+.fcar__feature {
+  display: contents;
+}
+
+/* node 1390:6619 — head pinned to the column's own inline-start (right)
+   edge: icon beside the text, text packed toward the icon. Centres
+   vertically on the SAME line the mockup centres on (below) rather than
+   pinning to the column's top, now that the two sit side by side —
+   self-relative translateY so it holds regardless of how many lines a
+   given feature's description wraps to. */
+.fcar__head {
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--space-24);
+  /* rest state: every head hidden except the first */
+  opacity: 0;
+  visibility: hidden;
+}
+
+.fcar__feature[data-feature='0'] .fcar__head {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* node 956:11283 "App Icon" — white rounded card, soft two-part shadow,
+   64px icon centred in a 96px frame. The frame is static; only the icon
+   inside carries the enter/exit stagger (data-head-icon). */
+.fcar__head-icon-frame {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  background: var(--surface-2);
+  border-radius: var(--radius-app-icon);
+  box-shadow: var(--shadow-app-icon);
+}
+
+.fcar__head-icon {
+  width: 64px;
+  height: 64px;
+}
+
+.fcar__head-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  max-width: var(--fcar-head-text-w);
+  text-align: start;
+}
+
+.fcar__head-title {
+  font-size: var(--fs-32);
+  font-weight: var(--fw-bold);
+  line-height: 1.3;
+  color: var(--text-primary);
+}
+
+.fcar__head-desc {
+  font-size: var(--fs-16);
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+/* ---------- mockup stage (beside the head) ---------- */
+/* node 956:11274: the two side mockups sit vertically CENTRED against the
+   centre one rather than sharing its top edge — that's what tucks them in
+   "under" the front phone instead of floating at the same height beside it.
+   Implemented as an always-present `translateY(-50%)` anchored at the
+   shared centre line: a percentage translate resolves against the
+   element's OWN box, so every mockup ends up centred regardless of its
+   current scale or its own image's aspect ratio — no per-scale or
+   per-feature math needed. This is now also the head's own centre line
+   (see .fcar__head above), now that the two sit side by side. The driver's
+   per-frame transform always includes this piece — see
+   features-carousel.ts' render(), which never writes a Y translate of its
+   own for exactly this reason. */
+.fcar__mockup {
+  position: absolute;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  /* Centred within the MOCKUP ZONE (column minus the head budget + gap) by
+     auto margins, not the full column — the driver's transform stays purely
+     additive on top of this (x/scale only), so a static centring translate
+     here never gets overwritten by it. */
+  inset-inline-start: calc(#{$fcar-head-zone-w} + #{$fcar-zone-gap});
+  inset-inline-end: 0;
+  margin-inline: auto;
+  width: var(--fcar-mockup-w);
+  /* Static z, bottom → top: Birth · L · R · C. Never animated (§3.5). The
+     driver relies on this order; it only writes transform/opacity. */
+  z-index: 1;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  img,
+  picture {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+
+/* Rest state = the finished first feature (D5): mockup 1 centred at full
+   size, mockup 2 parked in the R slot. Everything else stays hidden.
+   translateX is physical on purpose — this is a depth composition, not text
+   flow, and must not mirror under RTL (§8). */
+.fcar__feature[data-feature='0'] .fcar__mockup {
+  opacity: 1;
+  visibility: visible;
+  z-index: 4;
+}
+
+/* Pre-hydration approximation only, matching carousel.animation.ts'
+   SLOT_STEP at its own authoring width — the driver measures the real
+   mockup zone and overwrites this on its first frame. Keeps the
+   translateY(-50%) piece so the R slot still centres correctly before
+   hydration. */
+$slot-step-rest: 187px;
+
+.fcar__feature[data-feature='1'] .fcar__mockup {
+  opacity: $opacity-side;
+  visibility: visible;
+  z-index: 3;
+  transform: translateY(-50%) translate3d($slot-step-rest, 0, 0) scale($side-scale);
+}
+
+/* The driver measures the real column width and scales SLOT_STEP itself;
+   the rest-state offset above only has to be close, and is replaced on
+   frame 1. */
+.fcar.is-driven .fcar__feature[data-feature='1'] .fcar__mockup {
+  transform: none;
+}
+
+/* ---------- narrow / reduced-motion fallback ---------- */
+/* No pin, no driver, no rail: a plain nine-item list, each with its title,
+   description, icon and mockup (§8, D4, open decision 4). Deliberately the
+   same single fallback for both conditions — one code path, not two. */
+@mixin fcar-list-fallback {
+  .fcar__track {
+    height: auto !important;
+  }
+
+  .fcar__sticky {
+    position: static !important;
+    top: auto !important;
+  }
+
+  .fcar__body {
+    flex-direction: column;
+    gap: var(--space-72);
+  }
+
+  .fcar__rail,
+  .fcar__divider,
+  .fcar__stage {
+    display: none;
+  }
+
+  .fcar__column {
+    min-height: 0;
+    width: 100%;
+  }
+
+  .fcar__feature {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-24);
+  }
+
+  .fcar__head,
+  .fcar__mockup {
+    position: static;
+    width: 100%;
+    max-width: 420px;
+    /* the driver may have written inline styles before the breakpoint
+       changed — the fallback has to win over them */
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    inset-inline: auto;
+  }
+
+  .fcar__mockup {
+    max-width: 260px;
+  }
+
+  .fcar__head {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .fcar__head-text {
+    align-items: center;
+    text-align: center;
+    max-width: none;
+  }
+}
+
+@include below-1024 {
+  .fcar {
+    padding-inline: var(--space-32);
+  }
+
+  .fcar__doodle {
+    display: none;
+  }
+
+  @include fcar-list-fallback;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @include fcar-list-fallback;
+}
+
+@include below-768 {
+  .fcar {
+    padding-inline: var(--space-20);
+  }
+
+  .fcar__headline h2 {
+    font-size: var(--fs-32);
+  }
+
+  .fcar__head-title {
+    font-size: var(--fs-24);
+  }
+}

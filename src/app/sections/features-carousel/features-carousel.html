@@ -1,0 +1,148 @@
+<!-- S03b · pinned features carousel, Figma frame 1477:7969 (motion) and
+     section 1390:9880 (per-feature frames), built to
+     YNMO-TIFLI-FEATURES-CAROUSEL-BUILD.md plus several follow-up layout
+     passes — most recently: head and mockup sit SIDE BY SIDE in the column
+     (head at the inline-start edge, mockup filling the remaining inline-end
+     zone — see features-carousel.scss' $fcar-head-zone-w), superseding an
+     earlier "head stacked above its mockup" pass.
+
+     One markup tree serves three presentations:
+       · pinned desktop — .fcar__feature is display:contents, so each head and
+         each mockup positions absolutely against .fcar__column directly (head
+         pinned to the column's top, mockups centred below it), while still
+         being authored together per feature.
+       · SSR / no-JS rest — CSS alone renders feature 1 finished (head 1 lit,
+         mockup 1 centred, mockup 2 in the R slot, tile 1's own ring filled).
+         The driver adds .is-driven and takes over from an identical state.
+       · narrow / reduced-motion — .fcar__feature becomes a block, children go
+         back into normal flow, and the whole thing reads as a nine-item list
+         with the rail hidden. No pin (D4, §8). -->
+<section class="fcar" aria-label="خدمات ينمو تفلي">
+  <div class="fcar__track">
+    <div class="fcar__sticky">
+      <div class="fcar__headline">
+        <!-- node 1110:23533/1110:23536 — same two rotated squiggle doodles
+             services-grid uses behind its (identical) headline text. -->
+        <img
+          class="fcar__doodle fcar__doodle--a"
+          src="/assets/icons/services-grid/doodle-top-2.svg"
+          aria-hidden="true"
+          alt=""
+        />
+        <img
+          class="fcar__doodle fcar__doodle--b"
+          src="/assets/icons/services-grid/doodle-top-1.svg"
+          aria-hidden="true"
+          alt=""
+        />
+        <h2 id="features-carousel-heading">
+          {{ headline.before }}<span class="hl">{{ headline.highlight1 }}</span
+          >{{ headline.middle }}<span class="hl">{{ headline.highlight2 }}</span>
+        </h2>
+      </div>
+
+      <div class="fcar__body">
+        <!-- Each tile carries its own ring now (see the rail loop below) —
+             one ring PER icon, fixed in place, never sliding between tiles.
+             An earlier build used one shared ring translated to the active
+             tile; that read as the ring dragging a curved trail across the
+             gap between icons on handoff, which is exactly the "two ring
+             systems" defect §6 warned against in spirit (motion nobody
+             asked for) even though it was technically only one <svg>. -->
+        <div class="fcar__rail" aria-hidden="false">
+          @for (f of features; track f.id; let i = $index) {
+            <button
+              class="fcar__tile"
+              type="button"
+              [attr.data-tile]="i"
+              [attr.aria-label]="f.title"
+              [attr.aria-current]="i === 0 ? 'true' : null"
+              (click)="goTo(i)"
+            >
+              <svg
+                class="fcar__ring"
+                width="50"
+                height="50"
+                viewBox="0 0 50 50"
+                fill="none"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <path
+                  class="fcar__ring-path"
+                  [attr.data-ring]="i"
+                  pathLength="1"
+                  d="M25 1 H36 A13 13 0 0 1 49 14 V36 A13 13 0 0 1 36 49 H14 A13 13 0 0 1 1 36 V14 A13 13 0 0 1 14 1 Z"
+                  vector-effect="non-scaling-stroke"
+                />
+              </svg>
+              <img
+                class="fcar__tile-glyph"
+                [attr.data-tile-glyph]="i"
+                [src]="f.icon"
+                alt=""
+                aria-hidden="true"
+              />
+            </button>
+          }
+        </div>
+
+        <!-- node 1390:6644 — dashed divider between the rail and the
+             head+mockup column, exact Figma stroke (--border-divider-dashed). -->
+        <span class="fcar__divider" aria-hidden="true"></span>
+
+        <div class="fcar__column">
+          <!-- Measuring reference only — the driver reads its width to scale
+               SLOT_STEP (§3.4) and to know where the mockups' shared
+               horizontal centre is. Sized in CSS to the mockup ZONE (column
+               minus the head budget), not the full column, now that head
+               and mockup sit side by side. Renders nothing itself. -->
+          <div class="fcar__stage" aria-hidden="true"></div>
+
+          @for (f of features; track f.id; let i = $index) {
+            <div class="fcar__feature" [attr.data-feature]="i">
+              <!-- node 1390:6619 — head pinned to the column's own
+                   inline-start (right) edge, icon beside the text; centred
+                   vertically on the same line the mockup centres on
+                   (features-carousel.scss), now that the two sit side by
+                   side instead of stacked. -->
+              <article class="fcar__head" [attr.data-head]="i">
+                <!-- node 956:11283 "App Icon" — white rounded card + soft
+                     two-part shadow. The frame itself is static; only the
+                     icon inside moves with the head's own stagger
+                     (data-head-icon). -->
+                <span class="fcar__head-icon-frame">
+                  <img
+                    class="fcar__head-icon"
+                    [attr.data-head-icon]="i"
+                    [src]="f.icon"
+                    [alt]="f.iconAlt"
+                    aria-hidden="true"
+                  />
+                </span>
+                <span class="fcar__head-text">
+                  <h3 class="fcar__head-title">{{ f.title }}</h3>
+                  <p class="fcar__head-desc">{{ f.description }}</p>
+                </span>
+              </article>
+
+              <!-- Decorative: the title and description carry the meaning
+                   (§8). No width/height attributes — most exports are
+                   913×1474, but nursery-picker and daycare-centers are
+                   naturally wider (overhanging ListRow cards), so each
+                   sizes off its own intrinsic aspect inside the fixed-width
+                   CSS box rather than a shared hint that would be wrong for
+                   two of the nine. -->
+              <div class="fcar__mockup" [attr.data-mockup]="i">
+                <picture>
+                  <source [srcset]="f.carouselMockupWebp" type="image/webp" />
+                  <img [src]="f.carouselMockup" alt="" aria-hidden="true" loading="lazy" decoding="async" />
+                </picture>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
