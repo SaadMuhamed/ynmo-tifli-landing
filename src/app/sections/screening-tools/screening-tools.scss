@@ -2,6 +2,12 @@
 
 .screening-tools {
   position: relative;
+  /* the tool cards' box-shadow bleeds past this section's own box; without
+     a stacking order above the next section (why-us, which itself needs
+     z-index:1 to beat testimonials the same way), that bleed gets
+     overpainted by why-us's own opaque background instead of showing
+     through normally. */
+  z-index: 2;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;

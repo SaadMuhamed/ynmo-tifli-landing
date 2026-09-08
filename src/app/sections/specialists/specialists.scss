@@ -225,7 +225,13 @@
   padding-block-start: calc(var(--space-24) / 2);
   padding-block-end: var(--space-56);
   margin-block-end: calc(-1 * (var(--space-56) - var(--space-24)));
-  padding-inline-start: var(--rail-shadow-room);
+  /* the shadow-room term here is only cancelled by the matching negative
+     margin above (netting the cards back to the section's normal gutter,
+     since that margin is fixed and doesn't grow); --align-extra is added
+     on top of that so above --page-max the cards keep pace with the
+     header bar's inset instead of drifting outward with the section's own
+     flat gutter. */
+  padding-inline-start: calc(var(--rail-shadow-room) + var(--align-extra));
   scroll-padding-inline: 0;
   -webkit-mask-image: var(--rail-mask);
   mask-image: var(--rail-mask);

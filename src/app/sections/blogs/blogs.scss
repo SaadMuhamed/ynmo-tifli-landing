@@ -195,7 +195,12 @@
      instead of stopping at the section's normal side margin. */
   margin-inline-end: calc(-1 * var(--gutter));
   margin-block-start: -40px;
-  padding-inline-start: var(--space-24);
+  /* the rail's own box already sits flush at the section's flat gutter,
+     which matches the header bar's own inset below --page-max — so this
+     only needs --align-extra on top (zero below --page-max) to keep pace
+     with the header above it, not a separate flat minimum that would
+     overshoot the header's own (zero) extra at narrower widths. */
+  padding-inline-start: var(--align-extra);
   padding-inline-end: calc(var(--gutter) + var(--space-24));
   scroll-padding-inline: var(--space-24);
   /* overflow-x:auto forces overflow-y non-visible too — the cards' own

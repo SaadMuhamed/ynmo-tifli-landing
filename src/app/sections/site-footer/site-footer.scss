@@ -29,7 +29,12 @@
      kept the white background spanning full-bleed, which doesn't match. */
   margin-inline-start: var(--gutter);
   padding-block: var(--space-124);
-  padding-inline-start: var(--gutter);
+  /* --align-extra is computed against .site-footer (unpadded, so it's the
+     *total* inset the header bar keeps above --page-max) — the margin
+     above already supplies one gutter of that, so this only needs to make
+     up the remainder (floored at 0, not at another gutter, or widths
+     between --container and --page-max would double-count it). */
+  padding-inline-start: max(0px, calc(var(--align-extra) - var(--gutter)));
   padding-inline-end: 0;
   margin-block-end: -140px;
 
@@ -43,6 +48,8 @@
 }
 
 .site-footer__cta-block {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -136,27 +143,36 @@
 }
 
 .site-footer__illustration {
-  flex: none;
+  /* Fills the entire card (not just a column next to the text) — the
+     source PNG is transparent, so its soft drop-shadow blends straight
+     onto the card's white background instead of being boxed in. */
+  position: absolute;
+  inset: 0;
+  z-index: 0;
   display: block;
-  /* Fill the CTA row's own height (set by the text column's padding-block)
-     instead of being sized off a fixed width and shrink-wrapping to a
-     shorter height than the row actually has. */
-  align-self: stretch;
-  width: auto;
+  pointer-events: none;
 
   img {
-    width: auto;
+    width: 100%;
     height: 100%;
+    /* contain, not cover — the card is much wider than the artwork, and
+       cover would zoom in and crop most of the network graphic away. The
+       source has a transparent background, so the uncovered strip on
+       either side just shows the card's own white, seamlessly. */
     object-fit: contain;
+    object-position: left center;
   }
 
   @include below-1024 {
+    position: static;
     width: 280px;
+    height: auto;
     align-self: center;
 
     img {
       width: 100%;
       height: auto;
+      object-fit: contain;
     }
   }
 }

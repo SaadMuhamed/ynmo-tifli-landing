@@ -90,6 +90,14 @@
   --page-max: 1440px;
   --container: 1192px;
   --gutter: 124px;
+  /* The site header's own bar is `width: var(--container)` centered with no
+     side padding — its edge sits at `max(gutter, (100% - container) / 2)`
+     from the viewport edge, which only equals a flat `gutter` below
+     --page-max; above it, the header keeps drifting inward while a flat
+     `padding-inline: var(--gutter)` doesn't. Add this to a flat-gutter
+     inset (or max() it against an existing padding value) to keep content
+     lined up with the header bar at any width. */
+  --align-extra: max(0px, calc((100% - var(--container)) / 2));
 
   /* ---------- Typography ---------- */
   --font-family: "IBM Plex Sans Arabic", "Noto Sans Arabic", system-ui, sans-serif;
