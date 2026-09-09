@@ -1,6 +1,10 @@
-# Ynmo Tifli — Landing Page
+<p align="center">
+  <img src="docs/readme-assets/tifli-logo.png" alt="Ynmo Tifli logo" width="88" />
+</p>
 
-**Live preview:** https://ynmo-tifli-landing.vercel.app
+<h1 align="center">Ynmo Tifli — Landing Page</h1>
+
+<p align="center"><strong>Live preview:</strong> https://ynmo-tifli-landing.vercel.app</p>
 
 Production MVP of the Ynmo Tifli landing page. Arabic-first, RTL-native, built in
 Angular 22 (standalone components + SSR, single prerendered route). Built per
@@ -15,15 +19,15 @@ README is the practical "how do I run/extend/ship this" guide.
 - **Route**: single page, fully prerendered at build time (`ng build` does SSR +
   prerender in one step — there's no separate prerender command).
 - **Language/direction**: Arabic, `dir="rtl"`, no i18n routing — one locale.
-- **12 sections (S00–S12)** assembled from Figma node-for-node, each its own
-  standalone component under `src/app/sections/`:
+- **13 sections + 2 global floating widgets**, assembled from Figma node-for-node,
+  each its own standalone component under `src/app/sections/`:
 
   | # | Section | Component dir |
   |---|---|---|
   | S00 | Floating header + nav drawer | `site-header/` |
   | S01 | Hero | `hero/` |
   | S02 | Journey | `journey/` |
-  | S03 | Feature scroll sequence (framework-free scroll driver) | `feature-scroll/` |
+  | S03 | Features carousel (pinned scroll-jack sequence) | `features-carousel/` |
   | S04 | Specialists / practitioners | `specialists/` |
   | S05 | Screening tools | `screening-tools/` |
   | S06 | Why us | `why-us/` |
@@ -31,11 +35,104 @@ README is the practical "how do I run/extend/ship this" guide.
   | S08 | Blogs | `blogs/` |
   | S09 | Partners | `partners/` |
   | S10 | Security banner | `security-banner/` |
-  | S11 | Footer | `site-footer/` |
-  | S12 | WhatsApp FAB (gated off, see B-6) | `whatsapp-fab/` |
+  | S11 | Footer (incl. "confused where to start" contact CTA) | `site-footer/` |
+  | — | WhatsApp FAB (gated off, see B-6) | `whatsapp-fab/` |
+  | — | Global bottom-center scroll FAB (see below) | `scroll-fab/` |
+
+  `services-grid/` also still lives on disk, unmounted — S03 replaced it and it's
+  kept only until that swap is signed off.
+
+<p align="center">
+  <img src="docs/readme-assets/hero.jpg" alt="Hero section" width="720" />
+</p>
+
+## Scroll-synced cinematic reveals
+
+Every section from Journey onward fades, un-blurs and slides into place as it
+enters the viewport scrolling down — and reverses the same way if you scroll back
+up past it. This isn't a one-shot load animation; it re-fires every time an
+element crosses the viewport edge, so the effect always matches scroll direction.
+
+<p align="center">
+  <img src="docs/readme-assets/scroll-reveal-midtransition.jpg" alt="A section mid-reveal: still blurred and translated, part-way through fading in" width="720" /><br/>
+  <sub>Caught mid-transition — opacity, blur and translateY are all still animating in.</sub>
+</p>
+
+<p align="center">
+  <img src="docs/readme-assets/scroll-reveal-why-us.jpg" alt="Screening tools and Why Us sections fully revealed" width="720" /><br/>
+  <sub>Same mechanism, fully settled — cascading tool cards and reason tiles staggered per item.</sub>
+</p>
+
+**How it works** — one shared primitive, applied per section:
+
+- `src/app/core/scroll-reveal.directive.ts` — a standalone `[appScrollReveal]`
+  directive. It watches its host with an `IntersectionObserver` and toggles a
+  `.scroll-reveal--visible` class as the element enters/exits the viewport
+  (`threshold: 0.2`, `rootMargin: '0px 0px -10% 0px'`). Because it toggles rather
+  than fires-once, the fade reverses on scroll-up for free.
+- Each section's `.scss` defines its own before/after state under
+  `.<element>.scroll-reveal` / `.scroll-reveal--visible` — typically
+  `opacity: 0` + `translateY(...)` + `filter: blur(...)` fading to
+  `opacity: 1` / no transform / no blur over `cubic-bezier(0.16, 1, 0.3, 1)`.
+  Heavier "header" blocks use a slower ~1s transition; repeating list items
+  (step cards, practitioner cards, tool cards, testimonial cards, blog cards,
+  reason tiles) use a faster ~0.85s transition with a per-index
+  `[style.transition-delay.ms]="i * N"` stagger so they cascade in one after
+  another instead of popping in as a block.
+- `prefers-reduced-motion: reduce` short-circuits every one of these blocks
+  back to a static, fully-visible state — no motion is forced on users who've
+  opted out.
+
+Sections wired up so far: `journey`, `features-carousel`'s own driver (predates
+this directive, has its own pin/scrub logic), `specialists`, `screening-tools`,
+`why-us`, `testimonials`, `blogs`, `partners`, `security-banner`, and the
+floating `site-header`.
+
+## The global scroll FAB
+
+<p align="center">
+  <img src="docs/readme-assets/security-footer-cta.jpg" alt="Security banner and footer contact CTA, with the bottom-center scroll FAB visible" width="720" /><br/>
+  <sub>The pill FAB stays fixed bottom-center; the security banner and footer's contact card are two more scroll-reveal blocks.</sub>
+</p>
+
+`scroll-fab/` is a single fixed bottom-center element (`app-scroll-fab`, mounted
+once in `app.html`) that cross-fades between two jobs depending on scroll
+position, using plain `IntersectionObserver`s against other sections' DOM
+(no shared state/service):
+
+- **Inside the pinned features carousel (S03)** — shows a "skip" pill that jumps
+  straight past the whole scroll-jacked stretch to Specialists.
+- **Everywhere else on the page** (except inside Hero, where the real buttons are
+  still on screen, and inside the footer, which has its own CTA) — resurfaces
+  Hero's two CTAs (`احجز جلسة استشاريه` / `احجز تقييم نمو الطفل`) so a visitor who
+  scrolled past them can still convert without scrolling back up.
+
+## More section previews
+
+<p align="center">
+  <img src="docs/readme-assets/journey.jpg" alt="Journey section" width="720" />
+</p>
+<p align="center">
+  <img src="docs/readme-assets/specialists.jpg" alt="Specialists section" width="720" />
+</p>
+<p align="center">
+  <img src="docs/readme-assets/testimonials.jpg" alt="Testimonials section" width="720" />
+</p>
+<p align="center">
+  <img src="docs/readme-assets/blogs.jpg" alt="Blogs rail" width="720" />
+</p>
 
 ## Latest updates
 
+- Extended the scroll-synced cinematic reveal (previously only on Hero/Journey)
+  across the rest of the page — Why Us, Testimonials, Blogs, Partners, Screening
+  Tools, Security Banner, Specialists, and the floating header — all via the one
+  shared `ScrollRevealDirective`.
+- Added the global bottom-center scroll FAB (`scroll-fab/`) that cross-fades
+  between a "skip the features carousel" control and Hero's two CTAs depending
+  on scroll position.
+- Added the features carousel (S03) as a pinned scroll-jack sequence, replacing
+  `services-grid` (kept on disk, unmounted, until fully signed off).
 - New brand favicon shipped (`public/favicon.png`, replacing the old `.ico`).
 - Fixed a real site-wide layout bug: `overflow-x:hidden` was only set on `<body>`,
   which under RTL let the fixed header size itself to the unclipped (167px-wider)
@@ -94,10 +191,11 @@ vercel --prod   # production deployment
   live in any `.html` template — even aria-labels and alt text are bound from these
   files.
 - **Sections**: `src/app/sections/<name>/` — one standalone, `OnPush` component per
-  plan §7 section (S00–S12), listed above.
-- **S03 core logic**: `src/app/core/scroll-driver.ts` — the framework-free scroll
-  driver (§8.6 of the plan). It's plain TypeScript with no Angular imports, so it's
-  unit-testable on its own.
+  plan §7 section, listed above.
+- **S03 core logic**: `src/app/sections/features-carousel/carousel.animation.ts` —
+  the scroll-jack pin/scrub driver (§8.6 of the plan).
+- **Scroll-reveal core logic**: `src/app/core/scroll-reveal.directive.ts` — see
+  "Scroll-synced cinematic reveals" above.
 
 ## Adding a real feature scene (S03, once B-1 unblocks)
 
@@ -122,6 +220,36 @@ Export the new assets from Figma once the real design lands — the scene PNG mu
 via `get_screenshot`, which bakes in an opaque page background). No component code
 needs to change; the driver and template are already generic over all 9 rows.
 
+## Adding scroll-reveal to a new section
+
+1. Import `ScrollRevealDirective` in the section's `.ts` and add it to `imports: []`.
+2. Add `appScrollReveal` to the host element(s) you want to animate in the `.html`.
+   For a repeating list, also add `let i = $index` to the `@for` and
+   `[style.transition-delay.ms]="i * N"` (120–160ms per step reads well) for the
+   cascade.
+3. In the section's `.scss`, add a block styled after the existing ones (see
+   `src/app/sections/journey/journey.scss` for the canonical example):
+
+```scss
+.your-element.scroll-reveal {
+  opacity: 0;
+  transform: translateY(56px) scale(0.96);
+  filter: blur(10px);
+  transition:
+    opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 1s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.scroll-reveal--visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+```
+
+Don't forget the matching `@media (prefers-reduced-motion: reduce)` reset.
+
 ## Known placeholders / blockers (plan §13)
 
 | ID | Status |
@@ -131,7 +259,7 @@ needs to change; the driver and template are already generic over all 9 rows.
 | B-3 | Blogs (S08) ships 6 static posts (plan's own mock repeats one placeholder title across all cards) — no CMS wiring. |
 | B-4 | Every CTA href is `#` — no real destinations provided yet. |
 | B-5 | No analytics wired (GA4/GTM undecided). |
-| B-6 | WhatsApp FAB (S12) is built and gated behind `WHATSAPP_FAB_ENABLED = false` in `content/ar.ts` — flip it to `true` once a real number exists. |
+| B-6 | WhatsApp FAB is built and gated behind `WHATSAPP_FAB_ENABLED = false` in `content/ar.ts` — flip it to `true` once a real number exists. |
 | B-7 | Tokens added with no Ynmotomic equivalent yet (all in `_tokens.scss`, each commented): `--shadow-cta-brand`, `--shadow-header-float`, `--fs-22/28/60/64`, `--border-decorative-strong`, `--brand-secondary-700`, `--partner-tawakkalna-green`, `--brand-whatsapp-green`, `--surface-translucent-white`, `--shadow-tint-neutral`, `--shadow-cta-soft`, `--shadow-pagination`, `--shadow-cta-blue`, `--shadow-whatsapp`, `--shadow-ground-strong` / `--shadow-ground-transparent`, `--radius-hero`, `--state-success-50`, `--state-rating-gold`, `--icon-disabled`. Flag these for Ynmotomic backfill. |
 
 ## Content deviations from the plan's §7 prose (Figma trusted instead)
