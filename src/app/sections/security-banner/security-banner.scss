@@ -92,3 +92,31 @@
     height: 100%;
   }
 }
+
+/* ---------- scroll-synced cinematic reveal ---------- */
+.security-banner__content.scroll-reveal,
+.security-banner__cta.scroll-reveal {
+  opacity: 0;
+  transform: translateY(56px) scale(0.96);
+  filter: blur(10px);
+  transition:
+    opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 1s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.scroll-reveal--visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .security-banner__content.scroll-reveal,
+  .security-banner__cta.scroll-reveal {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+}

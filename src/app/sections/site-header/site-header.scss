@@ -9,9 +9,33 @@
   justify-content: center;
   transition: inset-block-start 0.2s ease;
   pointer-events: none; /* re-enabled on the bar itself; keeps the gutter clickable-through */
+  animation: header-fade-in 1.1s cubic-bezier(0.16, 1, 0.3, 1) both;
 
   @include below-1024 {
     inset-block-start: 0;
+  }
+}
+
+@keyframes header-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-80px) scale(0.94);
+    filter: blur(6px);
+  }
+  60% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    animation: none;
   }
 }
 

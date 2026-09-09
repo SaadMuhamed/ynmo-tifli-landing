@@ -1,6 +1,6 @@
 <!-- S07 · Figma node 956:11571 -->
 <section id="testimonials" class="testimonials" aria-labelledby="testimonials-heading">
-  <div class="testimonials__header">
+  <div class="testimonials__header" appScrollReveal>
     <span class="testimonials__deco testimonials__deco--start" aria-hidden="true">
       <span class="testimonials__bubble">
         <span class="skeleton-line"></span>
@@ -23,8 +23,8 @@
   </div>
 
   <ul class="testimonial-grid">
-    @for (card of content.cards; track card.name) {
-      <li class="testimonial-card">
+    @for (card of content.cards; track card.name; let i = $index) {
+      <li class="testimonial-card" appScrollReveal [style.transition-delay.ms]="i * 120">
         @if (card.videoPoster) {
           <video
             class="testimonial-card__video"

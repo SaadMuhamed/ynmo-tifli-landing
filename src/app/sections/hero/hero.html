@@ -35,8 +35,13 @@
 
     <div class="hero__band">
       <ul class="hero__stats hero__stats--start">
-        @for (stat of hero.statsRight; track stat.label) {
-          <li class="stat-chip" [class]="'stat-chip--' + stat.accent">
+        @for (stat of hero.statsRight; track stat.label; let i = $index) {
+          <li
+            class="stat-chip"
+            [class]="'stat-chip--' + stat.accent"
+            appScrollReveal
+            [style.transition-delay.ms]="i * 120"
+          >
             <span class="stat-chip__glow"></span>
             <img class="stat-chip__icon" [src]="stat.icon" alt="" aria-hidden="true" />
             <span class="stat-chip__value" dir="ltr">{{ stat.value }}</span>
@@ -45,7 +50,7 @@
         }
       </ul>
 
-      <div class="hero__illustration">
+      <div class="hero__illustration" appScrollReveal>
         <picture>
           <source srcset="/assets/img/hero/hero-visual.webp" type="image/webp" />
           <img
@@ -61,8 +66,13 @@
       </div>
 
       <ul class="hero__stats hero__stats--end">
-        @for (stat of hero.statsLeft; track stat.label) {
-          <li class="stat-chip" [class]="'stat-chip--' + stat.accent">
+        @for (stat of hero.statsLeft; track stat.label; let i = $index) {
+          <li
+            class="stat-chip"
+            [class]="'stat-chip--' + stat.accent"
+            appScrollReveal
+            [style.transition-delay.ms]="i * 120"
+          >
             <span class="stat-chip__glow"></span>
             <img class="stat-chip__icon" [src]="stat.icon" alt="" aria-hidden="true" />
             <span class="stat-chip__value" dir="ltr">{{ stat.value }}</span>

@@ -1,6 +1,6 @@
 <!-- S05 · Figma node 956:11476 -->
 <section id="screening-tools" class="screening-tools" aria-labelledby="screening-heading">
-  <div class="screening-tools__heading">
+  <div class="screening-tools__heading" appScrollReveal>
     <span class="screening-tools__icon" aria-hidden="true">
       <img src="/assets/icons/screening-tools/icon-protected-file.svg" alt="" />
     </span>
@@ -12,7 +12,7 @@
 
   <div class="tool-stack">
     @for (tool of content.tools; track tool.acronym; let i = $index) {
-      <div class="tool-card" [class]="'tool-card--' + i">
+      <div class="tool-card" [class]="'tool-card--' + i" appScrollReveal [style.transition-delay.ms]="i * 160">
         <div class="tool-card__body">
           <h3 class="tool-card__title">
             {{ tool.titleBefore }}<bdi>{{ tool.acronym }}</bdi>{{ tool.titleAfter }}

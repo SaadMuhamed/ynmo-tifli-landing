@@ -1,6 +1,6 @@
 <!-- S09 · Figma node 956:11680 -->
 <section id="partners" class="partners" aria-labelledby="partners-heading">
-  <div class="partners__header">
+  <div class="partners__header" appScrollReveal>
     <img class="partners__sparkle partners__sparkle--a" src="/assets/icons/partners/sparkle-1.svg" alt="" aria-hidden="true" />
     <img class="partners__sparkle partners__sparkle--b" src="/assets/icons/partners/sparkle-2.svg" alt="" aria-hidden="true" />
     <img class="partners__sparkle partners__sparkle--c" src="/assets/icons/partners/sparkle-3.svg" alt="" aria-hidden="true" />
@@ -19,7 +19,7 @@
     </p>
   </div>
 
-  <div class="logo-strip">
+  <div class="logo-strip" appScrollReveal [style.transition-delay.ms]="120">
     <button class="logo-strip__arrow logo-strip__arrow--start" type="button" [attr.aria-label]="ui.prev" (click)="rail.scrollBy({ left: 200, behavior: 'smooth' })">
       <img src="/assets/icons/partners/icon-arrow-left.svg" alt="" />
     </button>

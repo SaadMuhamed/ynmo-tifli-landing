@@ -199,3 +199,46 @@
      icon in S02/S04) and did not do so here, so the up-left direction is
      the designer's intended final direction for this RTL layout. */
 }
+
+/* ---------- scroll-synced cinematic reveal ---------- */
+.screening-tools__heading.scroll-reveal {
+  opacity: 0;
+  transform: translateY(56px) scale(0.96);
+  filter: blur(10px);
+  transition:
+    opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 1s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.scroll-reveal--visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.tool-card.scroll-reveal {
+  opacity: 0;
+  transform: translateY(64px) scale(0.9);
+  filter: blur(12px);
+  transition:
+    opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.scroll-reveal--visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screening-tools__heading.scroll-reveal,
+  .tool-card.scroll-reveal {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+}

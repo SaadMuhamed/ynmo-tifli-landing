@@ -1,6 +1,6 @@
 <!-- S06 · Figma node 956:11515 -->
 <section id="why-us" class="why-us" aria-labelledby="why-us-heading">
-  <div class="why-us__aside">
+  <div class="why-us__aside" appScrollReveal>
     <img class="why-us__badge" src="/assets/img/why-us/badge.webp" alt="" aria-hidden="true" loading="lazy" decoding="async" />
 
     <h2 id="why-us-heading" class="why-us__heading">
@@ -20,8 +20,8 @@
        decorative composition, so it's left to mirror naturally per §2.1
        rather than reversed to pixel-match Figma's LTR screenshot. -->
   <ul class="reason-grid">
-    @for (tile of content.tiles; track tile.titleLine1) {
-      <li class="reason-tile">
+    @for (tile of content.tiles; track tile.titleLine1; let i = $index) {
+      <li class="reason-tile" appScrollReveal [style.transition-delay.ms]="i * 120">
         <img class="reason-tile__icon" [src]="tile.icon" alt="" aria-hidden="true" />
         <p class="reason-tile__title">
           <span>{{ tile.titleLine1 }}</span>

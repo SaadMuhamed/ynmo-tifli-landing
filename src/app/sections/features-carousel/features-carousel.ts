@@ -72,6 +72,13 @@ const ENTRANCE_COLUMN: readonly [number, number] = [0.7, 1];
  * request) means starting even further right and sliding to rest. */
 const RAIL_ENTER_TRAVEL = 32;
 
+/** Cinematic headline entrance, matching the fade+rise+blur treatment used
+ * on every other section's scroll reveal (hero, journey) — px risen and px
+ * of blur cleared over ENTRANCE_HEADLINE, driven off the same headlineP
+ * used for opacity so it stays perfectly in sync, both directions. */
+const HEADLINE_ENTER_RISE = 40;
+const HEADLINE_ENTER_BLUR = 8;
+
 /** offsetTop walked up the offsetParent chain — transform-immune, unlike
  * getBoundingClientRect(), so it cannot be corrupted by being read while an
  * element already carries an in-flight animation transform. */
@@ -271,6 +278,7 @@ export class FeaturesCarousel implements OnDestroy {
       el.style.opacity = '';
       el.style.visibility = '';
       el.style.willChange = '';
+      el.style.filter = '';
     }
     for (const path of this.ringPaths) path.style.strokeDashoffset = '';
   }
@@ -307,7 +315,10 @@ export class FeaturesCarousel implements OnDestroy {
         ? ramp(window.scrollY, this.sectionTop - window.innerHeight, this.pinStart())
         : 1;
 
-    this.headlineEl.style.opacity = ramp(E, ...ENTRANCE_HEADLINE).toFixed(4);
+    const headlineP = ramp(E, ...ENTRANCE_HEADLINE);
+    this.headlineEl.style.opacity = headlineP.toFixed(4);
+    this.headlineEl.style.transform = `translate3d(0, ${((1 - headlineP) * HEADLINE_ENTER_RISE).toFixed(2)}px, 0)`;
+    this.headlineEl.style.filter = `blur(${((1 - headlineP) * HEADLINE_ENTER_BLUR).toFixed(2)}px)`;
 
     const railP = ramp(E, ...ENTRANCE_RAIL);
     this.railEl.style.opacity = railP.toFixed(4);

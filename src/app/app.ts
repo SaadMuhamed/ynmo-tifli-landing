@@ -12,6 +12,7 @@ import { Partners } from './sections/partners/partners';
 import { SecurityBanner } from './sections/security-banner/security-banner';
 import { SiteFooter } from './sections/site-footer/site-footer';
 import { WhatsappFab } from './sections/whatsapp-fab/whatsapp-fab';
+import { ScrollFab } from './sections/scroll-fab/scroll-fab';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,6 +30,7 @@ import { WhatsappFab } from './sections/whatsapp-fab/whatsapp-fab';
     SecurityBanner,
     SiteFooter,
     WhatsappFab,
+    ScrollFab,
   ],
   selector: 'app-root',
   styleUrl: './app.scss',

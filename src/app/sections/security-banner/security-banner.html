@@ -1,6 +1,6 @@
 <!-- S10 · Figma node 956:11711 -->
 <section id="security-banner" class="security-banner" aria-labelledby="security-heading">
-  <div class="security-banner__content">
+  <div class="security-banner__content" appScrollReveal>
     <picture class="security-banner__badge">
       <source srcset="/assets/img/security-banner/badge.webp" type="image/webp" />
       <img src="/assets/img/security-banner/badge.png" alt="" aria-hidden="true" loading="lazy" decoding="async" />
@@ -11,7 +11,7 @@
     </h2>
   </div>
 
-  <a class="security-banner__cta" [href]="content.cta.href">
+  <a class="security-banner__cta" [href]="content.cta.href" appScrollReveal [style.transition-delay.ms]="120">
     <span>{{ content.cta.label }}</span>
     <span class="security-banner__cta-badge">
       <img src="/assets/icons/security-banner/icon-chevron.svg" alt="" />

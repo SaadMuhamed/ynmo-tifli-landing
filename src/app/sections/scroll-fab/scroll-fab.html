@@ -1,0 +1,40 @@
+<!-- node 1534:34879 (skip state) / node 1542:34979 (CTA-pair state) — one
+     fixed bottom-center anchor, two stacked, cross-fading contents. Only the
+     state matching `mode()` is interactive/reachable by keyboard; the other
+     sits behind it, invisible and inert. -->
+<div class="scroll-fab">
+  <button
+    class="scroll-fab__state scroll-fab__skip"
+    type="button"
+    [class.scroll-fab__state--active]="mode() === 'skip'"
+    [attr.aria-hidden]="mode() !== 'skip' ? true : null"
+    [tabIndex]="mode() === 'skip' ? 0 : -1"
+    (click)="skipFeatures()"
+  >
+    <span class="scroll-fab__icon scroll-fab__icon--rewind">
+      <img src="/assets/icons/features-carousel/skip-rewind.svg" alt="" aria-hidden="true" />
+    </span>
+    <span>{{ content.skipLabel }}</span>
+  </button>
+
+  <div class="scroll-fab__state scroll-fab__ctas" [class.scroll-fab__state--active]="mode() === 'ctas'" [attr.aria-hidden]="mode() !== 'ctas' ? true : null">
+    <a class="scroll-fab__cta scroll-fab__cta--plain" [href]="content.consultationCta.href" [tabIndex]="mode() === 'ctas' ? 0 : -1">
+      <span class="scroll-fab__badge">
+        <img src="/assets/icons/scroll-nav-fab/arrow-badge-cyan.svg" alt="" aria-hidden="true" />
+      </span>
+      <span>{{ content.consultationCta.label }}</span>
+      <span class="scroll-fab__icon scroll-fab__icon--calendar">
+        <img src="/assets/icons/scroll-nav-fab/calendar.svg" alt="" aria-hidden="true" />
+      </span>
+    </a>
+    <a class="scroll-fab__cta scroll-fab__cta--bordered" [href]="content.assessmentCta.href" [tabIndex]="mode() === 'ctas' ? 0 : -1">
+      <span class="scroll-fab__badge">
+        <img src="/assets/icons/scroll-nav-fab/arrow-badge-purple.svg" alt="" aria-hidden="true" />
+      </span>
+      <span>{{ content.assessmentCta.label }}</span>
+      <span class="scroll-fab__icon scroll-fab__icon--task">
+        <img src="/assets/icons/scroll-nav-fab/task-daily.svg" alt="" aria-hidden="true" />
+      </span>
+    </a>
+  </div>
+</div>

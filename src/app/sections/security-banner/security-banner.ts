@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { SECURITY_BANNER } from '../../content/ar';
+import { ScrollRevealDirective } from '../../core/scroll-reveal.directive';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [],
+  imports: [ScrollRevealDirective],
   selector: 'app-security-banner',
   styleUrl: './security-banner.scss',
   templateUrl: './security-banner.html',

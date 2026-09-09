@@ -1,6 +1,6 @@
 <!-- S08 · Figma node 956:11679 (instance of shared "Blogs Section" component) -->
 <section id="blogs" class="blogs" aria-labelledby="blogs-heading">
-  <div class="blogs__top">
+  <div class="blogs__top" appScrollReveal>
     <div class="blogs__heading-block">
       <h2 id="blogs-heading" class="blogs__heading">
         <span>{{ content.headingLine1 }}</span>
@@ -30,7 +30,7 @@
   </div>
 
   <div class="blogs__body">
-    <div class="blogs__tabs" role="tablist">
+    <div class="blogs__tabs" role="tablist" appScrollReveal [style.transition-delay.ms]="120">
       @for (tab of content.tabs; track tab; let i = $index) {
         <button
           class="blogs__tab"
@@ -49,8 +49,8 @@
        section's own (wider) content width instead of the letterboxed
        container, so it's not clipping card shadows or the slider view. -->
   <ul class="blog-rail" #rail (scroll)="onRailScroll(rail)">
-    @for (post of content.posts; track $index) {
-      <li class="blog-card">
+    @for (post of content.posts; track $index; let i = $index) {
+      <li class="blog-card" appScrollReveal [style.transition-delay.ms]="i * 120">
         <a [href]="post.href" class="blog-card__link">
           <div class="blog-card__media">
             <picture>

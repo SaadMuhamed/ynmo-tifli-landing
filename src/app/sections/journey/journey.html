@@ -1,6 +1,6 @@
 <!-- S02 · Figma node 956:10779 -->
 <section id="journey" class="journey" aria-labelledby="journey-heading">
-  <div class="journey__header">
+  <div class="journey__header" appScrollReveal>
     <picture class="journey__sparkles" aria-hidden="true">
       <source srcset="/assets/icons/journey/sparkles-cluster.webp" type="image/webp" />
       <img class="journey__sparkle" src="/assets/icons/journey/sparkles-cluster.png" alt="" />
@@ -10,8 +10,8 @@
   </div>
 
   <ol class="journey__steps">
-    @for (step of journey.steps; track step.number; let last = $last) {
-      <li class="step-card">
+    @for (step of journey.steps; track step.number; let last = $last; let i = $index) {
+      <li class="step-card" appScrollReveal [style.transition-delay.ms]="i * 160">
         <span class="step-card__badge">
           <img [src]="'/assets/icons/journey/badge-' + step.number + '.png'" alt="{{ step.number }}" />
         </span>
@@ -32,14 +32,14 @@
       </li>
       @if (!last) {
         <!-- node 1110:23090 / 22879 / 22660 — connector between adjacent step cards -->
-        <li class="journey__connector" aria-hidden="true">
+        <li class="journey__connector" aria-hidden="true" appScrollReveal [style.transition-delay.ms]="i * 160 + 80">
           <img src="/assets/icons/journey/step-connector.svg" alt="" />
         </li>
       }
     }
   </ol>
 
-  <div class="journey__promos">
+  <div class="journey__promos" appScrollReveal [style.transition-delay.ms]="journey.steps.length * 160">
     @for (promo of journey.promos; track promo.headingBrand; let last = $last) {
       <div class="app-promo">
         <div class="app-promo__row">

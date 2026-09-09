@@ -1,7 +1,7 @@
 <!-- S04 · Figma node 956:11313 -->
 <section id="specialists" class="specialists" aria-labelledby="specialists-heading">
   <div class="specialists__intro">
-    <div class="specialists__collage">
+    <div class="specialists__collage" appScrollReveal>
       <picture>
         <source srcset="/assets/img/specialists/collage-photo-v2.webp" type="image/webp" />
         <img
@@ -30,7 +30,7 @@
       </picture>
     </div>
 
-    <div class="specialists__text">
+    <div class="specialists__text" appScrollReveal [style.transition-delay.ms]="120">
       <h2 id="specialists-heading" class="specialists__heading">
         <span class="specialists__scribble" aria-hidden="true">
           <img src="/assets/icons/specialists/scribble.svg" alt="" />
@@ -65,8 +65,8 @@
     [class.practitioner-rail--at-end]="atEnd()"
     (scroll)="onRailScroll(rail)"
   >
-    @for (p of specialists.practitioners; track p.name) {
-      <li class="practitioner-card">
+    @for (p of specialists.practitioners; track p.name; let i = $index) {
+      <li class="practitioner-card" appScrollReveal [style.transition-delay.ms]="i * 120">
         <div class="practitioner-card__head">
           <picture>
             <source [srcset]="p.avatarWebp" type="image/webp" />
@@ -94,7 +94,7 @@
     }
   </ul>
 
-  <div class="rail-nav">
+  <div class="rail-nav" appScrollReveal [style.transition-delay.ms]="specialists.practitioners.length * 120">
     <button class="rail-nav__arrow" type="button" [disabled]="atStart()" [attr.aria-label]="ui.prev" (click)="scrollRail(rail, 1)">
       <img [src]="atStart() ? '/assets/icons/specialists/arrow-right.svg' : '/assets/icons/specialists/arrow-right-active.svg'" alt="" />
     </button>

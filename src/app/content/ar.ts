@@ -7,6 +7,9 @@
 export const UI = {
   prev: 'السابق',
   next: 'التالي',
+  /** S03b — skip control (node 1534:34879), jumps past the pinned features
+   * carousel to the next section. */
+  skipFeatures: 'تخطي مميزات التطبيق',
 };
 
 export interface NavLink {
@@ -656,6 +659,23 @@ export const WHATSAPP_FAB: WhatsappFabContent = {
   tooltipLine2: 'تواصل معنا واتس آب!',
   ariaLabel: 'تواصل معنا عبر واتساب',
   href: '#',
+};
+
+export interface ScrollFabContent {
+  skipLabel: string;
+  consultationCta: NavLink;
+  assessmentCta: NavLink;
+}
+
+/**
+ * Global bottom-center scroll FAB (nodes 1534:34879 skip state, 1542:34979
+ * CTA-pair state) — same two CTAs as HERO's own primary/secondary buttons
+ * (node 956:10749), resurfaced once the reader has scrolled past the hero.
+ */
+export const SCROLL_FAB: ScrollFabContent = {
+  skipLabel: UI.skipFeatures,
+  consultationCta: { label: 'احجز جلسة استشاريه', href: '#' },
+  assessmentCta: { label: 'احجز تقييم نمو الطفل', href: '#' },
 };
 
 /** B-6: real WhatsApp number not yet provided — flag stays false until it is. */

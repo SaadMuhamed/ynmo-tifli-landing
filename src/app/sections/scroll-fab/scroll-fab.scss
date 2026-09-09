@@ -1,0 +1,250 @@
+@use '../../../styles/mixins' as *;
+
+/* Shared LAYOUT only — background/border/shadow/color are per-state below.
+   Both states share the same light frosted-glass BODY (same gradient fill +
+   blur as skip, node 1534:34879) so the fill itself is opaque enough that
+   whatever's scrolling underneath reads as genuinely blurred, not crisp and
+   merely tinted — only each CTA button's border/shadow/text color varies. */
+@mixin glass-pill-shape {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding-block: var(--space-16);
+  padding-left: 16px;
+  padding-right: 20px;
+  border-radius: var(--radius-full);
+  font-size: var(--fs-16);
+  font-weight: var(--fw-bold);
+  white-space: nowrap;
+  cursor: pointer;
+  /* Blur-clear half of the cross-fade lives HERE, on the glass element
+     itself, not on its .scroll-fab__state wrapper — an ancestor's `filter`
+     opens a new backdrop root, cutting the descendant's own backdrop-filter
+     off from the real page behind it (it can then only "see" its own
+     isolated subtree, which paints nothing there) so the glass stopped
+     blurring anything and read as a plain tinted pill. Self-filter doesn't
+     isolate its own backdrop-filter the same way, so this has to sit on the
+     exact element that carries backdrop-filter below. */
+  filter: blur(8px);
+  transition:
+    transform 0.2s ease,
+    filter 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Every pill places its leading badge/icon at the physical left, trailing
+     icon (if any) at the physical right — a fixed decorative layout, not
+     language-flow-driven (§8's "physical, not logical" convention) — so
+     each row is deliberately reversed under the page's dir="rtl" rather
+     than following DOM order. */
+  flex-direction: row-reverse;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+/* ---------- fixed anchor ---------- */
+.scroll-fab {
+  position: fixed;
+  z-index: 40;
+  inset-inline: 0;
+  bottom: var(--space-32);
+  height: 56px;
+  pointer-events: none;
+}
+
+/* Both states stack at the exact same anchor point (independent widths —
+   one pill vs. a pair — so each self-centers rather than sharing a flex
+   row); only the active one is opaque and reachable. Cinematic cross-fade:
+   rise + blur-clear + fade, the same treatment already used for hero/
+   journey's scroll reveals, just symmetric (it runs in reverse for the one
+   losing the handoff, not just a plain opacity swap). */
+.scroll-fab__state {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  display: flex;
+  align-items: flex-end;
+  transform: translateX(-50%) translateY(16px);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &--active {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+  }
+}
+
+/* ---------- skip state (node 1534:34879) — light frosted glass ---------- */
+.scroll-fab__skip {
+  @include glass-pill-shape;
+  border: 1px solid color-mix(in srgb, #fff 65%, var(--brand-primary-100));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, #fff 55%, transparent),
+    color-mix(in srgb, var(--brand-primary-100) 55%, transparent)
+  );
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  box-shadow:
+    0 24px 32px 0 color-mix(in srgb, var(--brand-primary-300) 55%, transparent),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.7);
+  color: var(--brand-primary);
+
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-2px);
+  }
+  /* .scroll-fab__skip IS the positioned .scroll-fab__state element (unlike
+     the CTA pair, where the centering transform lives on a separate wrapper
+     around each button) — the plain hover rule above replaces `transform`
+     wholesale, silently dropping .scroll-fab__state--active's own
+     translateX(-50%) centering and shunting the whole pill sideways off its
+     anchor. Re-including it here (higher specificity, so it always wins)
+     keeps the hover lift purely vertical. */
+  &.scroll-fab__state--active:hover,
+  &.scroll-fab__state--active:focus-visible {
+    transform: translateX(-50%) translateY(-2px);
+  }
+
+  &.scroll-fab__state--active {
+    filter: blur(0);
+  }
+}
+
+.scroll-fab__icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+
+  &--rewind {
+    width: 24px;
+    height: 24px;
+    img {
+      width: 20.76px;
+      height: 13.66px;
+    }
+  }
+  &--calendar {
+    width: 20px;
+    height: 20px;
+    img {
+      width: 17.5px;
+      height: 18.334px;
+    }
+  }
+  &--task {
+    width: 24px;
+    height: 24px;
+    img {
+      width: 18.5px;
+      height: 21.5px;
+    }
+  }
+
+  img {
+    display: block;
+  }
+}
+
+/* ---------- CTA-pair state (node 1542:34979) — light frosted glass ---------- */
+/* Figma's own literal fill here is a near-invisible 5%-opacity tint
+   (rgba(86,60,202,.05)) — technically correct per spec, but next to skip's
+   own pill it read as barely-there and let crisp underlying content show
+   straight through instead of a blurred one: not "glass" so much as plain
+   transparency. Matching skip's own gradient fill (same white/brand-100
+   mix) instead keeps this build's actual liquid-glass intent — an opaque
+   enough body that the blur behind it is legible — while everything Figma
+   DID specify precisely (each button's own border and shadow tint) stays
+   exactly as spec'd below. */
+.scroll-fab__ctas {
+  gap: var(--space-24);
+  /* consultation physically left, assessment physically right — matches the
+     Figma frame's own (inherently physical/LTR) layout, same reversed-under-
+     rtl treatment as everything else here. */
+  flex-direction: row-reverse;
+}
+
+.scroll-fab__cta {
+  @include glass-pill-shape;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, #fff 55%, transparent),
+    color-mix(in srgb, var(--brand-primary-100) 55%, transparent)
+  );
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-2px);
+  }
+
+  &--plain {
+    color: var(--brand-secondary);
+    box-shadow:
+      0 24px 32px 0 rgba(57, 203, 249, 0.35),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
+  }
+
+  &--bordered {
+    color: var(--brand-primary);
+    border: 2px solid var(--brand-primary-100);
+    box-shadow:
+      0 24px 32px 0 rgba(164, 145, 235, 0.5),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
+  }
+}
+
+/* .scroll-fab__cta itself isn't the .scroll-fab__state element (that's the
+   .scroll-fab__ctas wrapper around both buttons) — so unlike skip, this is a
+   real descendant selector, not a same-element compound one. */
+.scroll-fab__state--active .scroll-fab__cta {
+  filter: blur(0);
+}
+
+.scroll-fab__badge {
+  display: flex;
+  flex: none;
+  width: 20px;
+  height: 20px;
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-fab__state {
+    transition: opacity 0.25s ease;
+    transform: translateX(-50%) !important;
+  }
+
+  .scroll-fab__skip,
+  .scroll-fab__cta {
+    filter: none !important;
+  }
+}
+
+@include below-768 {
+  .scroll-fab {
+    bottom: var(--space-20);
+  }
+
+  .scroll-fab__ctas {
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: var(--space-12);
+  }
+
+  .scroll-fab__cta,
+  .scroll-fab__skip {
+    font-size: var(--fs-14);
+  }
+}

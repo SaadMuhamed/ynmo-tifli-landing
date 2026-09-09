@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { BLOGS, UI } from '../../content/ar';
+import { ScrollRevealDirective } from '../../core/scroll-reveal.directive';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [],
+  imports: [ScrollRevealDirective],
   selector: 'app-blogs',
   styleUrl: './blogs.scss',
   templateUrl: './blogs.html',
