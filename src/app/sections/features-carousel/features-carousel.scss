@@ -49,6 +49,24 @@ $fcar-zone-gap: 64px; // var(--space-64)
  * shared formula. */
 $mockup-zone-fill: 0.5645827634576065;
 
+/* Narrow (§ mobile rebuild): head sits ABOVE the mockup instead of beside it
+   — the same "budget zone" concept as $fcar-head-zone-w/$fcar-zone-gap
+   above, just split along the vertical axis instead of the horizontal one,
+   and against the full column width rather than a horizontal remainder
+   (there's no side-by-side split left to carve out of). Tuned by eye against
+   the actual rendered head/mockup sizes at this breakpoint, the same way
+   desktop's own min-height: 580px is a by-eye "tall enough" rather than a
+   derived value — recompute if the mobile head's own font sizes or the
+   mockup's fill fraction change enough to over/undershoot these. */
+$fcar-mobile-head-zone-h: 190px;
+$fcar-mobile-zone-gap: 24px;
+$fcar-mobile-mockup-zone-h: 340px;
+/** Fraction of the (now full) column width the centre mockup fills — see
+ * $mockup-zone-fill's own doc comment for the concept; this is that same
+ * idea against a differently-shaped zone, not solved for the same zero-
+ * spill constraint (mobile has no head zone to spill into). */
+$fcar-mobile-mockup-fill: 0.72;
+
 .fcar {
   --fcar-rail-w: #{$tile-size};
   --fcar-head-text-w: 300px;
@@ -291,13 +309,20 @@ $mockup-zone-fill: 0.5645827634576065;
   height: 24px;
 }
 
-/* Rest state: every tile shows its inactive glyph, tile 0 (SSR/no-JS
-   "feature 1 finished" convention, §8) shows its active one instead. */
+/* Rest state: every tile shows its inactive glyph; .is-active (template
+   defaults tile 0 to it — SSR/no-JS "feature 1 finished" convention, §8)
+   shows the active one instead. Class-driven rather than a hardcoded
+   `[data-tile='0']` default so the narrow tab-switcher (features-carousel.ts'
+   selectMobileFeature(), which has no per-frame render() loop to write
+   inline opacity the way the desktop driver does) can move this by toggling
+   the same class the driver already toggles on desktop. Inline styles the
+   driver writes per frame still win over these on desktop regardless (no
+   !important here), so this only ever governs SSR/narrow/no-JS. */
 [data-tile-glyph-active] {
   opacity: 0;
 }
 
-.fcar__tile[data-tile='0'] {
+.fcar__tile.is-active {
   [data-tile-glyph-inactive] {
     opacity: 0;
   }
@@ -500,10 +525,226 @@ $slot-step-rest: 165px;
   transform: none;
 }
 
-/* ---------- narrow / reduced-motion fallback ---------- */
-/* No pin, no driver, no rail: a plain nine-item list, each with its title,
-   description, icon and mockup (§8, D4, open decision 4). Deliberately the
-   same single fallback for both conditions — one code path, not two. */
+/* ---------- narrow: re-skinned pin ---------- */
+/* NARROW_QUERY in features-carousel.ts matches this exact breakpoint —
+   below 1024 the driver still pins/scrolls exactly as desktop does: same T
+   timeline, entrance fade, ring fill, glyph cross-fade, AND the same
+   head/mockup pose math (headPose()/poseFor() run unconditionally now, no
+   narrow branch) — nothing here is a reduced or alternate animation, only
+   the CSS anchors differ:
+     · the rail becomes one horizontal (scrollable) icon row under the
+       headline, the divider rotates into a full-width rule under it;
+     · the headline is explicitly EXCLUDED from the pinned block (explicit
+       request: "stop at the top" means the rail/column, not the title) —
+       .fcar__body, not .fcar__sticky, is what actually gets position:
+       sticky here (pinTargetEl() in features-carousel.ts switches which
+       element it sets `top`/reads height on to match); the headline stays
+       in normal flow above it and scrolls away once pinning starts;
+     · head sits ABOVE the mockup depth stack instead of beside it — two
+       stacked zones (head zone, mockup zone) in place of desktop's two
+       side-by-side ones, same "budget" concept, see the $fcar-mobile-*
+       constants up top and .fcar__head/.fcar__mockup below. The "2
+       mockups — front + a smaller low-opacity one to the side" look is
+       exactly desktop's, not a mobile simplification.
+   Wide-screen reduced-motion keeps the older full nine-item unpinned list
+   instead (below) — there's no scroll-driven motion to sync there, so
+   nothing is lost by not pinning it. */
+@include below-1024 {
+  .fcar {
+    padding-inline: var(--space-32);
+    /* head no longer sits beside the mockup (below) — the mockup zone is
+       the full column width now, not a horizontal remainder after a head
+       budget, so this sizes off that instead of desktop's own formula. */
+    --fcar-mockup-w: calc(100% * #{$fcar-mobile-mockup-fill});
+  }
+
+  /* the desktop pair sits at fixed pixel offsets tuned for a single
+     ~696px-wide headline box — meaningless once the mobile headline
+     reflows across 3-4 lines at a much narrower width, so hide them... */
+  .fcar__doodle {
+    display: none;
+  }
+
+  /* ...and replace with a per-phrase marker line instead, anchored to each
+     .hl span itself (em-sized, so it scales with the span's own font-size
+     and tracks it regardless of which line it wraps to) rather than the
+     whole headline box. This is what makes the purple highlight actually
+     visible on mobile — without it .hl was color-only, no line under it. */
+  .fcar__headline .hl {
+    position: relative;
+    z-index: 0;
+    display: inline-block;
+
+    &::before {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      inset-inline: -0.15em;
+      inset-block-end: -0.05em;
+      height: 0.7em;
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+      pointer-events: none;
+    }
+
+    &:first-of-type::before {
+      background-image: url('/assets/icons/services-grid/doodle-top-2.svg');
+    }
+
+    &:last-of-type::before {
+      background-image: url('/assets/icons/services-grid/doodle-top-1.svg');
+    }
+  }
+
+  /* .fcar__track's own height still comes from the driver exactly as on
+     desktop (measure() no longer bails for narrow) — but WHICH element gets
+     position: sticky changes here: .fcar__sticky (headline + body together)
+     is desktop's pin boundary; narrow moves that to .fcar__body alone so
+     the headline scrolls away normally and only rail/divider/column "stop
+     at the top" (explicit request) — pinTargetEl() in features-carousel.ts
+     is what actually sets `top`/reads height off whichever one applies.
+     .fcar__sticky itself becomes display: contents — position: sticky's
+     travel range is bounded by the sticky element's OWN PARENT box, and
+     .fcar__sticky's natural (un-inflated) height would give .fcar__body
+     almost no room to actually stay stuck; display: contents removes
+     .fcar__sticky from the box tree entirely (same trick .fcar__feature
+     already uses below) so .fcar__headline and .fcar__body become direct
+     children of .fcar__track instead — the one ancestor that IS tall,
+     since the driver inflates ITS height, not .fcar__sticky's. */
+  .fcar__sticky {
+    display: contents;
+  }
+
+  /* .fcar__sticky's own flex gap no longer applies once it's display:
+     contents (its layout properties are ignored entirely) — replaced with
+     a plain margin so the headline-to-rail spacing survives narrow. */
+  .fcar__headline {
+    margin-block-end: var(--space-72);
+  }
+
+  .fcar.is-pinned .fcar__body {
+    position: sticky;
+  }
+
+  .fcar__body {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-24);
+  }
+
+  .fcar__rail {
+    flex-direction: row;
+    width: 100%;
+    gap: var(--space-12);
+    overflow-x: auto;
+    overflow-y: visible;
+    /* headroom for the tile's own focus ring/shadow so scrolling never
+       clips it. */
+    padding: var(--space-4);
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .fcar__tile {
+    flex: none;
+  }
+
+  /* the vertical dashed rule rotated: a full-width horizontal rule under the
+     icon row instead of a column-height one beside it. */
+  .fcar__divider {
+    align-self: stretch;
+    width: 100%;
+    height: 1px;
+    background-image: repeating-linear-gradient(
+      to right,
+      var(--border-divider-dashed) 0,
+      var(--border-divider-dashed) 2px,
+      transparent 2px,
+      transparent 5px
+    );
+  }
+
+  .fcar__column {
+    /* base rule's flex: 1 1 0 is sized for the desktop ROW body (grow along
+       a horizontal main axis) — .fcar__body's main axis is vertical here
+       (flex-direction: column, above), so that same flex-basis: 0 instead
+       collapses this to zero HEIGHT: .fcar__body has no explicit height of
+       its own to grow into (it's sized BY its children, this one included),
+       so there is no free space for flex-grow to distribute and the column
+       is left at its 0 basis. flex: none sizes this off its own explicit
+       min-height instead (below) — head and mockup are both position:
+       absolute here exactly as on desktop, so column gets nothing from
+       their real content height either way, the same reason desktop's own
+       min-height: 580px exists above. */
+    flex: none;
+    width: 100%;
+    min-height: calc(
+      #{$fcar-mobile-head-zone-h} + #{$fcar-mobile-zone-gap} + #{$fcar-mobile-mockup-zone-h}
+    );
+  }
+
+  /* the mockup zone is the FULL column width now — there's no head budget
+     to carve out of it, since head sits above the mockup instead of beside
+     it (see .fcar__head/.fcar__mockup below) — so the driver measures the
+     real (wider) width here and scales SLOT_STEP against that instead. */
+  .fcar__stage {
+    inset-inline-start: 0;
+  }
+
+  /* .fcar__feature stays display: contents here too (base rule, unchanged)
+     — head and mockup both still position absolutely against .fcar__column
+     directly and cross-fade via their own per-frame opacity from
+     headPose()/poseFor() (features-carousel.ts), exactly like desktop; only
+     WHERE each anchors within the column changes below. */
+
+  /* icon beside its title+description, one horizontal stack — the base rule
+     already lays it out this way (flex-direction: row) — narrow re-centres
+     that row within its own full-width zone at the TOP of the column
+     instead of desktop's beside-the-mockup vertical centre (the matching
+     lower zone is .fcar__mockup below); the shared translateY(-50%)
+     self-centring convention (features-carousel.ts' render()) still applies
+     unchanged, just against this zone's own centre line now. */
+  .fcar__head {
+    inset-inline: 0;
+    inset-block-start: calc(#{$fcar-mobile-head-zone-h} / 2);
+    justify-content: center;
+    align-items: center;
+  }
+
+  .fcar__head-text {
+    align-items: flex-start;
+    text-align: start;
+    /* desktop's 300px cap (--fcar-head-text-w) assumes a much wider column
+       with room beside the icon for it — narrow's column is nowhere near
+       that wide, so this sizes off the head's own (now full-width) box
+       instead: the same icon-frame (96px) + gap (space-24) budget desktop
+       carves out, just resolved against a different available width. */
+    max-width: calc(100% - 96px - var(--space-24));
+  }
+
+  /* node 956:11274's "2 mockups, front + a smaller low-opacity one to the
+     side" depth stack is unchanged (features-carousel.ts' poseFor() runs
+     identically on both breakpoints) — only the anchor moves from beside
+     the head (desktop) to BELOW it: same self-centring translateY(-50%)
+     convention, just against this zone's own centre line. --fcar-mockup-w
+     is overridden above (the root .fcar rule) to size off the full column
+     width now that there's no head budget to carve out of it either. */
+  .fcar__mockup {
+    inset-inline-start: 0;
+    inset-block-start: calc(
+      #{$fcar-mobile-head-zone-h} + #{$fcar-mobile-zone-gap} + #{$fcar-mobile-mockup-zone-h} / 2
+    );
+  }
+}
+
+/* Wide-screen reduced-motion only: the pinned/sliding presentation is pure
+   motion with nothing else earning its layout, so turn it into a plain
+   nine-item list instead — narrow already gets its own tap-switcher above
+   regardless of motion preference (there's no scroll-driven motion in it to
+   begin with, so "reduced motion" is already satisfied by construction). */
 @mixin fcar-list-fallback {
   .fcar__track {
     height: auto !important;
@@ -542,8 +783,6 @@ $slot-step-rest: 165px;
     position: static;
     width: 100%;
     max-width: 420px;
-    /* the driver may have written inline styles before the breakpoint
-       changed — the fallback has to win over them */
     opacity: 1 !important;
     visibility: visible !important;
     transform: none !important;
@@ -566,25 +805,36 @@ $slot-step-rest: 165px;
   }
 }
 
-@include below-1024 {
-  .fcar {
-    padding-inline: var(--space-32);
-  }
-
-  .fcar__doodle {
-    display: none;
-  }
-
-  @include fcar-list-fallback;
-}
-
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce) and (min-width: 1024px) {
   @include fcar-list-fallback;
 }
 
 @include below-768 {
+  /* .fcar itself (the track's visual box) and .fcar__sticky now carry no
+     inset of their own — .fcar__sticky spans the full section width, and
+     .fcar__headline/.fcar__body below take over the actual 16/24 gutter
+     directly so the rendered content keeps the same margins it had before;
+     this only moves WHERE the inset lives, freeing the outer containers to
+     be genuinely full-width. */
   .fcar {
-    padding-inline: var(--space-20);
+    padding-inline: 0;
+    padding-block-start: var(--space-48);
+    padding-block-end: 0;
+  }
+
+  .fcar__sticky {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+  }
+
+  .fcar__headline {
+    padding-inline: var(--space-16);
+  }
+
+  .fcar__body {
+    padding-inline: var(--space-16);
+    padding-block: var(--space-24);
   }
 
   .fcar__headline h2 {

@@ -73,6 +73,9 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "allowedHosts": ["192.168.1.13", "localhost"]
+          },
           "configurations": {
             "production": {
               "buildTarget": "ynmo-tifli-landing:build:production"

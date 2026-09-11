@@ -54,6 +54,7 @@
             <button
               class="fcar__tile"
               type="button"
+              [class.is-active]="i === 0"
               [attr.data-tile]="i"
               [attr.aria-label]="f.title"
               [attr.aria-current]="i === 0 ? 'true' : null"

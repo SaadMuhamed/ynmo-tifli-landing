@@ -15,6 +15,10 @@
     gap: var(--space-32);
     text-align: center;
   }
+
+  @include below-768 {
+    padding-inline: var(--space-16);
+  }
 }
 
 .security-banner__content {

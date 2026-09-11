@@ -13,8 +13,16 @@ import { SCROLL_FAB } from '../../content/ar';
 type ScrollFabMode = 'hidden' | 'skip' | 'ctas';
 
 /** Clears the floating header, matching MIN_STICKY_TOP in
- * features-carousel.ts — the target this FAB's own skip button scrolls to. */
+ * features-carousel.ts — the target this FAB's own skip button scrolls to.
+ * Desktop only: below 1024 the header sits much closer to the top
+ * (site-header.scss) — skipFeatures() measures the real header there
+ * instead, same fix as features-carousel.ts' own stickyTopOffset and for
+ * the same reason (this fixed value left a large gap under the header on
+ * narrow). */
 const HEADER_CLEARANCE = 162;
+const HEADER_SELECTOR = 'app-site-header';
+const NARROW_QUERY = '(max-width: 1023px)';
+const NARROW_HEADER_BREATHING_ROOM = 16;
 
 /**
  * Global bottom-center FAB (nodes 1534:34879 / 1542:34979). One fixed anchor,
@@ -48,15 +56,23 @@ export class ScrollFab implements OnDestroy {
 
   private heroCtasVisible = false;
   private footerVisible = false;
-  private featuresVisible = false;
 
   /** .hero__ctas / #site-footer suppression — see the top-shrink rootMargin
    * on hero in init() for why this isn't a bare edge test either. */
   private edgeObserver?: IntersectionObserver;
   /** .fcar__sticky (the pinned CONTENT box, not the tall scroll-jack .fcar
    * section) — see init() for the top-shrink rootMargin this uses for the
-   * same reason hero's own observer does. */
+   * same reason hero's own observer does. Below 1024, .fcar__sticky is
+   * `display: contents` (features-carousel.scss' mobile rebuild — the
+   * headline is deliberately excluded from what's pinned there, so
+   * .fcar__sticky no longer generates a box at all), so it can never
+   * intersect anything on that breakpoint; .fcar__body is the equivalent
+   * on-screen pinned box there instead. Both are observed and OR'd in
+   * recompute() — on any given breakpoint only one of them has a real box
+   * to begin with, so the other's callback simply never fires. */
   private featuresObserver?: IntersectionObserver;
+  private featuresStickyVisible = false;
+  private featuresBodyVisible = false;
 
   constructor() {
     // Mirrors features-carousel.ts' own driver: afterNextRender fires before
@@ -85,8 +101,12 @@ export class ScrollFab implements OnDestroy {
     // actually on screen. .fcar__sticky IS the on-screen content: pinned in
     // place for the whole scroll-jacked stretch, then released and scrolled
     // away with no trailing dead space, so its intersection tracks what a
-    // reader actually sees far more precisely.
-    const features = document.querySelector('.fcar__sticky');
+    // reader actually sees far more precisely. Below 1024 it's `display:
+    // contents` instead (features-carousel.scss) and generates no box at
+    // all — .fcar__body is the equivalent on-screen pinned box there (see
+    // the featuresObserver field's own doc comment).
+    const featuresSticky = document.querySelector('.fcar__sticky');
+    const featuresBody = document.querySelector('.fcar__body');
 
     this.edgeObserver = new IntersectionObserver((entries) => {
       for (const entry of entries) {
@@ -99,21 +119,26 @@ export class ScrollFab implements OnDestroy {
     if (footer) this.edgeObserver.observe(footer);
 
     this.featuresObserver = new IntersectionObserver(
-      ([entry]) => {
-        this.featuresVisible = entry.isIntersecting;
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.target === featuresSticky) this.featuresStickyVisible = entry.isIntersecting;
+          else if (entry.target === featuresBody) this.featuresBodyVisible = entry.isIntersecting;
+        }
         this.recompute();
       },
-      // .fcar__sticky enters once (rising from below into journey→features)
-      // then stays pinned — same screen rect — for the whole multi-viewport
-      // scroll-jacked stretch, so this only actually re-fires once, at
-      // RELEASE: the pin lets go and the now-static element scrolls away
-      // through the TOP like any normal-flow content (same as hero). A bare
-      // "any pixel still overlapping" test stayed true well after release,
-      // while only a sliver still poked above the viewport's top edge —
-      // same top-shrink fix as hero's own observer, same reasoning.
+      // The pinned box enters once (rising from below into journey→
+      // features) then stays put — same screen rect — for the whole multi-
+      // viewport scroll-jacked stretch, so this only actually re-fires once
+      // per target, at RELEASE: the pin lets go and the now-static element
+      // scrolls away through the TOP like any normal-flow content (same as
+      // hero). A bare "any pixel still overlapping" test stayed true well
+      // after release, while only a sliver still poked above the
+      // viewport's top edge — same top-shrink fix as hero's own observer,
+      // same reasoning.
       { rootMargin: '-20% 0px 0px 0px' },
     );
-    if (features) this.featuresObserver.observe(features);
+    if (featuresSticky) this.featuresObserver.observe(featuresSticky);
+    if (featuresBody) this.featuresObserver.observe(featuresBody);
   }
 
   private recompute(): void {
@@ -121,7 +146,7 @@ export class ScrollFab implements OnDestroy {
       this.mode.set('hidden');
       return;
     }
-    this.mode.set(this.featuresVisible ? 'skip' : 'ctas');
+    this.mode.set(this.featuresStickyVisible || this.featuresBodyVisible ? 'skip' : 'ctas');
   }
 
   /** Same one-off smooth scrollTo features-carousel.ts' own skipToNext()
@@ -132,7 +157,18 @@ export class ScrollFab implements OnDestroy {
     if (!this.browser) return;
     const next = document.getElementById('specialists');
     if (!next) return;
-    const top = next.getBoundingClientRect().top + window.scrollY - HEADER_CLEARANCE;
+    const narrow = window.matchMedia(NARROW_QUERY).matches;
+    const clearance = narrow ? this.narrowHeaderClearance() : HEADER_CLEARANCE;
+    const top = next.getBoundingClientRect().top + window.scrollY - clearance;
     window.scrollTo({ top, behavior: 'smooth' });
+  }
+
+  /** app-site-header is position: fixed, so its rect is already viewport-
+   * relative — safe to read once here rather than caching it, since this
+   * only runs on an explicit tap, not per frame. */
+  private narrowHeaderClearance(): number {
+    const header = document.querySelector(HEADER_SELECTOR);
+    const headerBottom = header ? header.getBoundingClientRect().bottom : HEADER_CLEARANCE;
+    return Math.max(headerBottom + NARROW_HEADER_BREATHING_ROOM, 0);
   }
 }

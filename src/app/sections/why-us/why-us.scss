@@ -21,6 +21,8 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
+    padding-inline: var(--space-16);
+    padding-block: var(--space-24);
   }
 }
 
@@ -33,7 +35,15 @@
   gap: var(--space-32);
 
   @include below-1024 {
+    /* Heading + badge sit side by side as one row (badge at the row's
+       inline-start — the right, under this doc's dir="rtl" — matching
+       their natural DOM order), with the CTA wrapping onto its own full
+       row below via its flex-basis:100%. */
+    flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: space-between;
+    width: 100%;
   }
 }
 
@@ -48,8 +58,15 @@
   pointer-events: none;
   z-index: 0;
 
+  /* Desktop's absolute placement (pinned above/beside the left-aligned
+     heading) assumes that layout; below-1024 keeps it in normal flow
+     instead, sitting beside the heading in the row above (own DOM order
+     already puts it first, at the inline-start/right side) rather than
+     overlapping it. */
   @include below-1024 {
-    display: none;
+    position: static;
+    flex: none;
+    width: 170px;
   }
 }
 
@@ -67,7 +84,13 @@
   text-align: start;
 
   @include below-1024 {
-    text-align: center;
+    text-align: start;
+    /* flex-basis:0 (not auto) — auto's max-content hypothetical size is
+       wide enough on its own to trip flex-wrap, dropping the heading onto
+       its own line below the badge instead of filling the space beside
+       it. */
+    flex: 1 1 0;
+    min-width: 0;
   }
 }
 
@@ -100,6 +123,11 @@
   font-weight: var(--fw-bold);
   color: var(--brand-primary);
   white-space: nowrap;
+
+  @include below-1024 {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
 }
 
 .why-us__cta-icon,
@@ -129,7 +157,7 @@
   min-width: 0;
 
   @include below-1024 {
-    grid-template-columns: repeat(auto-fit, 228px);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     justify-content: center;
   }
 }

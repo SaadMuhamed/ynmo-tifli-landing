@@ -2,6 +2,12 @@
 
 .blogs {
   position: relative;
+  /* .blog-rail's card shadows bleed past .blogs's own box (its negative
+     margin-block-end reclaims the padding that makes room for them); without
+     a stacking order above its normal-flow sibling, the next section's own
+     opaque background paints over that bleed instead of it showing through —
+     same fix as .why-us's identical z-index comment. */
+  z-index: 1;
   background: var(--surface-page);
   padding-block: var(--space-72);
   padding-inline: var(--gutter);
@@ -9,6 +15,15 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-72);
+
+  @include below-1024 {
+    /* redefined (not hardcoded) so the mobile-rail bleed math further down
+       (which reads var(--gutter) to cancel this exact padding) stays in
+       sync instead of drifting off the old 20px --gutter value. */
+    --gutter: var(--space-16);
+    padding-block: var(--space-24);
+    padding-inline: var(--gutter);
+  }
 }
 
 .blogs__top {
@@ -21,6 +36,13 @@
   @include below-1024 {
     flex-direction: column;
     align-items: stretch;
+    /* --container (calc(100% - 96px)) never gets redefined below the 768
+       breakpoint — only --gutter does — so at real phone widths this stale
+       96px subtraction chews a big chunk out of an already-narrow screen,
+       leaving the row sitting well inside .blogs's own 16px padding rather
+       than filling it. Mobile has no separate "container" concept — full
+       width within the section's own padding is exactly what's wanted. */
+    max-width: none;
   }
 }
 
@@ -142,6 +164,11 @@
   width: 100%;
   max-width: var(--container);
   margin-inline: auto;
+
+  /* Same stale --container issue as .blogs__top above. */
+  @include below-1024 {
+    max-width: none;
+  }
 }
 
 .blogs__tabs {
@@ -151,6 +178,16 @@
   /* flex-start packs to the RTL start (right) instead of centering. */
   justify-content: flex-start;
   width: 100%;
+
+  @include below-1024 {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 }
 
 .blogs__tab {
@@ -164,6 +201,11 @@
   font-size: var(--fs-20);
   font-weight: var(--fw-medium);
   color: var(--brand-primary);
+
+  @include below-1024 {
+    flex: none;
+    scroll-snap-align: start;
+  }
 
   &--active {
     background: var(--brand-primary-50);
@@ -209,8 +251,10 @@
      by the scrollport; the negative margin-block-end reclaims most of
      that added space so the section's total height doesn't grow to match. */
   padding-block-start: var(--space-32);
-  padding-block-end: var(--space-80);
-  margin-block-end: calc(-1 * (var(--space-80) - var(--space-24)));
+  /* 88px (56 offset + 32 blur), not --space-80 (80px) — that 8px shortfall
+     hard-clipped the shadow's faint outer edge against the scrollport. */
+  padding-block-end: 88px;
+  margin-block-end: calc(-1 * (88px - var(--space-24)));
 
   &::-webkit-scrollbar {
     display: none;
@@ -221,7 +265,6 @@
   scroll-snap-align: start;
   flex: 0 0 272px;
   border-radius: var(--radius-lg);
-  overflow: hidden;
   box-shadow: 0 56px 32px 0 var(--shadow-tint-neutral);
 }
 
@@ -230,6 +273,12 @@
   flex-direction: column;
   align-items: flex-start;
   background: var(--surface-2);
+  /* Rounds/clips the card's own visual content (media + body) — kept off
+     .blog-card itself: overflow:hidden on the same element as its own
+     box-shadow clips that shadow too, no matter how much scrollport
+     padding surrounds it. */
+  border-radius: inherit;
+  overflow: hidden;
 }
 
 .blog-card__media {

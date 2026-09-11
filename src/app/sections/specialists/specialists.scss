@@ -5,6 +5,15 @@
   background: var(--surface-page);
   padding-block: var(--space-72);
   padding-inline: var(--gutter);
+
+  @include below-1024 {
+    /* redefined (not hardcoded) so .practitioner-rail's bleed math below
+       (which reads var(--gutter) to cancel this exact padding) stays in
+       sync instead of drifting 4px off the old 20px --gutter value. */
+    --gutter: var(--space-16);
+    padding-block: var(--space-24);
+    padding-inline: var(--gutter);
+  }
 }
 
 .specialists__intro {
@@ -16,6 +25,7 @@
 
   @include below-1024 {
     flex-direction: column;
+    max-width: 100%;
   }
 }
 
@@ -162,7 +172,10 @@
   gap: var(--space-16);
 
   @include below-1024 {
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-items: stretch;
+    width: 100%;
   }
 }
 
@@ -185,6 +198,11 @@
     width: 20px;
     height: 20px;
   }
+
+  @include below-1024 {
+    justify-content: center;
+    width: 100%;
+  }
 }
 
 .chip-link {
@@ -196,6 +214,11 @@
   color: var(--brand-secondary);
   text-decoration: underline;
   align-self: center;
+
+  @include below-1024 {
+    justify-content: center;
+    width: 100%;
+  }
 
   img {
     width: 16px;

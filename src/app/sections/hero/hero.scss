@@ -39,6 +39,7 @@
   @include below-1024 {
     border-radius: 0;
     padding-block-start: 140px;
+    padding-block-end: var(--space-24);
   }
 }
 
@@ -268,6 +269,25 @@
     height: auto;
     flex-wrap: wrap;
   }
+
+  /* mobile only: stack illustration (full-bleed) above both stat rows —
+     desktop/tablet keep the side-by-side band layout above untouched.
+     padding-inline zeroed here (not just left to .hero__illustration's
+     own negative margin) since .hero__band carries its own gutter padding
+     on top of .hero__card's — without this the illustration's bleed only
+     cancels this padding and stops short of the card's, at .hero__band's
+     own edge rather than the viewport's. */
+  @include below-768 {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: var(--space-24);
+    padding-inline: 0;
+    /* var(--container) shaves an extra fixed 96px off here (tuned for the
+       tablet band layout) — left in place that cap would center the band
+       well inside .hero__card's own padding, so the illustration's bleed
+       below would still fall short of the real card/viewport edge. */
+    max-width: none;
+  }
 }
 
 .hero__stats {
@@ -286,8 +306,16 @@
     margin-block-start: 0;
   }
 
+  /* mobile: was display:none — numbers now sit in a row underneath the
+     full-bleed illustration instead of the desktop side column layout. */
   @include below-768 {
-    display: none;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-items: center;
+    align-items: start;
+    gap: var(--space-16);
+    width: 100%;
+    order: 1;
   }
 }
 
@@ -347,6 +375,15 @@
      fills the box with no letterboxing. Left at its full natural height —
      see .hero__band for how the card only counts the top portion of it. */
   aspect-ratio: 1530 / 1255;
+
+  /* mobile: bleed past .hero__card's inline padding to hit the viewport
+     edges, and sort first in .hero__band's now-column flow. */
+  @include below-768 {
+    order: 0;
+    max-width: none;
+    width: calc(100% + var(--gutter) * 2);
+    margin-inline: calc(var(--gutter) * -1);
+  }
 }
 
 .hero__visual {

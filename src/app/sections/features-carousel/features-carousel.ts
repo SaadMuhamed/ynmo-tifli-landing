@@ -53,8 +53,24 @@ const SETTLE_EPSILON = 0.00005;
 
 /** Clears the floating header (48px gap + ~90px bar) plus breathing room —
  * matches services-grid's MIN_STICKY_TOP exactly, so every pinned section
- * on the page holds its headline the same distance under the header. */
+ * on the page holds its headline the same distance under the header. Desktop
+ * only: narrow's own header sits much closer to the top (site-header.scss'
+ * inset-block-start drops from 48px to var(--space-16) below 1024, and the
+ * bar itself is shorter there too) — reusing this same fixed 162px for
+ * narrow left a large dead gap between the header and the pinned rail
+ * (explicit report). See stickyTopOffset()/HEADER_SELECTOR below for the
+ * narrow replacement — measured off the real header rather than a second
+ * hardcoded guess, since guessing this exactly is what produced the gap in
+ * the first place. */
 const MIN_STICKY_TOP = 162;
+
+/** app-site-header is position: fixed, so its own rect is already in
+ * viewport (not page) coordinates — exactly what a sticky `top` offset
+ * needs, and unaffected by scroll position, so it's safe to read once in
+ * measure() rather than every frame (§3.1). */
+const HEADER_SELECTOR = 'app-site-header';
+/** px of breathing room below the header's own bottom edge, narrow only. */
+const NARROW_STICKY_BREATHING_ROOM = 16;
 
 /** Staged entrance sub-windows, in entrance progress E (0 → 1; E = 1 at
  * pinStart()). Explicit order — headline, then the rail, then the head+
@@ -109,8 +125,13 @@ export class FeaturesCarousel implements OnDestroy {
 
   private section: HTMLElement | null = null;
   private track: HTMLElement | null = null;
-  /** the sticky element — the driver sets its `top` and reads its height */
+  /** the sticky element on desktop — the driver sets its `top` and reads its
+   * height. Narrow uses `body` for both instead (§ mobile rebuild): the
+   * headline isn't part of the pinned block there, only rail+divider+column
+   * are, so the element that actually needs position:sticky differs — see
+   * pinTargetEl(). */
   private sticky: HTMLElement | null = null;
+  private body: HTMLElement | null = null;
   /** the mockup stage region — measured only to scale SLOT_STEP */
   private stage: HTMLElement | null = null;
   /** the four elements the staged entrance (updateEntrance()) fades in */
@@ -132,6 +153,11 @@ export class FeaturesCarousel implements OnDestroy {
   private ringPaths: SVGPathElement[] = [];
 
   private trackTop = 0;
+  /** the sticky `top` actually in effect — MIN_STICKY_TOP on desktop, the
+   * real measured header height (+ breathing room) on narrow; pinStart()
+   * reads this instead of the constant directly so it stays correct on
+   * whichever breakpoint set it last. */
+  private stickyTopOffset = MIN_STICKY_TOP;
   /** document-flow top of the SECTION itself (not the track) — see
    * updateEntrance()'s doc comment for why the entrance is timed off this
    * instead of a fixed lead distance. */
@@ -180,6 +206,7 @@ export class FeaturesCarousel implements OnDestroy {
     this.section = section;
     this.track = section.querySelector('.fcar__track') as HTMLElement | null;
     this.sticky = section.querySelector('.fcar__sticky') as HTMLElement | null;
+    this.body = section.querySelector('.fcar__body') as HTMLElement | null;
     this.stage = section.querySelector('.fcar__stage') as HTMLElement | null;
     this.headlineEl = section.querySelector('.fcar__headline') as HTMLElement | null;
     this.railEl = section.querySelector('.fcar__rail') as HTMLElement | null;
@@ -208,7 +235,7 @@ export class FeaturesCarousel implements OnDestroy {
     window.addEventListener('scroll', this.onScroll, { passive: true });
     window.addEventListener('resize', this.onResize, { passive: true });
 
-    if (this.reducedMotion || this.narrow) return; // static list stands as-is
+    if (this.reducedMotion) return; // static list stands as-is
 
     // Snap to wherever the reader already is rather than easing there from
     // T = 0: on a refresh part-way into the section, the damped follow would
@@ -222,9 +249,19 @@ export class FeaturesCarousel implements OnDestroy {
     this.rafHandle = requestAnimationFrame(this.frame);
   }
 
+  /** The element position:sticky actually gets applied to. Desktop pins
+   * .fcar__sticky whole (headline included, per services-grid's own
+   * convention) — narrow pins only .fcar__body instead (§ explicit request:
+   * the headline should scroll away normally, only the rail+divider+column
+   * "stop at the top"), features-carousel.scss switches which one actually
+   * gets `position: sticky` for the same breakpoint this reads. */
+  private pinTargetEl(): HTMLElement | null {
+    return this.narrow ? this.body : this.sticky;
+  }
+
   /** Cached geometry only — never read inside the rAF loop (§3.1, hard rule). */
   private measure(): void {
-    if (!this.section || !this.track || !this.sticky || !this.stage) return;
+    if (!this.section || !this.track || !this.sticky || !this.body || !this.stage) return;
     const rect = this.section.getBoundingClientRect();
     // A ResizeObserver can fire mid-transition (hidden tab, browser chrome
     // animating) with a momentary zero box. Keep the last good measurement
@@ -233,18 +270,50 @@ export class FeaturesCarousel implements OnDestroy {
 
     this.narrow = window.matchMedia(NARROW_QUERY).matches;
 
-    if (this.narrow || this.reducedMotion) {
+    // Narrow still pins/drives (§ mobile rebuild) — only the LAYOUT differs
+    // (features-carousel.scss stacks head above a re-anchored mockup depth
+    // stack instead of desktop's side-by-side one); the same T timeline,
+    // entrance fade, ring fill, glyph cross-fade and mockup/head poses all
+    // keep running so the mobile experience stays in sync with the
+    // identical scroll-driven model, just re-skinned. Only reduced-motion
+    // still bails outright — there's no reduced version of a scroll-jacked
+    // pin to fall back to, so that stays a plain unpinned list
+    // (fcar-list-fallback). Re-read AFTER updating this.narrow, since which
+    // element this is depends on it.
+    const pinTarget = this.pinTargetEl();
+    if (!pinTarget) return;
+
+    if (this.reducedMotion) {
       this.teardownPin();
       return;
     }
 
     this.stageWidth = this.stage.offsetWidth || STAGE_WIDTH;
-    this.sticky.style.top = `${MIN_STICKY_TOP}px`;
+    // Desktop's header sits much lower (48px gap + a taller bar) than
+    // narrow's (site-header.scss drops to var(--space-16) below 1024, with
+    // a shorter bar too) — reusing MIN_STICKY_TOP's fixed 162px for narrow
+    // left a large dead gap between the header and the pinned rail
+    // (explicit report). app-site-header is position: fixed, so its rect is
+    // already viewport-relative and safe to read here (not per-frame).
+    if (this.narrow) {
+      const header = document.querySelector(HEADER_SELECTOR);
+      const headerBottom = header ? header.getBoundingClientRect().bottom : MIN_STICKY_TOP;
+      this.stickyTopOffset = Math.max(headerBottom + NARROW_STICKY_BREATHING_ROOM, 0);
+    } else {
+      this.stickyTopOffset = MIN_STICKY_TOP;
+    }
+    pinTarget.style.top = `${this.stickyTopOffset}px`;
     this.section.classList.add('is-pinned');
 
     // position: sticky consumes the whole buffer by keeping the stage visibly
     // pinned while it is scrolled through, releasing exactly as the track's
-    // bottom reaches the sticky point — no scroll-jacking.
+    // bottom reaches the sticky point — no scroll-jacking. Always measured
+    // off .fcar__sticky (headline + body together), even on narrow where
+    // only .fcar__body itself gets position: sticky — .fcar__sticky's own
+    // offsetHeight is unaffected by which of its descendants is sticky, and
+    // this needs the FULL content height (headline included) for the track
+    // to end up tall enough; measuring just pinTarget there would undercount
+    // by the headline's own height and release the pin that much early.
     const stickyHeight = this.sticky.offsetHeight;
     this.extraScrollPx = window.innerHeight * VH_PER_FEATURE * this.count;
     this.track.style.height = `${stickyHeight + this.extraScrollPx}px`;
@@ -258,9 +327,10 @@ export class FeaturesCarousel implements OnDestroy {
   }
 
   private teardownPin(): void {
-    if (!this.section || !this.track || !this.sticky) return;
+    if (!this.section || !this.track || !this.sticky || !this.body) return;
     this.section.classList.remove('is-pinned');
     this.sticky.style.top = '';
+    this.body.style.top = '';
     this.track.style.height = '';
     this.extraScrollPx = 0;
     const entranceEls = [this.headlineEl, this.railEl, this.dividerEl, this.columnEl].filter(
@@ -343,7 +413,7 @@ export class FeaturesCarousel implements OnDestroy {
     this.measure();
     if (this.reducedMotion) {
       this.teardownPin();
-    } else if (!this.narrow) {
+    } else {
       this.dirty = true;
       this.rafHandle = requestAnimationFrame(this.frame);
     }
@@ -365,9 +435,9 @@ export class FeaturesCarousel implements OnDestroy {
 
   /**
    * Scroll position at which the sticky stage actually starts sticking —
-   * MIN_STICKY_TOP above the track's own top.
+   * stickyTopOffset above the track's own top.
    *
-   * Measuring T from `trackTop` instead loses exactly MIN_STICKY_TOP of
+   * Measuring T from `trackTop` instead loses exactly stickyTopOffset of
    * travel: position:sticky releases when the track's bottom meets the
    * stage's bottom, which is that much earlier than `trackTop +
    * extraScrollPx`. T would then top out around 8.76 and the tail of the
@@ -376,7 +446,7 @@ export class FeaturesCarousel implements OnDestroy {
    * at release.
    */
   private pinStart(): number {
-    return this.trackTop - MIN_STICKY_TOP;
+    return this.trackTop - this.stickyTopOffset;
   }
 
   private readonly frame = (): void => {
@@ -412,6 +482,12 @@ export class FeaturesCarousel implements OnDestroy {
   }
 
   private render(T: number): void {
+    // Same depth-stack math on both breakpoints now (§ mobile rebuild: the
+    // "2 mockups, front + a smaller low-opacity one to the side" look is
+    // this same poseFor(), not a mobile-only effect) — only the CSS anchor
+    // each .fcar__mockup positions against differs (features-carousel.scss),
+    // scaled automatically since stageWidth is read from the real
+    // .fcar__stage at whatever width that resolves to per breakpoint.
     for (let i = 0; i < this.mockups.length; i++) {
       const el = this.mockups[i];
       const pose = poseFor(i, T, this.stageWidth, this.count);
@@ -426,7 +502,7 @@ export class FeaturesCarousel implements OnDestroy {
       // text flow, and must not mirror under dir="rtl" (§8).
       //
       // The vertical centring is entirely CSS's job (.fcar__mockup's
-      // inset-block-start: 50% + its base translateY(-50%), the same line
+      // inset-block-start + its base translateY(-50%), the same line
       // .fcar__head centres on below) — this transform must only ever carry
       // x/scale. An earlier version of this line also added an absolute px
       // shift down to that same centre line before the translateY(-50%),
@@ -447,13 +523,12 @@ export class FeaturesCarousel implements OnDestroy {
       const pose = headPose(i, T, this.count);
       head.style.opacity = pose.opacity.toFixed(4);
       // translateY(-50%) here is the same self-centring piece the mockup
-      // transform carries above (see its comment) — the head now sits
-      // beside the mockup on that same shared centre line instead of being
-      // pinned to the column's top, so it needs the identical treatment:
-      // CSS sets the base translateY(-50%), and since this inline transform
-      // replaces the whole property, it has to re-include that piece itself
-      // or the head would jump to the column's top the moment the driver
-      // takes over.
+      // transform carries above (see its comment): CSS sets a base
+      // translateY(-50%) against the CENTRE of the head's own zone (beside
+      // the mockup on desktop, above it on narrow — features-carousel.scss),
+      // and since this inline transform replaces the whole property, it has
+      // to re-include that piece itself or the head would jump to that
+      // zone's top edge the moment the driver takes over.
       head.style.transform = `translate3d(0, ${pose.y.toFixed(2)}px, 0) translateY(-50%)`;
       head.style.visibility = pose.opacity > 0 ? 'visible' : 'hidden';
 
@@ -483,6 +558,18 @@ export class FeaturesCarousel implements OnDestroy {
         this.tiles[i].classList.toggle('is-active', isActive);
         if (isActive) this.tiles[i].setAttribute('aria-current', 'true');
         else this.tiles[i].removeAttribute('aria-current');
+      }
+      // Narrow only — desktop's rail is a fixed column, never scrolls.
+      // Narrow's is a horizontally-scrollable row (features-carousel.scss),
+      // so switching to a feature whose tile has scrolled out of view
+      // (explicit report: the newly-active tile was left clipped at the
+      // row's edge) needs to bring it back on screen itself. `inline` is
+      // what moves the row horizontally; `block: 'nearest'` is there
+      // specifically to stop this from ALSO nudging the page's own
+      // (vertical) scroll — the tile is already vertically in view inside
+      // the pinned rail, so "nearest" is a no-op on that axis.
+      if (this.narrow) {
+        this.tiles[active]?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
       }
       this.lastActive = active;
     }

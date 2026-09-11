@@ -9,11 +9,20 @@
   justify-content: center;
   transition: inset-block-start 0.2s ease;
   pointer-events: none; /* re-enabled on the bar itself; keeps the gutter clickable-through */
-  animation: header-fade-in 1.1s cubic-bezier(0.16, 1, 0.3, 1) both;
 
   @include below-1024 {
-    inset-block-start: 0;
+    inset-block-start: var(--space-16);
   }
+}
+
+/* Fade-in animation lives on .bar itself, not :host — :host wraps .drawer
+   too, and any non-'none' transform on an ancestor (even the harmless-
+   looking translateY(0) scale(1) this keyframe settles on) opens a new
+   containing block for descendant `position: fixed` elements. That silently
+   broke .drawer's fixed-to-viewport positioning, sizing/placing the full-
+   screen mobile menu against :host's own small box instead. */
+.bar {
+  animation: header-fade-in 1.1s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes header-fade-in {
@@ -34,7 +43,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :host {
+  .bar {
     animation: none;
   }
 }
@@ -55,8 +64,9 @@
   box-shadow: var(--shadow-header-float);
 
   @include below-1024 {
-    max-width: 100%;
-    border-radius: var(--radius-none);
+    width: 100%;
+    max-width: calc(100% - 32px);
+    border-radius: var(--radius-full);
   }
 }
 
@@ -211,9 +221,21 @@
 /* ---------- mobile drawer ---------- */
 .drawer {
   position: fixed;
-  inset: 0;
+  /* Floats 16px off the top/side edges like the closed header pill, instead
+     of covering the screen flush edge-to-edge — bottom stays flush since the
+     panel runs the rest of the way down, so only the top corners round. */
+  top: var(--space-16);
+  inset-inline: var(--space-16);
+  bottom: 0;
   z-index: 60;
   background: var(--surface-2);
+  /* :host sets pointer-events: none on itself so clicks pass through the
+     gutter around the floating header pill — .bar opts back in explicitly,
+     but .drawer (also a :host child) inherited that none, so the whole open
+     menu, X included, was inert no matter what its own click handlers did. */
+  pointer-events: auto;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  box-shadow: var(--shadow-header-float);
   display: flex;
   flex-direction: column;
   gap: var(--space-32);
@@ -245,8 +267,13 @@
   transform: translateX(0);
 }
 
+.drawer__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .drawer__close {
-  align-self: flex-start;
   font-size: var(--fs-24);
   width: 40px;
   height: 40px;
@@ -255,10 +282,15 @@
 .drawer__list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-24);
+}
+
+.drawer__item {
+  border-block-end: 1px solid var(--surface-1);
 }
 
 .drawer__link {
+  display: block;
+  padding-block: var(--space-16);
   font-size: var(--fs-18);
   font-weight: var(--fw-medium);
   color: var(--text-primary);
@@ -270,7 +302,7 @@
 }
 
 .drawer__cta {
-  display: inline-flex;
+  display: flex;
   justify-content: center;
   background: var(--brand-primary);
   color: var(--text-on-brand);
@@ -283,7 +315,9 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-4);
-  align-self: flex-start;
+  background: var(--surface-3);
+  border-radius: var(--radius-full);
+  padding: var(--space-2) var(--space-8);
 
   img {
     width: 20px;

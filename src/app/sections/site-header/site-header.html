@@ -67,10 +67,16 @@
   aria-modal="true"
   [attr.aria-label]="header.drawerAriaLabel"
 >
-  <button class="drawer__close" type="button" [attr.aria-label]="header.drawerCloseAriaLabel" (click)="closeDrawer()">✕</button>
+  <div class="drawer__top">
+    <button class="drawer__close" type="button" [attr.aria-label]="header.drawerCloseAriaLabel" (click)="closeDrawer()">✕</button>
+    <button class="drawer__lang" type="button" [attr.aria-label]="header.langAriaLabel">
+      <img class="utility__chevron" src="/assets/icons/site-header/chevron-lang.svg" alt="" />
+      <span aria-hidden="true">🇸🇦</span>
+    </button>
+  </div>
   <ul class="drawer__list">
     @for (link of header.navLinks; track link.label; let i = $index) {
-      <li>
+      <li class="drawer__item">
         <a
           [class.drawer__link--active]="i === header.activeNavIndex"
           class="drawer__link"
@@ -83,8 +89,4 @@
     }
   </ul>
   <a class="drawer__cta" [href]="header.ctaHref" (click)="closeDrawer()">{{ header.ctaLabel }}</a>
-  <button class="drawer__lang" type="button" [attr.aria-label]="header.langAriaLabel">
-    <span aria-hidden="true">🇸🇦</span>
-    <img src="/assets/icons/site-header/chevron-lang.svg" alt="" />
-  </button>
 </div>

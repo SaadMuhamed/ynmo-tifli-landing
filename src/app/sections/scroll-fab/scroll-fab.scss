@@ -232,19 +232,47 @@
   }
 }
 
-@include below-768 {
+/* Tablet-and-down special case: the CTA pair's full desktop sizing (fs-16,
+   space-24 gap, both badge + trailing icon per pill) no longer fits one row
+   inside the viewport below the laptop breakpoint — it either wrapped to two
+   stacked pills or ran off the screen edge. Below 1024px both pills shrink
+   together (smaller type, tighter gaps/padding, trailing icon dropped) so
+   the pair keeps its single-row layout at any width down to the narrowest
+   phones; laptop/desktop (>=1024px) keeps the original sizing untouched. */
+@include below-1024 {
   .scroll-fab {
     bottom: var(--space-20);
   }
 
   .scroll-fab__ctas {
-    flex-direction: column-reverse;
+    flex-direction: row-reverse;
     align-items: center;
-    gap: var(--space-12);
+    gap: var(--space-4);
+    max-width: calc(100vw - 32px);
   }
 
+  /* The two-line wrap turned out to be a stale below-768 rule fighting this
+     one (deleted below), not actually needing text this small — sized back
+     up now that it's the only rule in play. */
   .scroll-fab__cta,
   .scroll-fab__skip {
-    font-size: var(--fs-14);
+    gap: var(--space-4);
+    font-size: var(--fs-12);
+    padding-block: 10px;
+    padding-left: 8px;
+    padding-right: 10px;
+  }
+
+  .scroll-fab__badge {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Trailing calendar/task icon is purely decorative (badge + label already
+     identify each CTA) — dropping it is what buys back the width the pair
+     needs to survive down to the narrowest phones without wrapping. */
+  .scroll-fab__cta .scroll-fab__icon {
+    display: none;
   }
 }
+

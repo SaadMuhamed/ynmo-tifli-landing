@@ -9,6 +9,11 @@
   background: var(--surface-page);
   padding-block: var(--space-72);
   padding-inline: var(--gutter);
+
+  @include below-768 {
+    padding-block: var(--space-24);
+    padding-inline: var(--space-16);
+  }
 }
 
 .partners__header {
@@ -109,6 +114,13 @@
   gap: var(--space-16);
   width: 100%;
   max-width: var(--container);
+
+  /* --container (calc(100% - 96px)) never gets redefined below the 768
+     breakpoint, so at real phone widths this stale subtraction shrinks the
+     strip well inside .partners's own 16px padding instead of filling it. */
+  @include below-768 {
+    max-width: none;
+  }
 }
 
 .logo-strip__track {
@@ -166,10 +178,6 @@
   img {
     width: 24px;
     height: 24px;
-  }
-
-  @include below-768 {
-    display: none;
   }
 }
 

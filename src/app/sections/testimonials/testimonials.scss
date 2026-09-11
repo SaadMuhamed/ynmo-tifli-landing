@@ -5,6 +5,11 @@
   background: var(--surface-page);
   padding-block: var(--space-72);
   padding-inline: var(--gutter);
+
+  @include below-1024 {
+    padding-block: var(--space-48);
+    padding-inline: var(--space-16);
+  }
 }
 
 .testimonials__header {
@@ -118,6 +123,14 @@
   gap: var(--space-24);
   max-width: var(--container);
   margin-inline: auto;
+  width: 100%;
+
+  /* Same stale --container issue as blogs/partners above — never redefined
+     below the 768 breakpoint, so it shrinks the grid well inside
+     .testimonials's own (already-correct) 16px padding on real phones. */
+  @include below-768 {
+    max-width: none;
+  }
 }
 
 .testimonial-card {
