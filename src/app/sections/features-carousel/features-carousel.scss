@@ -1,3 +1,4 @@
+@use 'sass:math';
 @use '../../../styles/mixins' as *;
 
 /* Geometry mirrored from carousel.animation.ts — these two files must agree.
@@ -49,18 +50,52 @@ $fcar-zone-gap: 64px; // var(--space-64)
  * shared formula. */
 $mockup-zone-fill: 0.5645827634576065;
 
-/* Narrow (§ mobile rebuild): head sits ABOVE the mockup instead of beside it
-   — the same "budget zone" concept as $fcar-head-zone-w/$fcar-zone-gap
-   above, just split along the vertical axis instead of the horizontal one,
-   and against the full column width rather than a horizontal remainder
-   (there's no side-by-side split left to carve out of). Tuned by eye against
-   the actual rendered head/mockup sizes at this breakpoint, the same way
-   desktop's own min-height: 580px is a by-eye "tall enough" rather than a
-   derived value — recompute if the mobile head's own font sizes or the
-   mockup's fill fraction change enough to over/undershoot these. */
-$fcar-mobile-head-zone-h: 190px;
-$fcar-mobile-zone-gap: 24px;
-$fcar-mobile-mockup-zone-h: 340px;
+/* Narrow (§ mobile rebuild): head sits ABOVE the mockup instead of beside
+   it. Centring each within a shared fixed-height zone (like desktop's own
+   side-by-side $fcar-head-zone-w/$fcar-zone-gap) turned out not to work
+   here: a zone has to be sized for the LONGEST description so nothing
+   overlaps it, which then leaves visibly more slack above every SHORTER
+   one — no single fixed zone height is "always exactly right" against
+   descriptions that vary this much per feature (explicit reports covered
+   both failure directions: too much slack on short ones, real text/mockup
+   overlap on the long one once the zone was shrunk to fix that).
+   measure() (features-carousel.ts) sets each mockup's own `top` instead,
+   individually, off that SAME feature's real measured head height plus a
+   fixed $fcar-mobile-head-mockup-gap — exactly right regardless of content
+   length, with render() (same file) omitting the translateY(-50%)
+   self-centring piece on narrow so that measured top isn't re-centred back
+   around itself. .fcar__head is simply flush with the column's own top —
+   no zone/centring on that side either. The two $fcar-mobile-*-zone-h
+   constants below are used for exactly one thing now: a same-order-of-
+   magnitude WORST-CASE reservation for .fcar__column's own min-height, so
+   the tallest realistic feature still can't spill into the section below
+   (see .fcar__column) — they no longer drive any positioning. */
+$fcar-mobile-head-mockup-gap: 8px;
+/* Real measured head heights across all 9 features at phone width run
+   98-129px (icon + title + up to 3 description lines) — 230px reserved
+   roughly double the tallest of those, adding ~100px of blank slack atop
+   every single card regardless of feature (part of the "big gap between
+   sections" report, most visible on whichever feature happens to land
+   last, right before the next section). 140px keeps ~11px of margin over
+   the tallest measured (129px) instead. */
+$fcar-mobile-head-zone-h: 140px;
+/* Mockup zone reservation used to be a single fixed px worst-case
+   ($fcar-mobile-mockup-zone-h: 720px, sized for a ~620px-wide column) —
+   but this breakpoint spans real phones (~350-400px column) up through
+   near-tablet widths, and a column that much narrower than 620px still
+   got the full 720px reserved, leaving a large dead gap of empty space
+   below the actual (much shorter) mockup before the next section — most
+   visible right at this section's own end, reported as "a big gap
+   between the sections." Expressed as a percentage instead (below, on
+   .fcar__column's padding-block-end) so the reservation scales with the
+   column's own actual width at any breakpoint: percentage
+   padding-block-end resolves against the containing block's WIDTH (a
+   standard CSS quirk), giving a proportional "reserve space equal to my
+   own width times this aspect ratio" without any JS measurement. Mockups
+   render close to a 913:1474 (~1:1.615) portrait aspect (see
+   .fcar__mockup's own doc comment) at $fcar-mobile-mockup-fill of the
+   column's width, so the padding is fill × aspect × 100%. */
+$fcar-mobile-mockup-aspect: 1.615;
 /** Fraction of the (now full) column width the centre mockup fills — see
  * $mockup-zone-fill's own doc comment for the concept; this is that same
  * idea against a differently-shaped zone, not solved for the same zero-
@@ -629,7 +664,7 @@ $slot-step-rest: 165px;
   .fcar__body {
     flex-direction: column;
     align-items: stretch;
-    gap: var(--space-24);
+    gap: var(--space-16);
   }
 
   .fcar__rail {
@@ -681,9 +716,22 @@ $slot-step-rest: 165px;
        min-height: 580px exists above. */
     flex: none;
     width: 100%;
-    min-height: calc(
-      #{$fcar-mobile-head-zone-h} + #{$fcar-mobile-zone-gap} + #{$fcar-mobile-mockup-zone-h}
-    );
+    /* Worst-case reservation only (see the $fcar-mobile-* doc comment up
+       top) — actual head/mockup positioning below no longer reads these,
+       it's per-feature and JS-measured, so this purely stops the tallest
+       realistic feature from spilling into the section below. Both
+       padding sides, not a min-height: min-height is only a FLOOR on the
+       box's total (border-box) height, so it doesn't stack with padding —
+       a min-height here plus this same padding-block-end would just leave
+       the smaller of the two silently absorbed once padding alone already
+       exceeds it, dropping the head zone's reservation entirely. Padding
+       on both sides always renders (there's no content to absorb it into;
+       head/mockup are both position: absolute), so the two stack into a
+       true total: head zone + gap on top, mockup zone (scaled to the
+       column's actual width — see $fcar-mobile-mockup-aspect's doc
+       comment) on bottom. */
+    padding-block-start: calc(#{$fcar-mobile-head-zone-h} + #{$fcar-mobile-head-mockup-gap});
+    padding-block-end: math.percentage($fcar-mobile-mockup-fill * $fcar-mobile-mockup-aspect);
   }
 
   /* the mockup zone is the FULL column width now — there's no head budget
@@ -701,15 +749,17 @@ $slot-step-rest: 165px;
      WHERE each anchors within the column changes below. */
 
   /* icon beside its title+description, one horizontal stack — the base rule
-     already lays it out this way (flex-direction: row) — narrow re-centres
-     that row within its own full-width zone at the TOP of the column
-     instead of desktop's beside-the-mockup vertical centre (the matching
-     lower zone is .fcar__mockup below); the shared translateY(-50%)
-     self-centring convention (features-carousel.ts' render()) still applies
-     unchanged, just against this zone's own centre line now. */
+     already lays it out this way (flex-direction: row). Flush with the
+     column's own top, no centring: desktop's translateY(-50%) piece is
+     what centred this against a shared zone, and render() omits it here on
+     narrow specifically (features-carousel.ts) — every feature's head
+     lands at the exact same spot regardless of its own height, which is
+     what lets measure() hang each feature's mockup a fixed, real 8px below
+     THAT feature's own actual head height instead of guessing a shared
+     zone big enough for the longest one. */
   .fcar__head {
     inset-inline: 0;
-    inset-block-start: calc(#{$fcar-mobile-head-zone-h} / 2);
+    inset-block-start: 0;
     justify-content: center;
     align-items: center;
   }
@@ -728,15 +778,17 @@ $slot-step-rest: 165px;
   /* node 956:11274's "2 mockups, front + a smaller low-opacity one to the
      side" depth stack is unchanged (features-carousel.ts' poseFor() runs
      identically on both breakpoints) — only the anchor moves from beside
-     the head (desktop) to BELOW it: same self-centring translateY(-50%)
-     convention, just against this zone's own centre line. --fcar-mockup-w
-     is overridden above (the root .fcar rule) to size off the full column
-     width now that there's no head budget to carve out of it either. */
+     the head (desktop) to BELOW it. inset-block-start here is only the
+     SSR/pre-hydration fallback (feature 0, before measure() has run) —
+     once mounted, measure() overwrites `top` per feature off that
+     feature's own real head height, and render() omits translateY(-50%)
+     on narrow so this lands as a real top edge, not a centre line (see
+     both files' own comments). --fcar-mockup-w is overridden above (the
+     root .fcar rule) to size off the full column width now that there's
+     no head budget to carve out of it either. */
   .fcar__mockup {
     inset-inline-start: 0;
-    inset-block-start: calc(
-      #{$fcar-mobile-head-zone-h} + #{$fcar-mobile-zone-gap} + #{$fcar-mobile-mockup-zone-h} / 2
-    );
+    inset-block-start: calc(#{$fcar-mobile-head-zone-h} + #{$fcar-mobile-head-mockup-gap});
   }
 }
 
@@ -834,7 +886,13 @@ $slot-step-rest: 165px;
 
   .fcar__body {
     padding-inline: var(--space-16);
-    padding-block: var(--space-24);
+    /* asymmetric on purpose — this is the pinned box's own top inset (below
+       the sticky offset itself, features-carousel.ts' stickyTopOffset), so
+       the two stack: shrinking just this side is what actually closes the
+       gap between the header and the rail (explicit report), without also
+       cramping the space below the mockup at the bottom. */
+    padding-block-start: var(--space-12);
+    padding-block-end: var(--space-24);
   }
 
   .fcar__headline h2 {

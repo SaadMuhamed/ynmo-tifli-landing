@@ -2,6 +2,14 @@
 
 html {
   scroll-behavior: auto; /* never "smooth" — it desynchronises the S03 scroll driver */
+  /* CSS scroll anchoring (on by default) repositions scroll to compensate
+     for layout shifts near the viewport. features-carousel.ts's driver
+     grows .fcar__track to several viewport-heights tall ~1s after load
+     (its scroll-jack spacer) — WebKit (Safari desktop + iOS) has been
+     observed re-anchoring scroll off that shift on load/refresh, landing
+     mid-page instead of at the top. Disabling it site-wide is the standard
+     fix for this class of bug; nothing here relies on anchoring. */
+  overflow-anchor: none;
 }
 
 body {
@@ -11,6 +19,7 @@ body {
   font-weight: var(--fw-regular);
   line-height: 1.6; /* Arabic never below 1.4 */
   -webkit-font-smoothing: antialiased;
+  overflow-anchor: none;
 }
 
 .container {

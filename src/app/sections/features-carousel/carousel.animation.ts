@@ -295,6 +295,28 @@ export function poseFor(index: number, T: number, stageWidth = STAGE_WIDTH, coun
   };
 }
 
+/**
+ * Which slot mockup `index` currently occupies, as a z-index — "static,
+ * never animated" (§3.5's own phrasing for the bottom→top Birth·L·R·C
+ * order) means never INTERPOLATED between layers, not fixed to one index
+ * forever: this still has to be recomputed as k crosses each integer
+ * boundary, or every feature past the first two would tie at the same
+ * value and fall back to DOM order for who paints on top — which one of
+ * those wins is arbitrary there, so "the wrong one happened to be
+ * later in the DOM" is a real bug, not a fluke of one specific feature
+ * (explicit report: peeking side mockups painting OVER the centre one).
+ * features-carousel.scss' own [data-feature='0']/[data-feature='1'] rest-
+ * state rules only ever covered k landing on exactly those two DOM
+ * indices — coincidentally correct only for T's very first dwell.
+ */
+export function mockupZIndex(index: number, T: number, count = DEFAULT_COUNT): number {
+  const k = Math.ceil(index - effectiveT(T, count));
+  if (k === 0) return 4; // C — centre/front
+  if (k === 1) return 3; // R — next, peeking
+  if (k === -1) return 2; // L — previous, exiting
+  return 1; // birth/exit extremes, already opacity 0 regardless
+}
+
 // ---------------------------------------------------------------------------
 // §3.7 head (title + description + app icon)
 // ---------------------------------------------------------------------------

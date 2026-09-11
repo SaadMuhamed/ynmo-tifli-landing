@@ -16,6 +16,7 @@ import {
   clamp,
   headIconPose,
   headPose,
+  mockupZIndex,
   poseFor,
   ramp,
   tileActiveIconOpacity,
@@ -70,7 +71,13 @@ const MIN_STICKY_TOP = 162;
  * measure() rather than every frame (§3.1). */
 const HEADER_SELECTOR = 'app-site-header';
 /** px of breathing room below the header's own bottom edge, narrow only. */
-const NARROW_STICKY_BREATHING_ROOM = 16;
+const NARROW_STICKY_BREATHING_ROOM = 8;
+
+/** px between a feature's own head and its mockup, narrow only — measured
+ * per feature off that feature's real head height (measure(), below), not
+ * a shared fixed zone (explicit request: exactly 8px, regardless of how
+ * long any given feature's own description happens to be). */
+const NARROW_HEAD_MOCKUP_GAP = 8;
 
 /** Staged entrance sub-windows, in entrance progress E (0 → 1; E = 1 at
  * pinStart()). Explicit order — headline, then the rail, then the head+
@@ -305,16 +312,36 @@ export class FeaturesCarousel implements OnDestroy {
     pinTarget.style.top = `${this.stickyTopOffset}px`;
     this.section.classList.add('is-pinned');
 
-    // position: sticky consumes the whole buffer by keeping the stage visibly
-    // pinned while it is scrolled through, releasing exactly as the track's
-    // bottom reaches the sticky point — no scroll-jacking. Always measured
-    // off .fcar__sticky (headline + body together), even on narrow where
-    // only .fcar__body itself gets position: sticky — .fcar__sticky's own
-    // offsetHeight is unaffected by which of its descendants is sticky, and
-    // this needs the FULL content height (headline included) for the track
-    // to end up tall enough; measuring just pinTarget there would undercount
-    // by the headline's own height and release the pin that much early.
-    const stickyHeight = this.sticky.offsetHeight;
+    // Desktop keeps the original centred-in-shared-zone CSS default (its
+    // head/mockup sit side by side, not stacked, so none of this applies
+    // there) — clear any stale inline `top` a previous narrow pass left, so
+    // that default takes over again on breakpoint switch-back. The narrow
+    // anchor itself is set in render() instead, off the ACTIVE feature's
+    // head height specifically (see that comment for why it can't be
+    // per-mockup/per-feature the way this used to be here).
+    if (!this.narrow) for (const mockup of this.mockups) mockup.style.top = '';
+    this.lastActive = -1; // forces render()'s narrow mockup-top block to run on the very next frame even if T/active haven't moved (e.g. a resize crossing the narrow breakpoint)
+
+    // position: sticky consumes the whole buffer by keeping the stage
+    // visibly pinned while it is scrolled through, releasing exactly as the
+    // track's bottom reaches the sticky point — no scroll-jacking. This
+    // needs the FULL content height (headline included), not just
+    // pinTarget's own — measuring just pinTarget would undercount by the
+    // headline's own height and release the pin that much early, cutting
+    // the LAST feature's exit short right as the reader is mid-scroll
+    // through it (explicit report: "the whole screen scrolls down and
+    // skips the last feature cycle before it ends"). .fcar__sticky.
+    // offsetHeight would normally give that combined height directly, but
+    // on narrow .fcar__sticky is `display: contents` (features-carousel.
+    // scss) — a display: contents element generates NO BOX, so its
+    // offsetHeight is unconditionally 0, not "the headline+body height
+    // minus whichever is sticky" as an earlier version of this comment
+    // wrongly assumed. Summed explicitly instead, off boxes that genuinely
+    // exist on both breakpoints.
+    const headlineBoxHeight = this.headlineEl
+      ? this.headlineEl.offsetHeight + parseFloat(getComputedStyle(this.headlineEl).marginBottom)
+      : 0;
+    const stickyHeight = this.narrow ? headlineBoxHeight + pinTarget.offsetHeight : this.sticky.offsetHeight;
     this.extraScrollPx = window.innerHeight * VH_PER_FEATURE * this.count;
     this.track.style.height = `${stickyHeight + this.extraScrollPx}px`;
     this.trackTop = pageOffsetTop(this.track);
@@ -349,6 +376,15 @@ export class FeaturesCarousel implements OnDestroy {
       el.style.visibility = '';
       el.style.willChange = '';
       el.style.filter = '';
+    }
+    // .fcar__mockup's own per-feature `top` (narrow only, set in measure())
+    // and per-frame `z-index` (both breakpoints, render()) — fcar-list-
+    // fallback forces position: static regardless, making either harmless
+    // either way, but clearing them keeps this teardown a true reset
+    // rather than leaving stale values behind.
+    for (const el of this.mockups) {
+      el.style.top = '';
+      el.style.zIndex = '';
     }
     for (const path of this.ringPaths) path.style.strokeDashoffset = '';
   }
@@ -501,19 +537,34 @@ export class FeaturesCarousel implements OnDestroy {
       // translateX stays physical: this is a spatial depth composition, not
       // text flow, and must not mirror under dir="rtl" (§8).
       //
-      // The vertical centring is entirely CSS's job (.fcar__mockup's
-      // inset-block-start + its base translateY(-50%), the same line
+      // Desktop: the vertical centring is entirely CSS's job (.fcar__mockup's
+      // inset-block-start: 50% + its base translateY(-50%), the same line
       // .fcar__head centres on below) — this transform must only ever carry
-      // x/scale. An earlier version of this line also added an absolute px
-      // shift down to that same centre line before the translateY(-50%),
-      // which duplicated the CSS offset (inline transform doesn't replace
-      // inset-block-start, it stacks on top of it) and shoved every mockup
-      // ~430px below its intended spot. translateY(-50%) alone still
-      // self-centres correctly here because it's percentage-based: it
-      // resolves against THIS element's own rendered height, whatever that
-      // is for its current scale/aspect.
-      el.style.transform = `translate3d(${pose.x.toFixed(2)}px, 0, 0) translateY(-50%) scale(${pose.scale.toFixed(4)})`;
+      // x/scale there. An earlier version of this line also added an
+      // absolute px shift down to that same centre line before the
+      // translateY(-50%), which duplicated the CSS offset (inline transform
+      // doesn't replace inset-block-start, it stacks on top of it) and
+      // shoved every mockup ~430px below its intended spot.
+      //
+      // Narrow: measure() sets this.style.top per feature directly (its own
+      // head's real height + a fixed gap, not a shared centred zone — see
+      // that comment for why), so the -50% piece must be OMITTED there: it
+      // would re-centre the mockup back around that top value instead of
+      // hanging its actual top edge from it, undoing the whole point of
+      // measuring a real per-feature offset.
+      el.style.transform = this.narrow
+        ? `translate3d(${pose.x.toFixed(2)}px, 0, 0) scale(${pose.scale.toFixed(4)})`
+        : `translate3d(${pose.x.toFixed(2)}px, 0, 0) translateY(-50%) scale(${pose.scale.toFixed(4)})`;
       el.style.opacity = pose.opacity.toFixed(4);
+      // features-carousel.scss' [data-feature='0']/[data-feature='1'] rest-
+      // state rules only give the right z-index (front above peek) for
+      // whichever two DOM indices k happens to land on during the very
+      // first dwell — every later feature ties at the shared base z-index
+      // and falls back to DOM order, which is a real bug (mockupZIndex's
+      // own doc comment), not just a desktop non-issue: recomputed here so
+      // whichever slot each mockup currently occupies always paints right,
+      // on every feature, both breakpoints.
+      el.style.zIndex = mockupZIndex(i, T, this.count).toString();
       // Only the live layers get a compositing hint — never all nine (§8).
       el.style.willChange = 'transform, opacity';
     }
@@ -522,14 +573,19 @@ export class FeaturesCarousel implements OnDestroy {
       const head = this.heads[i];
       const pose = headPose(i, T, this.count);
       head.style.opacity = pose.opacity.toFixed(4);
-      // translateY(-50%) here is the same self-centring piece the mockup
-      // transform carries above (see its comment): CSS sets a base
-      // translateY(-50%) against the CENTRE of the head's own zone (beside
-      // the mockup on desktop, above it on narrow — features-carousel.scss),
-      // and since this inline transform replaces the whole property, it has
-      // to re-include that piece itself or the head would jump to that
-      // zone's top edge the moment the driver takes over.
-      head.style.transform = `translate3d(0, ${pose.y.toFixed(2)}px, 0) translateY(-50%)`;
+      // Desktop: translateY(-50%) is the same self-centring piece the
+      // mockup transform carries above (see its comment) — CSS sets a base
+      // translateY(-50%) against the centre of the head's own zone (beside
+      // the mockup there), and since this inline transform replaces the
+      // whole property, it has to re-include that piece itself or the head
+      // would jump to that zone's top edge the moment the driver takes over.
+      // Narrow: .fcar__head sits flush at the column's own top instead (no
+      // zone centring — every feature's mockup hangs off THIS feature's own
+      // real height instead, see measure()), so there's no centre line to
+      // re-include here.
+      head.style.transform = this.narrow
+        ? `translate3d(0, ${pose.y.toFixed(2)}px, 0)`
+        : `translate3d(0, ${pose.y.toFixed(2)}px, 0) translateY(-50%)`;
       head.style.visibility = pose.opacity > 0 ? 'visible' : 'hidden';
 
       const icon = this.headIcons[i];
@@ -567,9 +623,41 @@ export class FeaturesCarousel implements OnDestroy {
       // what moves the row horizontally; `block: 'nearest'` is there
       // specifically to stop this from ALSO nudging the page's own
       // (vertical) scroll — the tile is already vertically in view inside
-      // the pinned rail, so "nearest" is a no-op on that axis.
-      if (this.narrow) {
+      // the pinned rail, so "nearest" is a no-op on that axis IF the rail
+      // is already on screen.
+      //
+      // `lastActive !== -1` guards the one case where that assumption
+      // doesn't hold: init()'s very first render() call (syncing the DOM to
+      // wherever the reader already is on load/refresh) always finds
+      // `active !== lastActive`, since `lastActive` starts at its -1
+      // sentinel — that's not a real tile change, just this render's first
+      // run. At that point the rail is virtually never on screen yet (the
+      // reader hasn't scrolled to this pinned section at all), so
+      // `block:'nearest'` had real work to do on the vertical axis too and
+      // scrolled the whole document down to it — a bug report literally
+      // describing this: "refresh the page, it smooth-scrolls down by
+      // itself into this section." Skipping the scrollIntoView specifically
+      // for that first synthetic transition (while still applying the
+      // is-active class/aria-current below, so the tile highlight itself
+      // still starts correct) fixes that without touching the real,
+      // intentional behavior this exists for — tracking the active tile
+      // into view as the reader scrolls through the timeline afterward.
+      if (this.narrow && this.lastActive !== -1) {
         this.tiles[active]?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+      }
+      // Narrow only: ALL mockups share this ONE top anchor, off the
+      // ACTIVE feature's own real head height — not each mockup its own
+      // (explicit report: front and peeking mockups are literally
+      // different features' elements, so giving each its own top,
+      // measured off ITS OWN head, put them at different heights and
+      // broke the depth-stack's alignment). Every .fcar__head has a real
+      // box regardless of its current opacity (position: absolute, never
+      // display: none), so this is a plain read gated to actual index
+      // changes (rare — a handful of times over the whole scroll), not a
+      // per-frame one (§3.1 still holds).
+      if (this.narrow) {
+        const anchor = this.heads[active].offsetHeight + NARROW_HEAD_MOCKUP_GAP;
+        for (const mockup of this.mockups) mockup.style.top = `${anchor}px`;
       }
       this.lastActive = active;
     }

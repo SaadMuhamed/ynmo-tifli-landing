@@ -39,6 +39,19 @@
   min-width: 0;
   position: relative;
   aspect-ratio: 526 / 547;
+
+  /* .specialists__intro stacks to a column here (align-items: center, not
+     stretch) — the desktop flex-grow above sizes WIDTH in a row, but means
+     nothing for HEIGHT in a column, and this box has no other intrinsic
+     width to fall back on (its photo/badges children are both
+     position:absolute, so they don't contribute one either) — it was
+     collapsing to 0×0 and the whole collage silently vanished. An explicit
+     full-bleed width lets the aspect-ratio above resolve a real height
+     again. */
+  @include below-1024 {
+    flex: none;
+    width: 100%;
+  }
 }
 
 /* node 1110:23617 — the team photo (blob mask + globe badge), its own
